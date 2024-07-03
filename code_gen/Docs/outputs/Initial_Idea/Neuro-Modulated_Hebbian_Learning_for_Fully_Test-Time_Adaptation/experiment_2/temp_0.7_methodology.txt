@@ -1,0 +1,80 @@
+## Methodology for Applying Neuro-Modulated Hebbian Learning to NumerAI
+
+Based on the high-level idea, the NumerAI dataset description, and the analysis of the Neuro-Modulated Hebbian Learning (NHL) paper, here's a proposed methodology:
+
+**1. Relevance of NHL to NumerAI:**
+
+* **Limitations of the NumerAI dataset:** The dataset exhibits distribution shifts across time (eras), making it challenging for static models to maintain consistent performance. 
+* **Relevance of NHL:** NHL's ability to adapt to changing data distributions during inference aligns well with the temporal dynamics of the NumerAI dataset. The feed-forward soft Hebbian learning can capture evolving feature representations within each era, while the neuro-modulator can help adjust to broader trends across eras. 
+
+**2. Model Selection:**
+
+* **Considerations:** Given the tabular nature of the NumerAI data and the need to capture temporal relationships, a recurrent neural network (RNN) architecture, such as an LSTM or GRU, is a suitable choice. These models can learn from sequences of data points (eras) and retain information from past eras to inform predictions in the current era.
+* **Model limitations:** RNNs can suffer from vanishing gradients, especially with long sequences. This can hinder the model's ability to learn long-term dependencies across eras.
+
+**3. Combining NHL with RNNs:**
+
+* **Overcoming limitations:** To address the vanishing gradient problem, we can incorporate the neuro-modulator not just at the early layers but also at various points within the RNN architecture. This would allow for feedback and gradient flow across different time scales, facilitating the learning of both short-term and long-term dependencies.
+
+**4. Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * **Handling missing values:**  Implement techniques like imputation (e.g., mean/median filling, KNN imputation) or create indicator features for missing values.
+    * **Feature scaling:**  Apply standardization or normalization to ensure features are on a similar scale.
+    * **Era-based splitting:**  Divide the data into training, validation, and test sets based on eras to respect the temporal nature of the data and avoid leakage. 
+
+2. **Model Architecture:**
+    * **Input layer:**  Design an input layer with the appropriate number of units to accommodate the NumerAI features.
+    * **RNN layers:**  Stack multiple LSTM or GRU layers to capture temporal dependencies across eras.
+    * **Neuro-modulator layers:**  Integrate neuro-modulator layers at different points within the RNN architecture (e.g., after the input layer, between RNN layers, and before the output layer). 
+    * **Output layer:**  Use a dense layer with a single output unit and a sigmoid activation function for predicting the probability of a stock outperforming the market.
+
+3. **Training Process:**
+    * **Loss function:**  Employ a combination of the mean squared error (MSE) loss for the prediction task and the entropy loss for the neuro-modulator layers.
+    * **Optimizer:**  Utilize an optimizer like Adam or RMSprop with gradient clipping to prevent exploding gradients.
+    * **Training regime:**  Train the model on the training set, monitoring performance on the validation set, and using early stopping to prevent overfitting.
+
+4. **Inference and Adaptation:**
+    * **Feed-forward pass:** For each era in the test set, feed the feature data through the network, allowing the soft Hebbian learning rule to update weights in the early layers and the RNN hidden states to evolve.
+    * **Neuro-modulation:**  Use the output of the network and the entropy loss to fine-tune the neuro-modulator layers.
+    * **Prediction:** Generate predictions for each stock within the era based on the adapted model.
+
+**5. Pseudocode:**
+
+```
+# Data Preprocessing
+data = load_numerai_data()
+data = handle_missing_values(data)
+data = scale_features(data)
+train_data, val_data, test_data = split_data_by_era(data)
+
+# Model Architecture
+model = Sequential()
+model.add(InputLayer(input_shape=(num_features,)))
+model.add(LSTM(units=128, return_sequences=True))
+model.add(NeuroModulatorLayer())  # Example placement
+model.add(LSTM(units=64))
+model.add(NeuroModulatorLayer())
+model.add(Dense(units=1, activation='sigmoid')) 
+
+# Training Process
+model.compile(loss=['mse', 'entropy'], optimizer='adam')
+model.fit(train_data, epochs=10, validation_data=val_data, callbacks=[EarlyStopping()])
+
+# Inference and Adaptation
+for era in test_data:
+    predictions = model.predict(era)
+    model.train_on_batch(era, predictions)  # Update neuro-modulator
+    # Generate and store final predictions for the era
+```
+
+**6. Data Handling and Computational Efficiency:**
+
+* **Training on the entire dataset:**  The methodology can be adapted for training on the complete NumerAI dataset by employing techniques like data parallelism or distributed training across multiple machines or GPUs.
+* **Computational efficiency:**  To improve efficiency during inference, consider techniques like quantization, pruning, or knowledge distillation to reduce the model's size and computational requirements.
+
+**7. Additional Considerations:**
+
+* **Hyperparameter optimization:**  Experiment with different hyperparameter configurations, including the number of layers, units, learning rate, and the placement/number of neuro-modulator layers, to find the optimal settings for the NumerAI dataset.
+* **Regularization:**  Apply techniques like L1/L2 regularization or dropout to prevent overfitting and improve generalization.
+* **Ensemble methods:** Explore combining multiple models trained with NHL to further enhance performance and robustness. 

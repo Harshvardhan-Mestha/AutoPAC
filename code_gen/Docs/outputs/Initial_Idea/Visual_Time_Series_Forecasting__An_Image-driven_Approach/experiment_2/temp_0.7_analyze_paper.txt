@@ -1,0 +1,52 @@
+## Literature Review: Visual Time Series Forecasting: An Image-driven Approach 
+
+**Paper Summary:**
+
+This paper introduces a novel approach to time series forecasting by transforming the problem into the domain of computer vision. Instead of relying solely on numerical data, the method converts time series into images and trains a convolutional autoencoder to predict future values by generating subsequent images. This approach offers several advantages:
+
+* **Flexibility**: It is data-driven and non-parametric, making it adaptable to various data forms without the constraints of predetermined parameters.
+* **Uncertainty Estimation**: The visual predictions inherently provide estimates of uncertainty, as opposed to pointwise estimates of traditional methods.
+* **Robustness**: Transforming continuous numeric data into a discrete bounded space through visualization leads to more robust and stable predictions.
+
+**Methodology Analysis:**
+
+1. **Data Preprocessing:**
+    * **Conversion to Images:** Numeric time series are converted into 2D images by plotting them with time on the x-axis and values on the y-axis.
+    * **Normalization:** Images are standardized by scaling pixel values to [0,1] and negating them, making the time series line bright and the background dark. Each column is then normalized to sum to 1, effectively representing a discrete probability distribution over time.
+
+2. **Model Architecture:**
+    * The paper employs a convolutional autoencoder (VisualAE) for image-to-image regression.
+    * The encoder network uses convolutional layers to extract features and compress the input image into a lower-dimensional embedding.
+    * The decoder network reconstructs the forecast image from the embedding, effectively predicting the future continuation of the time series.
+
+3. **Loss Function:**
+    * The loss function used is the Jensen-Shannon Divergence (JSD), which measures the similarity between two probability distributions.
+    * JSD is calculated column-wise between the predicted and ground-truth images, focusing on the likelihood of pixel intensity at each time step.
+
+4. **Evaluation Metrics:**
+    * **Numeric Metrics:** 
+        * SMAPE (Symmetric Mean Absolute Percentage Error)
+        * MASE (Mean Absolute Scaled Error)
+    * **Image-based Metrics:**
+        * JSD (Jensen-Shannon Divergence)
+        * IoU (Intersection over Union)
+
+**Key Findings:**
+
+* VisualAE outperforms baseline methods (ARIMA, NumAE, Random Walk) on image-based metrics (IoU, JSD) across various datasets, including synthetic and real-world data.
+*  Numeric metrics (SMAPE, MASE) sometimes provide inconsistent results and may not accurately reflect the quality of visual forecasts.
+* The paper demonstrates the value of incorporating visual approaches in time series forecasting, especially when combined with traditional numeric methods and image-based evaluation metrics.
+
+**Strengths of the Methodology:**
+
+* The approach effectively leverages the power of deep learning for image processing and applies it to the domain of time series forecasting.
+* The use of JSD as a loss function is well-suited for comparing probability distributions represented by the image columns.
+* The inclusion of both numeric and image-based evaluation metrics provides a comprehensive assessment of forecast accuracy.
+
+**Potential Limitations and Future Research Directions:**
+
+* The paper primarily focuses on short-term forecasting. Exploring the applicability of the method to longer-term predictions would be valuable.
+* Investigating the impact of different image representations and model architectures could lead to further improvements in performance.
+*  The interpretability of the model's predictions could be enhanced by incorporating techniques for visualizing the learned features and attention mechanisms.
+
+**Overall, this paper presents a significant contribution to the field of time series forecasting by demonstrating the effectiveness of visual approaches. The proposed methodology offers promising results and opens up new avenues for future research in this area.** 

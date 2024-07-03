@@ -1,0 +1,54 @@
+## Literature Review: Pretraining Data Mixtures and In-Context Learning in Transformer Models 
+
+**Paper:** Pretraining Data Mixtures Enable Narrow Model Selection Capabilities in Transformer Models by Yadlowsky, Doshi, and Tripuraneni (2023)
+
+**Focus:** Methodology and Findings related to In-Context Learning (ICL) in Transformer models.
+
+**Methodology:**
+
+* **Pretraining Setup:**
+    * Transformer models (decoder-only, GPT-2 scale) are pretrained on sequences of (x, f(x)) pairs, where x is drawn from a normal distribution and f is a function drawn from a specific distribution over function classes.
+    * **Data Mixtures:** The key manipulation involves using mixtures of different function classes during pretraining, e.g., a mixture of dense and sparse linear functions or a mixture of linear functions and sinusoids.
+    * **Training Objective:** The model is trained using a "teacher forcing" objective with squared loss, aiming to predict the next element in the sequence (f(x)) given the previous elements.
+
+* **Evaluation Setup:**
+    * **In-Context Learning (ICL):** The models are evaluated on their ability to perform ICL, where they are given a few examples of a new function and asked to predict the output for a new input.
+    * **Model Selection:** The paper investigates how well the models can select the appropriate function class from the pretraining mixture when presented with in-context examples.
+    * **Out-of-Distribution (OOD) Generalization:** The paper also explores how well the models generalize to functions that are outside the distribution of the pretraining data, including convex combinations of known functions and extreme versions of known functions.
+
+* **Function Classes:**
+    * The paper considers several function classes:
+        * Dense linear functions (all coefficients non-zero)
+        * Sparse linear functions (few non-zero coefficients)
+        * Two-layer ReLU networks
+        * Sinusoidal functions 
+
+**Findings:**
+
+* **Model Selection:**
+    * Transformer models demonstrate near-optimal model selection capabilities when the in-context examples come from a function class within the pretraining mixture. They can effectively identify the relevant function class and make accurate predictions.
+    * The cost of model selection (in terms of sample complexity) is minimal compared to training on a single function class.
+    * Model size plays a role in model selection ability, with larger models generally performing better. 
+
+* **OOD Generalization:**
+    * Transformer models struggle to generalize to functions that are out-of-distribution (OOD) from the pretraining data. 
+    * They fail to accurately predict on convex combinations of functions from the pretraining mixture, even when they can accurately predict on each individual function.
+    * Generalization performance degrades as the functions become more dissimilar to those seen during pretraining. 
+    * The model selection capabilities are limited by the proximity to the pretraining data, highlighting the importance of broad function space coverage for robust ICL.
+
+**Strengths of the Methodology:**
+
+* **Controlled Setting:** The use of synthetic data and well-defined function classes allows for a controlled study of the impact of pretraining data on ICL.
+* **Focus on Model Selection:** The paper directly addresses the important question of how models select between different function classes during ICL.
+* **Exploration of OOD Generalization:** The paper investigates the limitations of ICL and highlights the challenges of generalizing beyond the pretraining data.
+
+**Limitations of the Methodology:**
+
+* **Synthetic Data:** The reliance on synthetic data raises questions about the generalizability of the findings to real-world tasks and natural language settings.
+* **Limited Function Classes:** The paper explores a limited number of function classes, and further research is needed to understand how the findings extend to other function classes and more complex tasks.
+
+**Potential Next Steps:**
+
+* Investigate the challenges of training tokenized models on similar tasks and compare their model selection and OOD generalization capabilities.
+* Explore methods for improving OOD generalization in ICL, such as incorporating inductive biases or developing more robust pretraining strategies.
+* Bridge the gap between the findings in this controlled setting and the complexities of natural language tasks and ICL in large language models. 

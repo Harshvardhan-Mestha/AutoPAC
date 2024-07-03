@@ -1,0 +1,41 @@
+## Literature Review: Deep Neural Networks Tend To Extrapolate Predictably
+
+**Paper:**  Deep Neural Networks Tend To Extrapolate Predictably by Katie Kang, Amrith Setlur, Claire Tomlin, Sergey Levine
+
+**Focus:** Methodology and Findings related to Neural Network Extrapolation
+
+### Summary:
+
+This paper investigates the behavior of deep neural networks when faced with out-of-distribution (OOD) inputs. Contrary to the common belief that neural networks become unpredictable and overconfident in such situations, the authors find a surprisingly predictable pattern. As inputs deviate further from the training distribution, the network's predictions often converge towards a constant value, termed the "optimal constant solution" (OCS). This OCS minimizes the average loss over the training data without considering the input. 
+
+### Methodology:
+
+1. **Datasets and Tasks:** The authors tested their hypothesis on 8 diverse datasets encompassing image and text domains with both discrete and continuous labels. Tasks included classification (cross-entropy loss), selective classification (mean squared error loss), and regression (Gaussian negative log-likelihood loss).
+
+2. **Network Architectures:**  Various architectures were employed, including CNNs (ResNet, VGG) for image tasks and transformers (DistilBERT) for text tasks.
+
+3. **Distribution Shifts:** Both natural and synthetic distribution shifts were used to evaluate OOD behavior. Examples include CIFAR10-C, ImageNet-R/Sketch, DomainBed, and adding noise/blur to images.
+
+4. **Evaluation Metrics:**
+    * **OOD Score:** A low-capacity model was trained to discriminate between training and evaluation data, with the average predicted likelihood of the evaluation data belonging to the evaluation distribution serving as the OOD score.
+    * **Distance to OCS:** KL divergence was used for cross-entropy and Gaussian NLL losses, while mean squared error was used for MSE loss to quantify the distance between model predictions and the OCS.
+
+5. **Analysis of Mechanism:** 
+    * **Representation Analysis:** The authors investigated the behavior of intermediate feature representations for OOD inputs, finding that they tend to have smaller norms compared to in-distribution inputs. This suggests a reduced influence of the input signal on the final prediction.
+    * **Weight Analysis:** The study also explored the alignment between feature representations and weight matrices, revealing that OOD representations have less overlap with the weight matrices, particularly in later layers.
+    * **Accumulation of Model Constants:**  The analysis showed that the accumulation of model constants (e.g., bias terms) often closely approximates the OCS. This, combined with the diminishing influence of OOD representations, explains the observed convergence towards the OCS.
+
+6. **Theoretical Analysis:** The paper provides theoretical support for the observed phenomenon by analyzing the solutions of gradient flow on deep homogeneous networks with ReLU activations. The analysis demonstrates that gradient flow leads to low-rank weight matrices, creating narrow subspaces for meaningful representations. Deviations from these subspaces, as seen with OOD inputs, result in a collapse of output magnitudes. Additionally, the bias term learned by the network aligns with the OCS, further reinforcing the observed behavior. 
+
+### Key Findings:
+
+*  Neural networks exhibit a predictable pattern of extrapolation towards the OCS when faced with OOD inputs.
+*  This phenomenon is observed across various datasets, tasks, architectures, and types of distribution shifts. 
+*  The mechanism behind this behavior involves the diminishing influence of OOD representations and the alignment of accumulated model constants with the OCS.
+*  Theoretical analysis on deep homogeneous networks supports the empirical findings.
+
+### Additional Notes:
+
+* The paper discusses instances where "reversion to the OCS" does not hold, such as with adversarial examples.
+* The authors propose a strategy for risk-sensitive decision-making by leveraging the OCS, demonstrating its effectiveness in selective classification tasks. 
+* Further research is needed to fully understand the conditions under which "reversion to the OCS" occurs and to explore its implications for other decision-making problems. 

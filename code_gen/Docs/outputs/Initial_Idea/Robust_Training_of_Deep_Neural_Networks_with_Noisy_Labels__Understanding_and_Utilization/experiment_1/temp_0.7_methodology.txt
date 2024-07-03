@@ -1,0 +1,71 @@
+## Methodology for NumerAI Prediction with Noisy Labels
+
+Based on the high-level idea, the literature review on handling noisy labels, and the characteristics of the NumerAI dataset, we can formulate the following methodology:
+
+**1. Model Selection:**
+
+* **XGBoost**: Given the tabular nature of the NumerAI data and its focus on feature interactions, XGBoost is a suitable candidate. It excels at handling mixed data types, is efficient for large datasets, and provides feature importance information.
+* **Limitations**: XGBoost can be sensitive to noisy labels, potentially leading to overfitting and reduced generalization performance.
+
+**2. Relevance of Literature Review**:
+
+* The paper on "Understanding and Utilizing Deep Neural Networks Trained with Noisy Labels" is relevant as it provides strategies for identifying clean samples and training models robustly in the presence of noisy labels. 
+* While the paper focuses on DNNs, the principles of noise characterization, clean sample identification, and robust training can be adapted to XGBoost.
+
+**3. Combining Ideas and Overcoming Limitations**:
+
+* We will adapt the NCV and INCV methods from the paper to identify clean samples within the NumerAI dataset.
+* XGBoost will be trained using the identified clean samples first, followed by gradual incorporation of the remaining data, similar to the improved Co-teaching strategy.
+
+**4. Data Handling**:
+
+* **Feature Engineering**: NumerAI features are already engineered, but we may explore additional feature interactions or transformations based on domain knowledge.
+* **Missing Values**: We will analyze the patterns of missing values and apply appropriate imputation techniques, such as median/mode imputation or model-based imputation.
+
+**5. Implementation Steps**:
+
+1. **Data Preprocessing**:
+    * Handle missing values using appropriate imputation techniques.
+    * Analyze feature importance and potentially create new features based on interactions.
+    * Split the data into training, validation, and test sets, ensuring proper handling of overlapping eras.
+2. **Clean Sample Identification (INCV)**:
+    * Apply the INCV method with XGBoost as the base model to identify clean samples within the training set. This involves iteratively splitting the data, training the model, and selecting samples with high prediction confidence.
+    * Tune the INCV hyperparameters (e.g., number of iterations, early stopping criteria) based on validation performance.
+3. **Model Training**:
+    * Train an XGBoost model using only the identified clean samples.
+    * Gradually incorporate the remaining training data, monitoring validation performance to avoid overfitting.
+    * Tune XGBoost hyperparameters (e.g., learning rate, tree depth, regularization) based on validation performance. 
+4. **Evaluation**:
+    * Evaluate the final model on the test set using appropriate metrics (e.g., correlation, sharpe ratio) provided by NumerAI.
+    * Analyze feature importance to understand the model's behavior and potentially inform further feature engineering.
+
+**6. Pseudocode:**
+
+```
+# Data Preprocessing
+data = load_numerai_data()
+data = handle_missing_values(data)
+data = feature_engineering(data)
+train_data, validation_data, test_data = split_data(data)
+
+# Clean Sample Identification (INCV)
+clean_samples = incv(train_data, XGBoost)
+
+# Model Training
+model = XGBoost()
+model.fit(clean_samples)
+model = gradually_incorporate_remaining_data(model, train_data)
+model = tune_hyperparameters(model, validation_data)
+
+# Evaluation
+performance = evaluate_model(model, test_data)
+feature_importance = analyze_feature_importance(model)
+```
+
+**7. Additional Considerations**:
+
+* Experiment with different XGBoost configurations and hyperparameters.
+* Explore ensemble methods or stacking with other models to improve performance.
+* Continuously monitor and adapt the methodology based on changes in the NumerAI data and feedback from the platform. 
+
+This methodology provides a robust framework for tackling the NumerAI prediction challenge while addressing the potential issue of noisy labels. By adapting techniques from the literature and combining them with the strengths of XGBoost, we aim to achieve consistent and improved performance in this unique and competitive environment. 

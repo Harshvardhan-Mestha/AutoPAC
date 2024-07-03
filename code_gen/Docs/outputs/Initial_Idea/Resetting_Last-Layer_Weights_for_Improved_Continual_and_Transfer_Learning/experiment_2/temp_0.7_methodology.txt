@@ -1,0 +1,72 @@
+## Methodology for NumerAI Prediction with "Zapping" Inspiration
+
+While the "Reset It and Forget It" paper focuses on image classification, its core idea of promoting adaptable features through weight resetting (zapping) can potentially be adapted to the NumerAI dataset. Here's a proposed methodology, considering the dataset's characteristics and potential model limitations:
+
+**1. Model Selection:**
+
+* **XGBoost:** Given the tabular nature of the NumerAI data, XGBoost is a strong candidate due to its effectiveness with such data and its ability to handle mixed data types.  Its limitations include potential overfitting and sensitivity to hyperparameter tuning.
+
+**2. Addressing XGBoost Limitations with "Zapping" Inspiration:**
+
+* **Ensemble of XGBoost models:** To mitigate overfitting, we can create an ensemble of XGBoost models trained on different subsets of features and/or data. This diversifies the models and reduces reliance on specific features, aligning with NumerAI's recommendation.
+* **Feature Subset Selection:** Inspired by "zapping," we can introduce randomness in feature selection for each model in the ensemble. This would involve randomly selecting a subset of features for each model during training. This process can be seen as "zapping" features instead of neurons, promoting the model's ability to generalize and adapt to different feature combinations. 
+
+**3. Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * Handle missing values (NaNs) through imputation techniques like median/mean filling or more advanced methods like KNN imputation.
+    * Explore feature scaling or normalization if necessary, depending on the chosen features and their distributions.
+2. **Feature Engineering:**
+    * Analyze feature importance and correlations to identify potentially redundant or uninformative features.
+    * Consider creating new features based on existing ones, potentially through interactions or aggregations, if domain knowledge suggests their usefulness.
+3. **Ensemble Creation with "Feature Zapping":**
+    * Define the number of models in the ensemble (e.g., 10 models).
+    * For each model:
+        * Randomly select a subset of features (e.g., 70% of the total features).
+        * Train an XGBoost model on the selected features using the training data.
+        * Tune hyperparameters for each model individually using cross-validation on the training data.
+4. **Model Training and Validation:**
+    * Train each XGBoost model in the ensemble on the full training data with the selected features.
+    * Evaluate each model's performance on the validation data using appropriate metrics (e.g., correlation, mean squared error).
+5. **Ensemble Prediction:**
+    * Combine predictions from each model in the ensemble using averaging or weighted averaging based on individual model performance.
+6. **Evaluation and Refinement:**
+    * Evaluate the ensemble's performance on the test data and compare it to individual model performance.
+    * Analyze errors and feature importance to identify areas for improvement.
+    * Iterate on feature engineering, feature selection ("zapping") strategy, and ensemble size to enhance the final model.
+
+**4. Addressing Data Size:**
+
+* **Incremental Learning:** If the dataset is too large to fit in memory, consider using incremental learning techniques. This involves splitting the data into smaller batches and training the models sequentially, updating their weights with each batch. This approach aligns with the continual learning aspect of the "zapping" paper.
+
+**5. Pseudocode:**
+
+```
+# Preprocessing and Feature Engineering (Steps 1-2)
+# ...
+
+# Ensemble Creation and Training (Steps 3-4)
+num_models = 10
+feature_subset_ratio = 0.7
+models = []
+for i in range(num_models):
+    # Feature Zapping
+    selected_features = random.sample(features, int(len(features) * feature_subset_ratio))
+    
+    # Model Training
+    model = XGBoost()
+    model.fit(train_data[selected_features], train_targets)
+    models.append(model)
+
+# Prediction and Evaluation (Steps 5-6)
+# ...
+``` 
+
+**6. Additional Considerations:**
+
+* Experiment with different feature selection ratios and ensemble sizes to find the optimal configuration.
+* Explore other ensemble methods like stacking or blending to further improve performance.
+* Consider using early stopping and regularization techniques within XGBoost to prevent overfitting.
+* If computational resources allow, experiment with other models like LightGBM or CatBoost, which share similarities with XGBoost but may offer performance advantages.
+
+This methodology provides a framework for applying the "zapping" inspiration to the NumerAI dataset while addressing potential limitations of XGBoost. The focus on ensemble learning and random feature selection aims to improve generalization and adaptability, aligning with the core principles of the paper. 

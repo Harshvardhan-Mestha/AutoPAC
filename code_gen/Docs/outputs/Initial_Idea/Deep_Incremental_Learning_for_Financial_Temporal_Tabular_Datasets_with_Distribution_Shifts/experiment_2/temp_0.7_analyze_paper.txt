@@ -1,0 +1,64 @@
+## Literature Review: Deep Incremental Learning for Financial Data
+
+Based on the provided abstract and introduction, here's a breakdown of the paper focusing on the methodology, using the chain of thought approach:
+
+**Problem Addressed:**
+
+* The paper tackles the challenge of **predicting stock rankings** in a dynamic financial environment where data distribution shifts and non-stationarity are prevalent.
+* Traditional machine learning models struggle in such scenarios due to concept drift. 
+
+**Proposed Solution: Deep Incremental Learning (DIL):**
+
+* A **hierarchical ensemble learning framework** is proposed, where models are built layer by layer.
+* Each layer consists of an ensemble of base learners (e.g., XGBoost models) trained on different segments of the temporal data.
+* **Crucially, features in each layer incorporate predictions from previous layers**, enabling the model to adapt to changing patterns and learn from past predictions.
+
+**Key Methodological Aspects:**
+
+1. **Data Formulation:**
+    * **Temporal Tabular Datasets:** The paper focuses on tabular data where features are extracted from time series data using methods like Signature Transform (ST) and Random Fourier Transform (RFT). This allows the application of traditional ML models without the complexity of recurrent neural networks. 
+    * **Data Lag:**  A lag of 15 weeks is considered to account for data embargo and model training time.
+
+2. **Base Learners:** 
+    * **XGBoost:**  Gradient boosting decision trees are chosen as the base learners due to their superior performance on tabular data, robustness to distribution shifts, and scalability. 
+    * **Factor Timing Models:**  Exponential Moving Average (EMA) and models based on ST/RFT are explored as baseline comparisons.
+
+3. **Model Training:**
+    * **Incremental Training:** Each base learner within a layer is trained incrementally, updating parameters as new data arrives while maintaining other hyperparameters. 
+    * **Parallel Training:** Models within a layer are trained independently and in parallel, enabling efficient use of computational resources.
+    * **Ansatz Hyperparameter Set:** A specific set of hyperparameters (including learning rate derived from the number of boosting rounds) is chosen based on performance and computational efficiency.
+
+4. **Model Ensembling:**
+    * **Ensemble Strategies:** Various ensemble strategies are explored to create diverse base learners, including:
+        * **Training Size Ensemble:** Combining models trained on different lengths of historical data.
+        * **Learning Rate Ensemble:** Combining models with different learning rates (and thus, complexities) to capture both fast and slow-changing features.
+        * **Target Ensemble:** Combining models trained on different target variables, including risk-controlled targets for hedging.
+        * **Feature Sets Ensemble:** Combining models trained on different subsets of features based on domain knowledge (feature group labels).
+    * **Layer 2 Models:** Simple averaging and ridge regression with non-negative constraints are used to further refine predictions from Layer 1.
+
+5. **Dynamic Hedging:**
+    * **Model Disagreement as a Signal:**  The variance between Layer 1 model predictions is used as a proxy for investor disagreement, informing a tail risk hedging strategy.
+    * **Dynamic Hedging Ratio:** The hedging ratio is adjusted based on the recent performance of the tail risk strategy, dynamically switching between hedged and unhedged modes.
+
+**Evaluation:**
+
+* Performance is evaluated on the Numerai dataset using metrics like Mean Correlation, Sharpe Ratio, and Calmar Ratio.
+* Comparisons are made between different base learner types, ensemble strategies, and hedging approaches.
+
+**Findings:**
+
+* DIL models outperform baseline models, showcasing the benefits of hierarchical learning and ensembling in adapting to concept drift.
+* Feature set ensembles based on domain knowledge demonstrate superior performance compared to random feature sampling.
+* Dynamic hedging based on model disagreement effectively reduces drawdown and improves risk-adjusted returns, especially during bear markets.
+
+**Strengths of the Methodology:**
+
+* **Adaptability:** The DIL framework effectively addresses the challenge of concept drift by incorporating past predictions and using diverse ensembles.
+* **Interpretability:**  The hierarchical structure allows for inspection of individual model performance and understanding the contribution of each layer.
+* **Computational Efficiency:** Parallel training and the use of efficient base learners like XGBoost make the framework scalable to large datasets. 
+
+**Limitations and Future Work:**
+
+* The paper primarily focuses on XGBoost models; exploring other base learners could further enhance performance and diversity.
+* The Ansatz formula for learning rate may require adaptation for different datasets and base learners.
+* Investigating more sophisticated Layer 2 models and dynamic hedging strategies could further improve risk management and performance. 

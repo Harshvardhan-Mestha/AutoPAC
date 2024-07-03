@@ -1,0 +1,4 @@
+Modify the json file filling in the paths and api keys.
+add relevant libraries in the 'package' text.
+Add research papers in the 'docs' folder.
+Add dataset of your choice in 'dataset' folder.

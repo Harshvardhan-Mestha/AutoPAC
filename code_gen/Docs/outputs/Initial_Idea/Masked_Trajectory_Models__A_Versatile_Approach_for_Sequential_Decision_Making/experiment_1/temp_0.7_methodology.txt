@@ -1,0 +1,92 @@
+## Methodology for NumerAI Prediction using MTM and Addressing its Limitations 
+
+While MTM shows promise for sequential decision-making, the NumerAI dataset presents a unique challenge as it's not a typical RL environment with state transitions and actions. However, we can adapt the MTM framework and combine it with other techniques to address these limitations and potentially develop a powerful prediction model.
+
+### Step 1: Adapting MTM to NumerAI
+
+1. **Trajectory Definition**: 
+    * We need to redefine "trajectory" in the context of NumerAI. One option is to consider each stock's historical data as a trajectory, where each time step represents a week (era) and features are the observations.  
+
+2. **Data Preprocessing**: 
+    * **Missing Values**: Address missing feature and target values (NaNs) using imputation techniques like mean/median filling or more advanced methods like KNN imputation.
+    * **Feature Scaling**: Normalize features to ensure they have similar scales, improving model convergence.
+
+3. **Model Architecture**:
+    * **Encoder**: Utilize a transformer encoder to capture temporal dependencies between eras for each stock.
+    * **Decoder**: Since we're interested in predicting future returns, we can experiment with two decoder options:
+        * **Autoregressive Decoder**: Predict the target for the next era based on the encoded historical data.
+        * **Direct Target Prediction**: Use a separate prediction head on top of the encoder to directly predict the target for a given era without an autoregressive structure. 
+
+4. **Masking Strategy**:
+    * **Random Masking**: Apply random masking to features within each era to encourage the model to learn robust representations.
+    * **Era Masking**: Experiment with masking entire eras to force the model to learn long-term dependencies and potentially improve generalization.
+
+### Step 2: Addressing Limitations and Incorporating Additional Techniques
+
+1. **Static Feature Issue**:
+    * NumerAI features are static within an era, unlike the dynamic state transitions in typical RL environments. To address this, we can:
+        * **Feature Engineering**: Create new features that capture temporal aspects, such as moving averages or differences between consecutive eras.
+        * **Recurrent Networks**: Combine the transformer encoder with recurrent layers (e.g., LSTMs) to better capture temporal dynamics within each era.
+
+2. **Target Distribution**:
+    * The target variable has a discrete distribution with five classes. We need to choose a suitable loss function for this type of problem:
+        * **Cross-Entropy Loss**:  Common choice for multi-class classification problems.
+        * **Ordinal Regression Loss**:  Considers the ordering of the target classes, potentially leading to better performance. 
+
+3. **Model Size and Training Data**:
+    * Training MTM on the entire NumerAI dataset might be computationally expensive. Consider techniques like:
+        * **Gradient Checkpointing**: Reduces memory usage during training.
+        * **Distributed Training**:  Utilizes multiple GPUs or TPUs to speed up training.
+
+### Step 3: Implementation Details and Pseudocode
+
+Here's a pseudocode outlining the methodology:
+
+```python
+# 1. Data Loading and Preprocessing
+data = load_numerai_dataset()
+data = impute_missing_values(data)
+data = normalize_features(data)
+
+# 2. Define Trajectory and Prepare Data
+trajectories = group_data_by_stock(data)
+train_data, val_data = split_data(trajectories)
+
+# 3. Model Creation
+model = MTM(encoder_layers, decoder_layers, hidden_dim, num_heads, num_classes)
+
+# 4. Training Loop
+for epoch in range(num_epochs):
+    for trajectory in train_data:
+        # Apply masking strategy
+        masked_trajectory = apply_masking(trajectory)
+        
+        # Forward pass and loss calculation
+        predictions = model(masked_trajectory)
+        loss = calculate_loss(predictions, trajectory.targets)
+        
+        # Backward pass and optimization
+        update_model_parameters(loss)
+
+    # Evaluate on validation data
+    evaluate_model(model, val_data)
+
+# 5. Prediction on Test Data
+test_data = load_numerai_test_dataset()
+predictions = model(test_data)
+submit_predictions(predictions)
+```
+
+**Additional Considerations**:
+
+* Explore different hyperparameter settings for the model and training process.
+* Monitor training progress and use early stopping to prevent overfitting.
+* Analyze model predictions and feature importance to gain insights into the model's behavior.
+
+**Adapting to Other Strategies**:
+
+If MTM proves ineffective after thorough experimentation, consider alternative approaches:
+
+* **Gradient Boosting**:  XGBoost or LightGBM are strong contenders for tabular data.
+* **Ensemble Methods**: Combine predictions from multiple models for improved performance.
+* **Deep Learning Models**: Explore architectures like LSTMs or 1D convolutional neural networks. 

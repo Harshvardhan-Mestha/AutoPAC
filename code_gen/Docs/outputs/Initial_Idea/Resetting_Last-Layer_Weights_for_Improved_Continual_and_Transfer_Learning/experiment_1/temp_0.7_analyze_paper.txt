@@ -1,0 +1,47 @@
+## Analyzing "Reset It and Forget It: Relearning Last-Layer Weights Improves Continual and Transfer Learning" with a Focus on Methodology 
+
+Following the systematic approach you've provided, let's delve into the paper and dissect its methodology.
+
+**1. Critical Reading & Questioning:**
+
+* **Problem & Solution:** The paper addresses the challenge of catastrophic forgetting in neural networks during continual learning and proposes "zapping" (resetting weights in the last layer) as a solution to improve continual and transfer learning.  
+* **Alternative Solutions:** The paper acknowledges existing solutions like meta-learning with higher-order gradients (e.g., MAML, OML, ANML) but argues that zapping offers a simpler and computationally cheaper alternative.
+* **Limitations:** While zapping shows promising results, the paper acknowledges the need for further investigation into optimal resetting schedules and heuristics, especially for standard i.i.d. training. The impact of excessive zapping also needs exploration.
+* **Assumptions:** The paper assumes that zapping helps discover weights less susceptible to disruption, leading to more adaptable and robust features. It also assumes similarities between continual and transfer learning, making zapping beneficial in both scenarios.
+* **Data & Interpretation:** The paper uses Omniglot, Mini-ImageNet, and OmnImage datasets, chosen for their varying complexities and suitability for few-shot learning scenarios. The interpretation of results seems reasonable, highlighting the consistent benefits of zapping across datasets and transfer settings.
+
+**2. Creative Reading & Extensions:**
+
+* **Key Ideas:** Zapping as a simple and effective mechanism for improving continual and transfer learning, potentially as an alternative or complement to meta-learning.
+* **Applications & Extensions:** Exploring zapping in other domains beyond image classification (e.g., natural language processing, reinforcement learning). Investigating its effectiveness in larger models and with different architectures.
+* **Improvements:** Developing adaptive zapping schedules based on task similarity or learning progress. Combining zapping with other regularization techniques like dropout.
+* **Further Research:** Investigating the relationship between zapping and the "transfer shock" phenomenon observed during fine-tuning. Exploring alternative methods to approximate transfer learning during pre-training.
+
+**3. Methodology Summary:**
+
+**Pre-training Phase:**
+
+* **Three pre-training algorithms are compared:**
+    * **Standard i.i.d. pre-training:** Training on a subset of classes with mini-batch SGD.
+    * **Alternating Sequential and Batch learning (ASB):** Alternating between sequential learning on a single class and batch learning on a sample of all classes.
+    * **Meta-learning through ASB (Meta-ASB):** Similar to ASB but with meta-gradients in the outer loop to update initial inner-loop weights. 
+* **Zapping is applied (or not) in each pre-training algorithm:** Resetting weights of the last layer corresponding to the class being learned.
+
+**Transfer Phase:**
+
+* **Two transfer learning scenarios are evaluated:**
+    * **Sequential Transfer (Continual Learning):** Fine-tuning the pre-trained model on a sequence of new classes, one image at a time.
+    * **Standard i.i.d. Transfer (Fine-tuning):** Fine-tuning the pre-trained model on mini-batches of data from new classes. 
+
+**4. Algorithm Analysis:**
+
+* **Algorithm 1 (Pre-training):** This algorithm details the ASB and Meta-ASB procedures, including the zapping mechanism. It highlights the core idea of forgetting and relearning specific classes during pre-training. 
+* **Algorithm 2 (Sequential Transfer):** This algorithm outlines the continual learning setup, where the model is sequentially exposed to new classes and updates are performed after each image.
+* **Algorithm 3 (i.i.d. Transfer):** This algorithm describes the standard fine-tuning process with mini-batches of data from new classes. 
+
+**5.  Further Notes:**
+
+*  The paper explores different zapping frequencies and the number of classes to reset during i.i.d. pre-training, suggesting that more zapping generally leads to better performance but with diminishing returns.
+*  The paper compares its Convnet architecture to OML and ANML, demonstrating that it achieves comparable or better performance with a simpler design and without the need for separate inner and outer loop weights or neuromodulation. 
+
+**Overall, the paper presents a well-structured methodology for evaluating the effectiveness of zapping in continual and transfer learning. The experiments are comprehensive and provide strong evidence for the benefits of this simple yet powerful technique.**

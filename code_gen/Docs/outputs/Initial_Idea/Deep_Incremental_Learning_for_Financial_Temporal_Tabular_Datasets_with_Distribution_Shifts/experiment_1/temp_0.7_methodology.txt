@@ -1,0 +1,90 @@
+## Methodology for Numerai Prediction using Deep Incremental Learning with XGBoost
+
+Based on the literature review and the characteristics of the Numerai dataset, we propose the following methodology using XGBoost within a Deep Incremental Learning (DIL) framework:
+
+**1. Model Selection:**
+
+* **XGBoost** is chosen as the primary model due to its demonstrated effectiveness for large tabular datasets with skewed distributions, as highlighted in the literature and confirmed by the Numerai feature set. 
+* We acknowledge XGBoost's limitations regarding concept drift and address this by incorporating incremental retraining and ensembling strategies.
+
+**2. Data Preprocessing:**
+
+* **Missing values:** We will handle missing values using the default XGBoost behavior, allowing the algorithm to learn the best way to impute missing data based on the training data.
+* **Target selection:** We will utilize the main "target_cyrus_v4_20" for model training and evaluation, as it aligns with the Numerai hedge fund's strategy.
+
+**3. Deep Incremental Learning Architecture:**
+
+* We will implement a **two-layer DIL architecture**.
+* **Layer 1:**
+    * **Ensemble strategy:** We will employ **Jackknife feature set sampling** to create 10 diverse XGBoost models, each trained on a subset of features based on the defined feature groups. This approach leverages domain knowledge and has shown superior performance compared to random sampling.
+    * **Training size:**  Each model in Layer 1 will be trained on a **rolling window of 600 eras**, balancing the need for historical context and adaptability to recent trends. 
+    * **Retraining period:** Models will be retrained **every 50 eras** (approximately annually) to account for potential concept drift.
+    * **Hyperparameters:** We will use the **Ansatz hyperparameter set** (max depth: 4, data/feature sampling per tree: 0.75) and the **Ansatz learning rate formula** (learning rate = 50 / boosting rounds) for efficient and stable training.
+* **Layer 2:**
+    * We will use **Elastic Net regression** with non-negative parameter constraints to combine the predictions from Layer 1 models at the individual stock level. This approach offers flexibility and allows for dynamic weighting of models based on their performance.
+
+**4. Dynamic Hedging:**
+
+* We will implement the **Tail Risk strategy** by calculating the standard deviation of predictions from Layer 1 models as a measure of investor disagreement.
+* We will combine the Tail Risk strategy with the Baseline strategy (simple average of Layer 1 predictions) using **dynamic hedging**. The hedging ratio will adjust based on the recent performance of the Tail Risk strategy, providing downside protection during bear markets.
+
+**5. Computational Considerations:**
+
+* To handle the large Numerai dataset, we will implement the following techniques:
+    * **Regular era sampling:** We will sample 25% of the data eras for training each model in Layer 1, ensuring coverage of the entire dataset while managing computational resources.
+    * **Parallel training:** We will leverage the ability to train XGBoost models independently and in parallel to expedite the training process.
+
+**6. Evaluation:**
+
+* We will evaluate the performance of the DIL model using the Numerai portfolio metrics: Mean Correlation, Sharpe Ratio, and Calmar Ratio.
+* We will compare the performance of the DIL model against the Numerai benchmark models and the example model provided by Numerai.
+
+## Pseudocode:
+
+```
+# Parameters
+num_layers = 2
+layer_1_models = 10
+lookback_window = 600
+retrain_period = 50
+boosting_rounds = 5000
+ansatz_learning_rate = 50 / boosting_rounds
+feature_groups = ["intelligence", "charisma", ..., "rain"] 
+target_variable = "target_cyrus_v4_20"
+
+# Data Preprocessing
+data = load_numerai_data()
+data = handle_missing_values(data)
+
+# Layer 1: Ensemble of XGBoost Models with Jackknife Feature Sampling
+layer_1_predictions = []
+for i in range(layer_1_models):
+    feature_set = create_jackknife_feature_set(feature_groups, i)
+    model = XGBoostRegressor(
+        n_estimators=boosting_rounds, 
+        learning_rate=ansatz_learning_rate, 
+        max_depth=4, 
+        subsample=0.75, 
+        colsample_bytree=0.75
+    )
+    for era in range(lookback_window, len(data), retrain_period):
+        training_data = data[era-lookback_window:era][feature_set]
+        model.fit(training_data[features], training_data[target_variable])
+        predictions = model.predict(data[era:][feature_set])
+        layer_1_predictions.append(predictions)
+
+# Layer 2: Elastic Net Regression
+model = ElasticNet(positive=True, alpha=1e-4)
+model.fit(layer_1_predictions, data[target_variable])
+
+# Dynamic Hedging
+baseline_predictions = np.mean(layer_1_predictions, axis=0)
+tail_risk_predictions = np.std(layer_1_predictions, axis=0)
+
+# ... (Implement dynamic hedging logic based on recent tail risk performance) ...
+
+# Evaluation
+# ... (Calculate and compare Numerai portfolio metrics) ... 
+```
+
+**Note:** This pseudocode provides a high-level overview of the methodology. The actual implementation will require further details and adjustments depending on the specific libraries and computational resources used. 

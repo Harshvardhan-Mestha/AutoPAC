@@ -1,0 +1,33 @@
+## Literature Review: Methodology Focus on "When Do Neural Nets Outperform Boosted Trees on Tabular Data?" 
+
+Following the systematic approach for reading research papers, let's delve into the methodology of the paper "When Do Neural Nets Outperform Boosted Trees on Tabular Data?" with a critical and creative lens, noting down key findings.
+
+**1.  Critical Reading of the Methodology:**
+
+* **Scope and Generalizability:** The study boasts the largest analysis of tabular data to date, encompassing 19 algorithms and 176 datasets. This extensive scope strengthens the generalizability of the findings compared to previous studies with smaller sample sizes. However, the exclusion of datasets larger than 1.1M due to computational constraints might limit the applicability to certain real-world scenarios.
+* **Algorithm Selection:** The inclusion of diverse algorithms, spanning neural networks, gradient boosted decision trees, and baselines, ensures a comprehensive comparison. The use of TabPFN, a recently proposed neural network excelling on small datasets, adds a valuable dimension to the analysis.  
+* **Hyperparameter Optimization:** The paper employs 30 hyperparameter settings per algorithm, utilizing random search with Optuna. While this approach covers a reasonable range, exploring more sophisticated optimization techniques like Bayesian optimization could potentially yield further insights.
+* **Evaluation Metrics:** The study primarily focuses on accuracy and log loss, aligning with common practices in tabular data analysis. However, incorporating additional metrics like F1-score and AUC-ROC would provide a more nuanced understanding of algorithm performance, especially considering class imbalances. 
+* **Meta-feature Analysis:** The utilization of 965 meta-features from PyMFE enables a comprehensive exploration of dataset characteristics influencing algorithm performance.  However, investigating feature selection techniques to identify the most impactful meta-features could enhance interpretability and potentially uncover hidden relationships.
+
+**2. Creative Reading of the Methodology:**
+
+* **Exploring TabPFN further:** The impressive performance of TabPFN, particularly on small datasets and with limited training data, suggests exciting avenues for future research. Investigating its applicability to other domains like regression or time series forecasting, and exploring its potential for transfer learning, are promising directions.
+* **Regularization Techniques:** While the study acknowledges the importance of regularization, it doesn't delve deeply into specific techniques. Exploring the impact of various regularization methods on both neural networks and GBDTs could reveal valuable insights into improving robustness and generalizability.
+* **Meta-Learning and Pre-training:** The extensive meta-feature analysis and the curated TabZilla benchmark suite provide a solid foundation for developing meta-learned or pre-trained models for tabular data. This could lead to more efficient and effective algorithms that leverage knowledge from past datasets. 
+* **Ensemble Methods:**  The study primarily focuses on individual algorithms. However, exploring ensemble methods that combine the strengths of NNs and GBDTs, potentially guided by meta-features, could lead to more robust and accurate predictions.
+
+**3. Summary of Key Findings:**
+
+* The performance gap between NNs and GBDTs is often overstated. Simple baselines or lightly tuned GBDTs can achieve competitive performance on many datasets.
+* Dataset characteristics significantly influence algorithm performance. GBDTs excel on larger, more "irregular" datasets, while NNs tend to perform better on smaller datasets.
+* TabPFN demonstrates remarkable performance on small datasets, even with limited training data, suggesting promising avenues for future research.
+
+**4. Next Steps:**
+
+* Investigate the effectiveness of TabPFN on other tasks like regression and time series forecasting. 
+* Explore the impact of different regularization techniques on NNs and GBDTs.
+* Develop meta-learned or pre-trained models for tabular data using the available meta-features and benchmark suite.
+* Investigate ensemble methods that combine the strengths of NNs and GBDTs.
+
+**By critically and creatively analyzing the methodology of this paper, we gain valuable insights into the strengths and limitations of current approaches for tabular data analysis. The findings and proposed future directions pave the way for further research and development of more robust, efficient, and accurate algorithms for this ubiquitous data type.** 

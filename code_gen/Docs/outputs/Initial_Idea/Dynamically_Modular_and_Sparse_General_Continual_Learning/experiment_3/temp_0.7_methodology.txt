@@ -1,0 +1,81 @@
+## Methodology for Numerai Machine Learning Challenge
+
+Considering the Numerai dataset and the limitations of Dynamos, we need to adapt and extend the approach to effectively tackle this challenge. While Dynamos offers valuable insights into continual learning, its direct application to the Numerai dataset presents challenges due to the tabular nature of the data and the absence of convolutional layers. Therefore, we propose a modified methodology incorporating elements of Dynamos and addressing its limitations.
+
+**1. Model Selection:**
+
+* **Gradient Boosting Trees (GBTs):** Given the tabular nature of the Numerai data, GBTs such as XGBoost or LightGBM are well-suited for this task. They excel at handling mixed data types, including numerical and categorical features, and are robust to missing values.
+
+**2. Addressing Dynamos Limitations:**
+
+* **No Convolutional Layers:** As Dynamos relies on convolutional layers for its dynamic sparsity and modularity, we need to adapt this concept to GBTs. 
+* **Tabular Data:** The prototype loss in Dynamos is designed for image data and needs to be modified for tabular data.
+
+**3. Proposed Methodology:**
+
+**a) Feature Set and Group Selection:**
+
+1. **Initial Training:** Train an initial GBT model on each feature set (small, medium, large) and each feature group (all, constitution, charisma, etc.) separately.
+2. **Performance Evaluation:** Evaluate the performance of each model using metrics relevant to the Numerai competition, such as correlation and Sharpe ratio.
+3. **Selection:** Choose the top-performing models from each feature set and group based on the evaluation metrics.
+
+**b) Ensemble Learning with Dynamic Weighting:**
+
+1. **Ensemble Creation:** Combine the selected models into an ensemble.
+2. **Dynamic Weights:** Instead of static weights, introduce a weighting mechanism inspired by Dynamos. 
+    * **Meta-learner:** Train a meta-learner (e.g., a small neural network) to predict the weights for each model in the ensemble based on the current era's data. 
+    * **Input Features:** The meta-learner takes as input aggregated statistics from the current era's data, such as mean, standard deviation, and quantiles of each feature.
+    * **Training the Meta-learner:** Train the meta-learner using a reward function similar to Dynamos, where it is rewarded for assigning higher weights to models that contribute to accurate predictions for the current era.
+
+**c) Handling Missing Values and Outliers:**
+
+1. **Missing Value Imputation:** Implement appropriate missing value imputation techniques based on the characteristics of each feature. This might involve using mean/median imputation, creating indicator variables, or employing more advanced methods like KNN imputation.
+2. **Outlier Detection and Treatment:** Utilize outlier detection algorithms to identify and handle outliers in the data. This could involve winsorizing, clipping, or removing outliers depending on their nature and potential impact.
+
+**4. Training on the Entire Dataset:**
+
+1. **Incremental Training:** Train the ensemble incrementally on each era's data, updating the model weights and retraining the meta-learner as new data becomes available.
+2. **Memory Management:** To manage memory usage, consider using a rolling window approach where only the most recent eras are kept in memory for training.
+
+**5. Pseudocode:**
+
+```
+# Initialization
+models = {}
+for feature_set in ['small', 'medium', 'large']:
+    for feature_group in ['all', 'constitution', ...]:
+        models[(feature_set, feature_group)] = train_GBT(data[feature_set][feature_group])
+
+# Evaluation and Selection
+selected_models = select_top_performing_models(models)
+
+# Meta-learner
+meta_learner = train_meta_learner(selected_models)
+
+# Main Loop
+for era in eras:
+    # Preprocess data (handle missing values, outliers)
+    processed_data = preprocess(data[era])
+    
+    # Get predictions from each model
+    predictions = {}
+    for model in selected_models:
+        predictions[model] = model.predict(processed_data)
+    
+    # Get weights from meta-learner
+    weights = meta_learner.predict(get_statistics(processed_data))
+    
+    # Ensemble prediction
+    final_prediction = ensemble_predict(predictions, weights)
+    
+    # Update models and meta-learner
+    update_models(selected_models, processed_data)
+    update_meta_learner(meta_learner, processed_data, final_prediction)
+
+# Submit predictions
+submit_predictions(final_prediction)
+```
+
+**6. Conclusion:**
+
+This methodology adapts key concepts from Dynamos, such as dynamic weighting and a reward-based approach, to the context of the Numerai competition and GBT models. By incorporating ensemble learning, addressing data-specific challenges, and enabling incremental training, this approach offers a robust and adaptable solution for the Numerai machine learning challenge. 

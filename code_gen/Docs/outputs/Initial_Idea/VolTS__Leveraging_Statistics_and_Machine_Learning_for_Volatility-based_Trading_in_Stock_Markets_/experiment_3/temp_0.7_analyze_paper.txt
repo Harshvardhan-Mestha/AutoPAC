@@ -1,0 +1,50 @@
+## Literature Review: Analyzing "VolTS: A Volatility-based Trading System" 
+
+Following the provided guidelines, let's delve into a critical and creative analysis of the paper "VolTS: A Volatility-based Trading System to forecast Stock Markets Trend using Statistics and Machine Learning" by Ivan Letteri, focusing primarily on the methodology.
+
+**Summary of the Paper:**
+
+The paper introduces VolTS, a volatility-based trading system that leverages statistical analysis and machine learning to predict stock market trends. It clusters stocks based on their average historical volatility and then applies the Granger Causality Test (GCT) to identify pairs with predictive relationships. This information forms the basis of a trading strategy where one stock's trend informs buy/sell/hold decisions for the other.
+
+**Methodology Analysis:**
+
+1. **Data Collection and Preprocessing:**
+    * The system focuses on nine major stocks from NYSE and NasdaqGS.
+    * OHLC (Open, High, Low, Close) prices are downloaded via MetaTrader5.
+    * An anomaly detection step using KNN identifies and excludes periods with significant anomalies (e.g., the 2020 pandemic) from the analysis.
+
+2. **Historical Volatility Calculation:**
+    * Four historical volatility estimators are employed: Parkinson, Garman-Klass, Rogers-Satchell, and Yang-Zhang. 
+    * The average of these estimators is calculated for each stock.
+
+3. **Volatility Clustering:**
+    * K-means++ clustering with dynamic time warping (DTW) is applied to group stocks into three clusters (high, middle, low volatility). 
+    * The focus is on the "middle volatility" cluster for the trading strategy.
+
+4. **Granger Causality Test (GCT):**
+    * The GCT is used to identify pairs of stocks where one stock's past volatility can predict the other's future volatility.
+    * The analysis iterates through lag days (2 to 30) to find the optimal lag with the highest number of stocks showing directional coherency.
+
+5. **Trading Strategy:**
+    * A trend-following strategy is employed based on the identified causal relationships.
+    * If stock A's price increases and is found to Granger-cause stock B, a buy signal is generated for stock B.
+
+6. **Backtesting and Performance Evaluation:**
+    * The strategy is backtested on historical data to assess its profitability.
+    * Performance metrics like total return, win rate, maximum drawdown, Sharpe ratio, Sortino ratio, and Calmar ratio are used.
+
+**Critical Analysis:**
+
+* **Choice of Volatility Estimators:** While using multiple estimators provides a broader perspective on volatility, the paper doesn't explain the rationale behind choosing these specific four. Exploring other estimators and their impact could be beneficial.
+* **Clustering Approach:** The choice of three clusters and the focus on "middle volatility" seem arbitrary. Investigating the performance with different cluster numbers and strategies for other clusters could be valuable.
+* **GCT Limitations:** The GCT identifies correlation, not necessarily causation. Other methods like transfer entropy could be explored to establish causal relationships more rigorously.
+* **Trading Strategy Simplicity:** The simple trend-following strategy might not capture the full complexity of market dynamics. More sophisticated strategies incorporating additional technical indicators or machine learning models could be considered.
+
+**Creative Extensions:**
+
+* **Expanding the Universe:** The system could be applied to other asset classes like cryptocurrencies or commodities.
+* **Incorporating Additional Features:** Integrating fundamental analysis data or sentiment analysis could enhance the predictive power of the system.
+* **Dynamic Strategy Adjustment:** The trading strategy could be adapted based on market conditions or the confidence level of the GCT results.
+* **Ensemble Methods:** Combining VolTS with other forecasting models could improve overall prediction accuracy and robustness.
+
+**Overall, the paper presents a promising approach to volatility-based trading. However, further research and refinement are needed to address the limitations and explore the full potential of the system.** 

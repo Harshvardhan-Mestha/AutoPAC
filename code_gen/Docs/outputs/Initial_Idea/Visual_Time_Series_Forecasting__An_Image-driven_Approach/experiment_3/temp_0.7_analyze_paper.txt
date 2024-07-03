@@ -1,0 +1,47 @@
+## Literature Review: Visual Time Series Forecasting: An Image-driven Approach
+
+**Focus:** Understanding and documenting the methodology of the paper, specifically the image-driven approach to time series forecasting.
+
+**Chain of Thought:**
+
+1. **Problem Statement:** The paper aims to predict future values of a time series by treating the data as images and directly predicting the subsequent image, as opposed to traditional numeric forecasting methods.
+2. **Datasets:**
+    * **Synthetic Data:**
+        * **Harmonic Data:** Generated using a combination of sinusoids with varying frequencies and amplitudes, designed to be periodic but with complex patterns.
+        * **OU Data:** Generated using the Ornstein-Uhlenbeck process, exhibiting mean-reverting behavior with noise, similar to financial data like interest rates or volatility.
+    * **Real Data:**
+        * **ECG Data:**  Electrocardiogram readings with periodic patterns and intermittent spikes.
+        * **Financial Data:** Daily adjusted close values of stocks from the S&P 500 index, exhibiting irregular and complex behavior.
+3. **Data Preprocessing:** 
+    * Numeric time series are converted into images by plotting them with time on the x-axis and values on the y-axis.
+    * Images are standardized by scaling pixel values to [0,1] and negating them, resulting in bright lines for the time series data and a dark background.
+    * Each column of the image is normalized to sum to 1, creating a discrete probability distribution representing the likelihood of different values at each time step.
+4. **Model Architecture (VisualAE):**
+    * **Convolutional Autoencoder:** The model uses a convolutional autoencoder architecture.
+    * **Encoder:** 3 convolutional layers with ReLU activation and batch normalization, progressively downsampling the image and extracting features.
+    * **Embedding:** A fully connected layer that maps the encoded features to a 512-dimensional embedding vector.
+    * **Decoder:** Mirrored architecture of the encoder, progressively upsampling the embedding vector back to the original image size and reconstructing the forecasted image.
+5. **Loss Function:**
+    * **Jensen-Shannon Divergence (JSD):**  Used to compare the probability distributions of each column in the predicted and ground truth images, focusing on the likelihood of pixel intensities at each time step.
+6. **Baseline Methods:**
+    * **NumAE (Numeric AE):** A similar autoencoder architecture but operating directly on the numeric time series data, predicting future values using Huber loss.
+    * **ARIMA:** A traditional statistical method for time series forecasting, capturing autocorrelations in the data.
+    * **Random Walk:** A naive forecasting method that assumes future values are equal to the last observed value with added Gaussian noise.
+7. **Evaluation Metrics:**
+    * **Numeric Metrics:**
+        * **SMAPE (Symmetric Mean Absolute Percentage Error):** Measures the relative error between predicted and actual values.
+        * **MASE (Mean Absolute Scaled Error):**  Measures the error relative to a naive one-step forecast.
+    * **Image-based Metrics:**
+        * **JSD (Jensen-Shannon Divergence):** Measures the similarity between predicted and ground truth images based on their probability distributions.
+        * **IoU (Intersection over Union):** Measures the overlap between bounding boxes of non-zero pixels in predicted and ground truth images, indicating the accuracy of predicted trends and patterns.
+
+**Findings:**
+
+* VisualAE outperforms baseline methods on image-based metrics (IoU and JSD) across all datasets, demonstrating the effectiveness of the image-driven approach.
+* Numeric metrics (SMAPE and MASE) show mixed results and can be inconsistent or misleading, highlighting the importance of using image-based metrics in conjunction with traditional measures when evaluating visual forecasting methods. 
+* VisualAE effectively captures cyclic patterns in both Harmonic and ECG data.
+* For OU and Financial data, VisualAE better captures the underlying trends and distributions compared to baselines, even though these datasets are more challenging to predict due to their irregular nature.
+
+**Conclusion:**
+
+The paper presents a novel and promising approach to time series forecasting using visual representations and deep learning. The findings suggest that image-based methods can be more effective than traditional numeric approaches, especially when dealing with complex and irregular data.  Further research and development in this area could lead to significant advancements in the field of time series forecasting. 

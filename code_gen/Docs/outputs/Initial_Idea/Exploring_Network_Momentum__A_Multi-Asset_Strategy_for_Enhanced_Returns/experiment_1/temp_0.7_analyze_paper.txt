@@ -1,0 +1,42 @@
+## Literature Review: Network Momentum across Asset Classes
+
+Based on the provided abstract and introduction, here's my analysis of the paper's methodology with a focus on critical evaluation and potential extensions:
+
+**Core Idea:**
+
+The paper investigates "network momentum," a novel trading signal derived from momentum spillover across assets. It uses a graph learning model to identify interconnections between assets based on their momentum features and then leverages these connections to predict future asset performance.
+
+**Methodology Breakdown:**
+
+1. **Data Collection:**
+    * Daily prices of 64 highly liquid continuous futures contracts across four asset classes (Commodities, Equities, Fixed Income, and Currencies) are collected.
+    * Eight individual momentum features are calculated for each asset, including volatility-scaled returns and normalized MACD indicators over various time spans.
+
+2. **Graph Learning:**
+    * A graph learning model is employed to infer dynamic networks among the assets.
+    * The model minimizes the Laplacian quadratic term of the momentum feature matrix, encouraging connections between assets with similar momentum characteristics.
+    * Regularization terms ensure graph connectivity and smooth edge weight distribution.
+    * Five distinct graphs are learned using different lookback windows (spanning the previous five years) and then combined into an ensemble graph to reduce variance.
+
+3. **Network Momentum Construction:**
+    * Network momentum features for each asset are calculated by taking a weighted average of its connected assets' individual momentum features, with edge weights representing connection strength.
+    * A linear regression model is used to predict the future 1-day volatility-scaled return of each asset based on its network momentum features.
+
+4. **Portfolio Construction and Backtesting:**
+    * A long/short portfolio is constructed based on the predicted network momentum.
+    * The portfolio is backtested over an out-of-sample period from 2000 to 2022 and compared against benchmark strategies like individual momentum and buy-and-hold.
+
+**Critical Evaluation:**
+
+* **Graph Learning Assumptions:** The graph learning model assumes that momentum features are low-pass graph signals. This assumption might not hold in all market conditions, potentially impacting the accuracy of the inferred networks.
+* **Linearity Assumption:** The linear regression model might not capture the full complexity of the relationship between network momentum and future returns. Exploring non-linear models could be beneficial.
+* **Turnover:** The backtesting results indicate a relatively high turnover for the network momentum strategy, potentially leading to higher transaction costs. Implementing turnover regularization techniques could improve the practicality of the strategy.
+
+**Potential Extensions:**
+
+* **Alternative Graph Learning Models:** Exploring different graph learning models, such as those incorporating non-linear relationships or considering higher-order dependencies between assets, could lead to more accurate network representations.
+* **Machine Learning for Prediction:** Employing machine learning techniques like deep neural networks or ensemble methods for predicting future returns could potentially capture more complex patterns and improve performance.
+* **Incorporating Additional Features:**  Including other relevant features, such as fundamental or macroeconomic data, could enhance the predictive power of the model.
+* **Investigating Reversals:** Further analysis is needed to understand the reversal effects in network momentum and how to incorporate them effectively into the strategy.
+
+**Overall, the paper presents a novel and promising approach to exploiting momentum spillover across asset classes. While the methodology has limitations, the encouraging results and potential extensions provide a strong foundation for further research and development in this area.**

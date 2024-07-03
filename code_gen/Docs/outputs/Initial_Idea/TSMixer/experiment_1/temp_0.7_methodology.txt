@@ -1,0 +1,73 @@
+### Methodology for Applying TSMixer to NumerAI Dataset
+
+#### Step 1: Data Preprocessing
+- **Handle Missing Values**: Given that some feature values in the NumerAI dataset can be NaN, it is crucial to handle these appropriately. Options include imputation, where missing values are filled based on the mean, median, or mode of the column, or exclusion, where rows with missing values are removed.
+- **Feature Normalization**: Standardize features to have zero mean and unit variance. This is essential since MLPs, like those in TSMixer, are sensitive to the scale of input data.
+- **Era-Based Segmentation**: Treat each era in the data as a distinct segment. This approach respects the temporal nature of the data and avoids leakage between training and testing datasets.
+
+#### Step 2: Model Configuration
+- **Set Up TSMixer Architecture**: Configure the TSMixer with appropriate dimensions. Given the complexity and high dimensionality of the NumerAI dataset, the model's depth and the number of neurons in each layer need to be tuned based on validation performance.
+- **Parameter Tuning**: Use cross-validation within each era to tune hyperparameters such as the learning rate, the number of MLP layers, and dropout rates. This step is crucial to prevent overfitting and ensure the model generalizes well across different eras.
+
+#### Step 3: Feature Engineering
+- **Feature Selection**: Use feature importance metrics to select a subset of features that contribute most to predictive accuracy. This step can help in reducing model complexity and improving training efficiency.
+- **Group-Based Feature Processing**: Process features based on their groups (e.g., 'wisdom', 'strength') to potentially capture group-specific interactions using separate subnetworks within the TSMixer architecture.
+
+#### Step 4: Model Training
+- **Batch Training**: Train the model using mini-batches that respect era boundaries. Ensure that each batch contains data from only one era to maintain the integrity of temporal dynamics.
+- **Loss Function**: Use a categorical cross-entropy loss function suited for the multi-class nature of the target variable.
+
+#### Step 5: Model Evaluation
+- **Validation Strategy**: Implement a time-based cross-validation strategy. Validate the model on future eras that were not included in the training set to simulate real-world performance and avoid temporal leakage.
+- **Performance Metrics**: Evaluate the model using era-wise correlation metrics as suggested by NumerAI. This metric will help in assessing how well the model predictions align with the actual market-neutral returns.
+
+#### Step 6: Model Refinement
+- **Feedback Loop**: Incorporate feedback from the model's performance on the validation set to refine and adjust the architecture and training process. This might include adjusting the number of layers, changing the activation functions, or experimenting with different forms of regularization.
+
+#### Step 7: Deployment
+- **Model Deployment**: Deploy the trained model to make predictions on new, unseen data. Ensure that the deployment pipeline can handle the preprocessing needs as established in the training phase.
+
+### Pseudocode Generation for TSMixer Application on NumerAI Dataset
+
+```plaintext
+1. Define preprocess_data(features, targets):
+    - Handle NaN values in features and targets
+    - Normalize features
+    - Segment data by eras
+
+2. Define configure_tsmixer():
+    - Initialize TSMixer model with specified architecture parameters
+    - Set up hyperparameters tuning using cross-validation within eras
+
+3. Define feature_engineering(data):
+    - Perform feature selection based on importance
+    - Process features by groups if necessary
+
+4. Define train_model(data, model):
+    - For each era in data:
+        - Split data into training and validation sets
+        - Train model on training set using mini-batches
+        - Validate model on validation set
+        - Adjust model parameters based on validation performance
+
+5. Define evaluate_model(model, test_data):
+    - Compute predictions using the trained model on test_data
+    - Calculate era-wise correlation and other relevant metrics
+
+6. Define deploy_model(model, new_data):
+    - Preprocess new_data as per the training phase
+    - Use model to predict outcomes on new_data
+    - Return predictions
+
+7. Main:
+    - data = load_data()
+    - preprocessed_data = preprocess_data(data.features, data.targets)
+    - model = configure_tsmixer()
+    - feature_engineered_data = feature_engineering(preprocessed_data)
+    - trained_model = train_model(feature_engineered_data, model)
+    - test_data = load_test_data()
+    - evaluation_results = evaluate_model(trained_model, test_data)
+    - deployment_output = deploy_model(trained_model, new_data)
+```
+
+This pseudocode provides a clear, step-by-step framework for applying the TSMixer methodology to the NumerAI dataset, ensuring that all aspects from preprocessing to deployment are covered comprehensively.

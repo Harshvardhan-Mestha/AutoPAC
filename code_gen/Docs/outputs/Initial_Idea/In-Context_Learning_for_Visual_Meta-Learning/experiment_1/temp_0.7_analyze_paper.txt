@@ -1,0 +1,56 @@
+## Literature Review: Context-Aware Meta-Learning (CAML) 
+
+Based on the provided abstract and introduction of the paper "CONTEXT-AWARE META-LEARNING" by Fifty et al. (ICLR 2024), here's a breakdown of the key points with a focus on the methodology:
+
+**Problem Addressed:**
+
+*   Current visual meta-learning models struggle to achieve both fast learning and generalizability to unseen tasks, unlike Large Language Models (LLMs) like ChatGPT which excel at in-context learning. 
+*   Existing models either require fine-tuning (slow) or perform poorly on diverse tasks.
+
+**Proposed Solution (CAML):**
+
+*   Inspired by in-context learning in LLMs, CAML treats few-shot image classification as a sequence modeling problem.
+*   It utilizes a frozen pre-trained feature extractor (e.g., CLIP) to encode images and a novel ELMES (Equal Length and Maximally Equiangular Set) class encoder to represent labels.
+*   A non-causal sequence model (Transformer encoder) processes the combined image and label embeddings, allowing it to learn new visual concepts during inference without fine-tuning.
+
+**Methodology:**
+
+1. **Architecture:**
+    *   **Frozen Pre-trained Image Encoder:** Extracts features from images using a pre-trained model like CLIP, ensuring efficient processing and leveraging existing visual knowledge. 
+    *   **ELMES Class Encoder:** Maps class labels to a set of vectors with equal length and maximum angular separation, theoretically maximizing the ability to distinguish classes within the support set. 
+    *   **Non-Causal Sequence Model (Transformer Encoder):** Processes the sequence of image and label embeddings, attending to the full context of support and query examples to dynamically learn and classify.
+
+2. **Large-Scale Pre-Training:**
+    *   CAML is pre-trained on diverse image classification datasets (ImageNet-1k, Fungi, MSCOCO, WikiArt) encompassing generic objects, fine-grained categories, and unnatural images.
+    *   Only the non-causal sequence model is trained during pre-training, while the image and label encoders remain frozen.
+
+3. **Inference:**
+    *   Given a few-shot classification task, CAML encodes the support and query images using the frozen image encoder and represents their labels with the ELMES encoder.
+    *   The combined embeddings are fed into the non-causal sequence model, which predicts the query image's label based on the learned context. 
+
+**Evaluation:**
+
+*   CAML is evaluated on 11 diverse few-shot image classification benchmarks, including generic object recognition, fine-grained classification, unnatural image classification, and inter-domain tasks.
+*   It is compared against other meta-learning approaches (ProtoNet, MetaOpt, MetaQDA, SNAIL, GPICL) and the state-of-the-art in-domain method (P>M>F).
+
+**Findings:**
+
+*   CAML achieves state-of-the-art performance in the universal meta-learning setting, outperforming other baselines on most benchmarks. 
+*   It even matches or surpasses the in-domain performance of P>M>F on several tasks, demonstrating the effectiveness of its in-context learning approach.
+
+**Strengths:**
+
+*   **Fast and General:** Learns new concepts quickly during inference without fine-tuning, making it suitable for real-time applications.
+*   **Effective:** Achieves state-of-the-art performance on various few-shot image classification tasks.
+*   **Modular:** Benefits from advancements in pre-trained image encoders.
+
+**Weaknesses:**
+
+*   Requires knowing the maximum number of classes beforehand to construct the ELMES encoder. 
+*   May struggle with highly out-of-distribution images or varying image resolutions.
+
+**Future Directions:**
+
+*   Developing methods for handling varying numbers of classes and improving robustness to distribution shifts.
+*   Exploring alternative pre-trained image encoders and sequence models. 
+*   Investigating applications beyond few-shot image classification. 

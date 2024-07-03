@@ -1,0 +1,80 @@
+## Methodology: Applying Conservative Predictions to Numerai
+
+Based on the literature review and the high-level idea, here's a potential methodology for tackling the Numerai dataset while addressing its unique challenges and leveraging insights from the "Conservative Predictions on Noisy Financial Data" paper:
+
+**1. Model Selection:**
+
+* **XGBoost:** Given the tabular nature of the Numerai dataset and its blend of numerical and categorical features, XGBoost appears to be a suitable choice. It's known for its effectiveness in handling mixed data types, handling missing values, and achieving high accuracy.
+* **Limitations:** XGBoost can be prone to overfitting, especially with noisy data. Additionally, interpreting the model's decision-making process can be challenging.
+
+**2. Addressing XGBoost Limitations:**
+
+* **Cascading with Data Pruning:**  We can integrate the concept of cascading models with data pruning from the paper. This involves training a sequence of XGBoost models, where each subsequent model focuses on the data points where the previous model exhibited low confidence (high prediction variance). 
+* **Confidence Estimation:** To assess confidence, we can utilize techniques like  **conformal prediction** or **prediction intervals**. These methods provide a measure of uncertainty associated with each prediction, allowing us to identify data points where the model is less certain.
+
+**3. Relevance of the Paper:**
+
+* The paper's focus on handling noisy financial data and making conservative predictions aligns well with the characteristics of the Numerai dataset and the goal of achieving consistent "alpha" generation. 
+* The proposed cascading approach with data pruning directly addresses the overfitting concern associated with XGBoost and enhances the model's reliability by focusing on high-confidence predictions.
+
+**4. Combining Ideas and Overcoming Limitations:**
+
+* **Feature Engineering:**  We can leverage the insights from the paper regarding feature engineering by incorporating technical indicators, logical features (e.g., differences, slopes), and temporal features (e.g., change-length) based on the existing Numerai features.
+* **Data Splitting:**  Similar to the paper's experiments, we can employ various data splitting strategies, such as training on data from specific eras and testing on different eras, to evaluate the model's generalizability and robustness to different market conditions.
+
+**5. Training on the Entire Dataset:**
+
+* **Cross-Validation:** To ensure the model learns from the complete dataset while avoiding overfitting, we can implement a robust cross-validation strategy. This may involve techniques like nested cross-validation or time-series cross-validation to account for the temporal nature of the data and potential overlapping target values.
+
+**6. Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * Handle missing values using appropriate techniques (e.g., imputation, deletion).
+    * Discretize features if necessary, potentially using percentile-based binning as described in the paper.
+    * Engineer additional features based on technical indicators, logical relationships, and temporal trends.
+
+2. **Model Training:**
+    * Train an initial XGBoost model on the entire dataset.
+    * Use conformal prediction or prediction intervals to estimate the confidence of each prediction.
+    * Prune data points with low confidence (high uncertainty).
+
+3. **Cascading:**
+    * Train a second XGBoost model on the pruned dataset from step 2.
+    * Repeat the confidence estimation and pruning process.
+    * Continue cascading with additional XGBoost models until a stopping criterion is met (e.g., reaching a desired level of support or observing diminishing returns in accuracy).
+
+4. **Evaluation:**
+    * Evaluate the performance of the final cascaded model using appropriate metrics such as accuracy, support, utility, DRAR, and Traded Sharpe ratio.
+    * Analyze the distribution of predictions to ensure they focus on the extremes of the target distribution.
+    * Employ various data splitting strategies (e.g., by eras) to assess generalizability and robustness.
+
+**7. Pseudocode:**
+
+```
+# Data Preprocessing
+preprocessed_data = preprocess(numerai_data) 
+
+# Initial Model Training
+model_1 = XGBoost.train(preprocessed_data)
+predictions_1, confidence_1 = model_1.predict(preprocessed_data)
+
+# Data Pruning
+pruned_data_1 = prune_data(preprocessed_data, confidence_1, threshold)
+
+# Cascading
+models = [model_1]
+for i in range(2, num_cascades + 1):
+    model_i = XGBoost.train(pruned_data_(i-1))
+    predictions_i, confidence_i = model_i.predict(pruned_data_(i-1))
+    pruned_data_i = prune_data(pruned_data_(i-1), confidence_i, threshold)
+    models.append(model_i)
+
+# Evaluation
+evaluate_performance(models, numerai_data)
+```
+
+**8. Additional Considerations:**
+
+* **Hyperparameter Optimization:** Carefully tune the hyperparameters of each XGBoost model and the pruning thresholds to achieve optimal performance. 
+* **Ensemble Methods:** Explore combining the predictions of the cascaded models using ensemble methods (e.g., averaging, stacking) to potentially improve accuracy and robustness.
+* **Explainability:** Investigate techniques for interpreting the decision-making process of the XGBoost models to gain insights into the features driving the predictions. 

@@ -1,0 +1,113 @@
+## Methodology for Numerai Prediction with TabPFN and Beyond
+
+Based on the literature review of TabPFN and the characteristics of the Numerai dataset, we can design a methodology that addresses the limitations and leverages the strengths of both.
+
+### Analyzing TabPFN's Relevance:
+
+* **Strengths:** TabPFN excels at handling small, purely numerical datasets without missing values. Its speed and performance are remarkable, making it ideal for rapid experimentation and deployment.
+* **Limitations:** TabPFN struggles with categorical features, missing values, and large datasets due to the quadratic scaling of its Transformer architecture. The Numerai dataset presents all these challenges.
+
+### Overcoming Limitations:
+
+1. **Handling Categorical Features:**
+    * **Preprocessing:** We can employ various encoding techniques for categorical features, such as one-hot encoding, ordinal encoding, or embedding techniques. The choice of encoding will depend on the nature of the categorical features and their relationship with the target variable.
+    * **Prior Modification:**  In the long term, we could explore modifying the TabPFN prior to incorporate categorical data generation mechanisms, allowing the model to learn intrinsic representations of such features.
+
+2. **Handling Missing Values:**
+    * **Imputation:** We can impute missing values using techniques like mean/median imputation, k-nearest neighbors imputation, or model-based imputation. The choice of imputation method should consider the distribution of the missing data and the potential impact on the model's performance.
+    * **Prior Modification:** Similar to categorical features, incorporating mechanisms for generating missing data in the prior could help TabPFN learn to handle such cases more effectively.
+
+3. **Handling Large Datasets:**
+    * **Chunking:** We can split the Numerai data into smaller chunks that fit within TabPFN's capacity and train/predict on each chunk separately. The results can then be aggregated to obtain final predictions. 
+    * **Alternative Architectures:** Exploring alternative PFN architectures that scale linearly with the input size, such as Longformer or BigBird, could allow handling the entire dataset at once.
+
+### Model Selection:
+
+While TabPFN shows promise, its limitations with the Numerai dataset require careful consideration. We can explore a hybrid approach:
+
+* **TabPFN for Numerical Subsets:** Utilize TabPFN for subsets of the Numerai data that are purely numerical and have no missing values. This allows leveraging its speed and performance advantages where it shines.
+* **GBDTs or AutoML for Full Dataset:** Employ GBDT models like XGBoost or LightGBM, or AutoML frameworks like AutoGluon, for handling the entire dataset with its categorical features and missing values. These models have proven effective for such data and can be tuned for optimal performance.
+
+### Methodology Steps:
+
+1. **Data Preprocessing:**
+    * **Categorical Encoding:** Apply appropriate encoding techniques to categorical features.
+    * **Missing Value Imputation:** Impute missing values using a suitable method.
+    * **Feature Scaling:** Scale numerical features to a standard range.
+    * **Data Splitting:** Split the data into training, validation, and test sets. For Numerai, consider the temporal aspect and potential overlap in target values when creating splits.
+
+2. **Model Training and Evaluation:**
+    * **TabPFN:**
+        * **Chunk Creation:** If using chunking, split the training data into smaller chunks.
+        * **Prior-Fitting:** (Only required once for TabPFN development) Train TabPFN on synthetic data generated from the prior.
+        * **Inference:** For each chunk or the full numerical subset, use TabPFN to obtain predictions on the validation set.
+    * **GBDT/AutoML:**
+        * **Hyperparameter Tuning:** Tune the chosen GBDT or AutoML model using the validation set.
+        * **Training:** Train the model on the full training set with the best hyperparameters.
+        * **Evaluation:** Evaluate both models on the test set using appropriate metrics, considering the specific goals of the Numerai competition and the characteristics of the target variable.
+
+3. **Ensemble or Model Selection:**
+    * **Ensemble:** Combine the predictions from TabPFN and GBDT/AutoML using techniques like averaging or stacking to potentially improve overall performance.
+    * **Model Selection:** Choose the best-performing model based on the evaluation results, taking into account factors like performance, interpretability, and computational efficiency.
+
+4. **Prediction on New Data:**
+    * Apply the chosen model or ensemble to make predictions on new, unseen data from the Numerai tournament.
+
+### Pseudocode:
+
+```
+# Preprocessing
+def preprocess_data(data):
+    # Encode categorical features
+    data = encode_categorical(data)
+    # Impute missing values
+    data = impute_missing(data)
+    # Scale numerical features
+    data = scale_features(data)
+    return data
+
+# Split data
+train_data, val_data, test_data = split_data(data)
+
+# TabPFN 
+if using_tabpfn:
+    # Create chunks if necessary
+    if chunking:
+        train_chunks = create_chunks(train_data)
+    else:
+        train_chunks = [train_data]
+    
+    # Prior fitting (once)
+    tabpfn = train_tabpfn(prior_data)
+    
+    # Inference on each chunk
+    tabpfn_preds = []
+    for chunk in train_chunks:
+        chunk_preds = tabpfn.predict(chunk, val_data)
+        tabpfn_preds.append(chunk_preds)
+    
+    # Aggregate predictions if chunking
+    if chunking:
+        tabpfn_preds = aggregate_predictions(tabpfn_preds)
+
+# GBDT/AutoML
+if using_gbdt_or_automl:
+    # Tune hyperparameters
+    best_params = tune_model(model, val_data)
+    # Train on full data
+    model.train(train_data, best_params)
+    # Get predictions
+    model_preds = model.predict(val_data)
+
+# Ensemble or Model Selection
+if ensemble:
+    final_preds = ensemble_predictions(tabpfn_preds, model_preds)
+else:
+    # Choose best model based on validation performance
+    final_preds = choose_best_model(tabpfn_preds, model_preds)
+
+# Predict on test data
+test_preds = final_model.predict(test_data)
+```
+
+**Note:** This pseudocode provides a high-level overview and needs to be adapted based on the specific libraries and techniques used for each step. 

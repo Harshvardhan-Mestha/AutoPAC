@@ -1,0 +1,81 @@
+## Methodology for Numerai Tournament with Insights from L2GMOM
+
+The Numerai tournament presents a unique challenge with its focus on stock-specific returns ("alpha") and the need to consider era-based data points. While the L2GMOM framework from the analyzed paper offers valuable insights into learning financial networks and optimizing momentum strategies, its direct application to the Numerai dataset requires careful consideration and adaptation.
+
+### Relevance of L2GMOM and Limitations:
+
+* **Strengths:**
+    * **Feature Engineering:** L2GMOM's approach to combining individual momentum features into network features aligns with the Numerai dataset's emphasis on diverse feature sets and avoiding reliance on a small number of features.
+    * **End-to-End Learning:** Optimizing a model directly for the Numerai tournament's scoring metric (e.g., correlation, MMC) aligns with L2GMOM's end-to-end learning philosophy.
+
+* **Limitations:**
+    * **Graph Structure:** L2GMOM focuses on learning static graphs, whereas the dynamic nature of the stock market and the era-based structure of the Numerai dataset might benefit from evolving network representations.
+    * **Target Variable:** L2GMOM is designed for continuous target variables (returns), while the Numerai targets are discrete (5 classes).
+
+### Proposed Methodology:
+
+Given the strengths and limitations, we propose a modified approach inspired by L2GMOM:
+
+**1. Feature Engineering:**
+
+* **Individual Features:** Utilize the provided feature sets ("small", "medium", "large") and explore feature groups based on common attributes.
+* **Network Feature Generation:**
+    * **Dynamic Graph Learning:** Implement a graph neural network (GNN) architecture like Temporal Graph Networks (TGN) or Evolving Graph Networks (EGNN) to learn era-specific network structures.
+    * **Node Embeddings:** Employ GNNs to generate node embeddings that capture both individual feature information and network relationships within each era.
+    * **Network Features:** Design mechanisms to aggregate node embeddings into network-level features, potentially using attention mechanisms or pooling operations.
+
+**2. Model Selection and Training:**
+
+* **Model Choice:** Explore models suitable for both numerical and categorical features, such as XGBoost, LightGBM, or CatBoost. Consider ensemble methods or stacking for improved performance. 
+* **Target Transformation:**
+    * **Regression Approach:** Train a regression model on the continuous target values and then discretize the predictions into the 5 classes.
+    * **Classification Approach:** Directly train a classification model on the 5-class target variable. 
+* **Loss Function:** Choose a loss function aligned with the Numerai tournament's scoring metric, such as Spearman's rank correlation or mean squared error.
+* **Era-Based Validation:** Implement era-based cross-validation to account for the temporal dependencies in the data and avoid information leakage.
+
+**3. Training on the Entire Dataset:**
+
+* **Incremental Learning:** Utilize incremental learning techniques to train the model on the entire dataset efficiently. This allows the model to continuously adapt to new data and potentially improve performance over time.
+* **Ensemble Learning:** Train multiple models with different hyperparameters or architectures and combine their predictions for increased robustness and generalization.
+
+### Pseudocode:
+
+```
+# Feature Engineering
+function generate_features(data):
+    individual_features = extract_features(data, feature_sets, feature_groups)
+    graph = learn_dynamic_graph(data, GNN_model)
+    node_embeddings = generate_node_embeddings(data, graph, GNN_model)
+    network_features = aggregate_node_embeddings(node_embeddings)
+    return individual_features, network_features
+
+# Model Training and Evaluation
+function train_and_evaluate(train_data, validation_data):
+    # Choose appropriate model and loss function
+    model = choose_model(model_type, loss_function)
+    
+    # Era-based cross-validation
+    for era in eras:
+        train_data_era, validation_data_era = split_data_by_era(train_data, validation_data, era)
+        individual_features, network_features = generate_features(train_data_era)
+        model.train(individual_features, network_features, target_variable)
+        predictions = model.predict(generate_features(validation_data_era))
+        evaluate_predictions(predictions, target_variable, scoring_metric)
+
+# Training on Entire Dataset
+function train_on_full_dataset(data):
+    model = choose_model(model_type, loss_function)
+    for era in eras:
+        data_era = get_data_by_era(data, era)
+        individual_features, network_features = generate_features(data_era)
+        model.update(individual_features, network_features, target_variable) # Incremental learning
+
+# Ensemble Learning
+function ensemble_predictions(models, data):
+    predictions = []
+    for model in models:
+        predictions.append(model.predict(generate_features(data)))
+    return combine_predictions(predictions) # Averaging, voting, etc.
+```
+
+**This methodology provides a comprehensive approach to tackle the Numerai tournament while leveraging insights from L2GMOM and addressing its limitations. The combination of dynamic graph learning, feature engineering, and appropriate model selection offers a promising path towards achieving competitive performance in the tournament.**

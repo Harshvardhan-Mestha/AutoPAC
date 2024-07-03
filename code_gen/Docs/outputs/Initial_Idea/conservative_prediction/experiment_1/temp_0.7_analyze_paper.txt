@@ -1,0 +1,39 @@
+## Literature Review: Conservative Predictions on Noisy Financial Data 
+
+**Paper Summary:**
+
+This paper tackles the challenge of applying machine learning to financial markets, which are notoriously noisy. It proposes a "conservative prediction" approach using a cascade of models (specifically MLPs and Differentiable Decision Trees) that abstain from making predictions when uncertain. This method aims to minimize risk while maintaining acceptable accuracy, focusing on high-confidence predictions at the extremes of the target distribution (indicating strong buy/sell signals).
+
+**Methodology Focus:**
+
+1. **Cascading Models:**
+    * **Data Pruning:**  The core idea is to train a sequence of models, each focusing on data points where the previous model(s) were uncertain (measured by Gini impurity). This progressively refines the predictions, leading to higher confidence in a subset of the data.
+    * **Algorithm:** The paper outlines the training (Algorithm 1) and inference (Algorithm 2) procedures for cascading models. 
+    * **Model Choices:** Both MLPs and Differentiable Decision Trees (DDTs) are explored, with DDTs demonstrating better performance in terms of support and risk-adjusted returns.
+
+2. **Differentiable Decision Trees (DDTs):**
+    * **Motivation:** DDTs offer a balance between the interpretability of decision trees and the optimization capabilities of neural networks.
+    * **Structure:** The paper describes the structure of DDTs, including the use of sigmoid functions for "fuzzy" decisions at each node and a regularization term to encourage balanced splits.
+    * **Forward Pass and Optimization:** The process of calculating path probabilities and the final output is explained, along with the use of cross-entropy loss and gradient descent for optimization.
+
+3. **Data and Features:**
+    * **Market Data:**  The paper uses 5-minute OHLCV data from the Indian equity market, normalized and augmented with technical indicators and logical/temporal features (e.g., moving averages, RSI, change-length). 
+    * **Synthetic Data:**  To study the impact of noise, synthetic data is generated using sine waves with varying levels of base and peak noise.
+    * **Discretization:** All features and target values (10-candle returns) are discretized into 5 bins for both market and synthetic data.
+
+4. **Experiments:**
+    * The paper presents several experiments comparing the performance of base models (MLP and DDT) with their cascaded counterparts under different training and testing scenarios, including varying noise levels and data from different time periods ("eras").
+    * **Key Findings:** Cascaded models generally outperform base models in terms of accuracy on the subset of data where predictions are made (support). However, the support diminishes as noise levels increase.
+    * **Actionable Predictions:** Importantly, the predictions tend to concentrate on the extremes of the target distribution, providing valuable buy/sell signals for trading decisions.
+
+5. **Utility and Risk-Adjusted Return:**
+    * **Metrics:** The paper introduces "utility" as a metric to measure the average gain per trade, focusing on predictions at the extremes (classes 0 and 4). Additionally, downside-risk adjusted return (DRAR) and Traded Sharpe ratio are used to assess risk-adjusted performance.
+    * **Results:** Cascaded models, particularly DDTs, demonstrate higher utility and better risk-adjusted returns compared to base models. This highlights the advantage of focusing on a smaller number of high-confidence, actionable predictions in a risk-sensitive domain like financial trading.
+
+**Critical Analysis and Future Work:**
+
+* **Generalizability:** The performance of all models degrades when tested on data from different eras, indicating a need for further research on improving generalizability, potentially through meta-learning or continual learning techniques. 
+* **Alternative Model Architectures:** Exploring other model architectures, such as LSTMs or transformers, could be beneficial, especially for capturing temporal dependencies in financial data. 
+* **Train-Time Pruning:**  Investigating train-time pruning methods, as mentioned in reference [12], could offer additional benefits in terms of calibration and efficiency. 
+
+**Overall, this paper presents a promising approach for dealing with noisy financial data by focusing on conservative predictions with high utility and reduced risk. The use of cascading models and DDTs offers valuable insights for further research in this area.** 

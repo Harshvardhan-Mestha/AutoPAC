@@ -1,0 +1,76 @@
+## Literature Review: A Comparison of Reinforcement Learning and Deep Trajectory Based Stochastic Control Agents for Stepwise Mean-Variance Hedging
+
+**Paper**: A Comparison of Reinforcement Learning and Deep Trajectory Based Stochastic Control Agents for Stepwise Mean-Variance Hedging by Ali Fathi and Bernhard Hientzsch 
+
+**Focus**: Methodology 
+
+### Summary:
+
+This paper compares two data-driven approaches for hedging derivatives under a stepwise mean-variance objective: Reinforcement Learning (RL) and Deep Trajectory-based Stochastic Optimal Control (DTSOC). The authors focus on a European call option scenario with transaction costs and discrete trading schedules, using the Black-Scholes-Merton model as the data-generating process and benchmark. The paper aims to provide a detailed comparison of the strengths, weaknesses, and limitations of both approaches in this simplified setting.
+
+### Methodology:
+
+**1. Problem Formulation:**
+
+* **Hedging Objective:** Stepwise mean-variance optimization of a portfolio containing the hedged instrument (European call option) and hedging instruments (stock and cash).
+* **Assumptions:**
+    * Discrete trading times with transaction costs.
+    * Self-financing strategies.
+    * Black-Scholes-Merton dynamics for the underlying asset.
+    * Black-Scholes-Merton model used for option pricing (book-keeping model).
+
+**2. Reinforcement Learning (RL) Approach:**
+
+* **Framework:** Markov Decision Process (MDP)
+* **State Space:** Time, stock price, option price, option delta, current stock holding.
+* **Action Space:** Rebalancing rate of the stock holding.
+* **Algorithm:** Deep Deterministic Policy Gradient (DDPG)
+    * Actor-critic architecture with 3 hidden layers each.
+    * Experience replay and target network updates for stability.
+    * Ornstein-Uhlenbeck process for exploration noise.
+
+**3. Deep Trajectory-based Stochastic Optimal Control (DTSOC) Approach:**
+
+* **Framework:** Stochastic optimal control problem formulated as optimizing over a computational graph.
+* **State Space:** Same as RL approach.
+* **Action Space:** Rebalancing rate of the stock holding.
+* **Control Representation:** Feedforward neural network with 3 hidden layers.
+* **Loss Function:** Expected cumulative cost based on stepwise mean-variance objective.
+* **Optimization:** Jointly optimize all policy parameters across time steps using ADAM optimizer.
+
+**4. Evaluation:**
+
+* **Performance Metric:** Distribution of total hedging cost (hedge P&L) at maturity across multiple test episodes.
+* **Sensitivity Analysis:** 
+    * Impact of transaction cost, option maturity, risk aversion parameter, and asset volatility on performance.
+    * Impact of hyperparameters (discount factor, learning rate, network architecture) on training and performance.
+* **Interpretability:** SHAP values used to analyze the importance of different state features in the agents' decision-making process. 
+
+### Findings:
+
+* Both RL and DTSOC agents achieved similar performance in the zero-transaction cost scenario, closely approximating the Delta hedge.
+* As transaction costs increased, both RL and DTSOC outperformed the Delta hedge.
+* Deep MVH performance deteriorated with longer option maturities, potentially due to the increased depth of the computational graph. 
+* Increasing risk aversion led to a decrease in the dispersion of the hedging cost distribution for both agents.
+* Increased asset volatility resulted in wider hedging cost distributions, with RL showing higher dispersion.
+* Sensitivity analysis revealed the importance of hyperparameter tuning and architectural choices for both approaches. 
+* SHAP analysis provided insights into the agents' reliance on different state features, highlighting the importance of the option delta in the low-transaction cost regime and the emergence of trading "inertia" in the high-transaction cost regime.
+
+### Future Directions:
+
+* **Expanding scope:**
+    * Explore other derivatives and portfolios.
+    * Consider exotic options with path-dependency or early exercise features.
+* **Data and models:**
+    * Test with more realistic market models used in investment banks.
+    * Explore the use of generative models for data generation.
+    * Investigate Sim2Real transfer risk for RL agents.
+* **Methodology advancements:**
+    * Design and test improved trajectory-based approaches for longer maturities. 
+    * Explore alternative network architectures and training strategies.
+* **Explainability and robustness:**
+    * Develop consistent and coherent methods for interpreting and explaining RL and DTSOC agents.
+    * Further investigate robustness and generalizability, including adversarial testing and exploring various black box risks.
+* **Alternative formulations:**
+    * Explore quadratic hedging with RL and DTSOC.
+    * Apply FBSDE-based methods like deep BSDEs to various hedging problems. 

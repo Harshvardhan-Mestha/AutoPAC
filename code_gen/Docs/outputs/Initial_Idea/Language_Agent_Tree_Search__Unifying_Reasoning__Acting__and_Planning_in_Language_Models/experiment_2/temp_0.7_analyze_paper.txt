@@ -1,0 +1,41 @@
+## Literature Review: Language Agent Tree Search (LATS)
+
+Based on the provided paper, here's a breakdown focusing on the methodology with a critical and creative lens:
+
+**Central Question:**
+
+How can large language models (LLMs) be enhanced to perform better in decision-making tasks that require reasoning, acting, and planning?
+
+**Proposed Solution (LATS):**
+
+LATS utilizes a modified Monte Carlo Tree Search (MCTS) algorithm to guide the LLM's decision-making process. It incorporates the following key components:
+
+* **LLM Agent:** The LLM acts as the core decision-maker, generating potential actions (including reasoning steps and environment interactions) based on the current state and past observations.
+* **Search Algorithm (MCTS):** This algorithm systematically explores the space of possible actions, balancing exploration and exploitation to find the most promising trajectory.
+* **Value Function:** The LLM also serves as a value function, evaluating the potential of each state based on its understanding of the task and past experiences.
+* **Environment Interaction:** LATS actively interacts with the environment, receiving observations and rewards that inform future actions and guide the search. 
+* **Self-Reflection:** Upon encountering failures, the LLM reflects on the trajectory and generates feedback to improve future attempts.
+
+**Methodology Breakdown:**
+
+1. **Selection:** The algorithm chooses a node in the search tree for expansion using the UCT formula, balancing exploration of less visited nodes with exploitation of high-value nodes.
+2. **Expansion:** The LLM agent samples multiple actions from the current state, leading to the creation of new child nodes in the tree. These actions can be reasoning steps ("thoughts") or environment interactions ("actions").
+3. **Evaluation:** The LLM acts as a value function, assigning a score to each new child node based on its potential for success.
+4. **Simulation:** Starting from the selected node, the algorithm simulates trajectories until reaching a terminal state (task completion or failure) by repeatedly applying the selection, expansion, and evaluation steps.
+5. **Backpropagation:** The outcome (reward) of the simulation is used to update the values of all nodes along the explored trajectory.
+6. **Reflection:** If the simulation results in failure, the LLM generates a self-reflection, analyzing the errors and suggesting improvements. This reflection is stored in memory and used as additional context for future iterations.
+
+**Critical Analysis:**
+
+* **Computational Cost:** LATS is computationally expensive compared to simpler prompting methods due to the search process and multiple LLM inferences. The number of expanded nodes (n) offers a trade-off between performance and efficiency.
+* **Environment Constraints:** LATS requires environments that allow "rollbacks" to previous states, which may not be feasible in all scenarios.
+* **Real-World Complexity:** The benchmarks used in the paper are relatively simple compared to real-world environments. Further research is needed to assess LATS's effectiveness in more complex settings.
+
+**Creative Considerations:**
+
+* **Dynamic Exploration Weight:** The exploration weight (w) could be dynamically adjusted based on the progress and the remaining search budget.
+* **Adaptive Depth Limit:** The depth limit could be dynamically adjusted based on the complexity of the task and the observed progress.
+* **Multi-Modal LLM Agents:** LATS could be extended to incorporate multi-modal LLMs that can process and generate information beyond text.
+* **Hierarchical Planning:** LATS could be combined with hierarchical planning techniques to handle tasks with long-term goals and sub-goals.
+
+**Overall, LATS presents a promising approach for improving LLM decision-making by unifying planning, acting, and reasoning. While computational cost and environment constraints remain limitations, the framework's flexibility and potential for creative extensions offer exciting avenues for future research.** 

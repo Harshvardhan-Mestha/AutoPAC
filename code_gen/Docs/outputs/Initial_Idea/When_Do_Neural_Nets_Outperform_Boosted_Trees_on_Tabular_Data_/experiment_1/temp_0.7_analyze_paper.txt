@@ -1,0 +1,37 @@
+## Literature Review: Methodology Focus - "When Do Neural Nets Outperform Boosted Trees on Tabular Data?"
+
+**Paper Summary:**
+
+This paper investigates the performance of neural networks (NNs) and gradient boosted decision trees (GBDTs) on tabular data.  It challenges the notion that one consistently outperforms the other, suggesting that performance depends heavily on dataset characteristics and hyperparameter tuning.
+
+**Methodology Analysis:**
+
+1. **Large-Scale Comparison:** The authors conducted a comprehensive analysis comparing 19 algorithms (including NNs, GBDTs, and baselines) across 176 diverse datasets. This large-scale approach provides stronger generalizability compared to prior studies with fewer datasets.
+2. **Hyperparameter Tuning:** Each algorithm was evaluated with up to 30 hyperparameter settings using random search. This acknowledges the significant impact of tuning on model performance and avoids biases due to suboptimal configurations.
+3. **Performance Metrics:** The study primarily uses accuracy and log loss as performance metrics, aligning with common practices in tabular data analysis. Additionally, they report results for F1-score and ROC AUC in the appendix for further insights.
+4. **Metafeature Analysis:**  To understand the influence of dataset characteristics, the authors extracted and analyzed dozens of metafeatures (e.g., number of datapoints, feature distributions, dataset size). This helps identify which properties favor NNs or GBDTs.
+5. **Statistical Significance:** The study employs statistical tests (Friedman test and Wilcoxon signed-rank test) to determine significant performance differences between algorithms and families, ensuring robust conclusions.
+6. **TabZilla Benchmark Suite:**  The authors introduce TabZilla, a collection of 36 "hard" datasets where simple baselines and most algorithms struggle to achieve top performance. This benchmark facilitates future research focusing on challenging cases for tabular data algorithms.
+
+**Key Findings Related to Methodology:**
+
+* **No Single Algorithm Dominates:**  Performance varies significantly across datasets, with nearly every algorithm achieving top rank on at least one dataset and bottom rank on another. This highlights the importance of considering dataset characteristics and avoiding generalizations.
+* **Hyperparameter Tuning is Crucial:** Light hyperparameter tuning on algorithms like CatBoost or ResNet often leads to greater performance gains than simply choosing between NNs and GBDTs. This emphasizes the need for proper tuning in practical applications.
+* **Dataset Size Matters:** GBDTs tend to outperform NNs on larger datasets, likely due to their ability to leverage more data points for decision splits in the trees.
+* **Dataset Irregularity Favors GBDTs:** GBDTs excel on datasets with irregular feature distributions (e.g., skewed or heavy-tailed), while NNs perform better on datasets with more regular feature characteristics.
+
+**Strengths of the Methodology:**
+
+* **Comprehensive and Large-Scale:** The study's extensive comparison across numerous algorithms and datasets provides a robust foundation for drawing conclusions about tabular data performance.
+* **Focus on Hyperparameter Tuning:**  Acknowledging the importance of tuning and incorporating it into the methodology strengthens the study's practical relevance.
+* **Metafeature Analysis:**  Exploring the impact of dataset characteristics offers valuable insights into the strengths and weaknesses of different algorithms and helps guide practitioners in algorithm selection.
+* **Statistical Rigor:** Employing statistical tests ensures the reliability of the findings and avoids drawing conclusions based on chance observations.
+* **Open-Source Resources:** Releasing the TabZilla benchmark suite and codebase promotes reproducibility and facilitates future research in tabular data.
+
+**Limitations and Potential Improvements:**
+
+* **Computational Cost:** The extensive experiments require significant computational resources, potentially limiting the inclusion of even larger datasets or more complex algorithms.
+* **Hyperparameter Optimization Strategies:** While the study employs random search for HPO, exploring more sophisticated optimization techniques (e.g., Bayesian optimization) could further enhance performance.
+* **Regularization Techniques:** The study primarily focuses on architectural differences and hyperparameter tuning. Investigating the impact of various regularization methods on both NNs and GBDTs could provide additional insights.
+
+**Overall, this paper provides a valuable contribution to the understanding of NNs and GBDTs on tabular data. Its rigorous methodology and insightful findings offer practical guidance for practitioners and pave the way for further research in this domain.** 

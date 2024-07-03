@@ -1,0 +1,46 @@
+## Literature Review: Neuro-Modulated Hebbian Learning for Fully Test-Time Adaptation 
+
+**Focus: Methodology and Findings**
+
+Based on the provided abstract and introduction of the paper "Neuro-Modulated Hebbian Learning for Fully Test-Time Adaptation", here's a breakdown of the methodology and key findings, focusing on the approach to address the challenge of unsupervised learning of early layer representations in fully test-time adaptation scenarios. 
+
+**Challenge:**
+
+* Deep neural networks suffer performance degradation when encountering data shifts between training (source domain) and testing (target domain) data.
+* Fully test-time adaptation aims to adapt the model during inference using only the test data stream, without access to the source data or labels. 
+* The main challenge lies in effectively learning useful early layer representations of the test samples in an unsupervised manner.
+
+**Proposed Method: Neuro-Modulated Hebbian Learning (NHL)**
+
+The paper proposes NHL, a biologically-inspired approach combining two key components:
+
+1. **Feed-Forward Soft Hebbian Learning:**
+    * Inspired by Hebbian learning principles observed in biological neural networks.
+    * Synaptic weights are updated based on the activity of pre- and post-synaptic neurons and a soft competitive learning rule. 
+    * This allows for unsupervised learning of early layer representations, capturing essential features of the target domain data. 
+    * Compared to traditional Hebbian learning, the soft decision rule enhances competitive learning, making it more suitable for fully test-time adaptation.
+
+2. **Neuro-Modulator:**
+    * Addresses the limitation of pure feed-forward Hebbian learning by incorporating feedback from the network's output.
+    * Acts as an interface between the Hebbian layer and the classifier, capturing external responses and guiding weight updates.
+    * Trained using backpropagation with an entropy loss, ensuring the learned representations align with the ultimate goal of accurate classification. 
+    * This feedback mechanism allows the model to fine-tune its response and adapt effectively to the target domain.
+
+**Findings:**
+
+* NHL demonstrates significant performance improvement over existing fully test-time adaptation methods on benchmark datasets like CIFAR-10-C, CIFAR-100-C, ImageNet-C, and digit recognition tasks.
+* Ablation studies confirm the importance of both the soft Hebbian learning and the neuro-modulator components for achieving optimal performance.
+* Feature visualization indicates that NHL learns representations similar to those obtained through supervised learning with labeled data. 
+
+**Connections to Existing Literature:**
+
+* The paper draws inspiration from biological plausibility learning and Hebbian learning principles, aligning with research on unsupervised learning in neural networks.
+* The neuro-modulator concept relates to the idea of predictive coding and free-energy principles in cognitive science, where a combination of bottom-up and top-down processing optimizes perception and learning.
+
+**Further Research Directions:**
+
+* Exploring the applicability of NHL to other tasks beyond image classification.
+* Investigating the optimal design and training of the neuro-modulator for different scenarios. 
+* Analyzing the theoretical properties of NHL and its connections to biological learning mechanisms.
+
+**Overall, NHL offers a promising approach for fully test-time adaptation by effectively learning early layer representations in an unsupervised manner through the combination of soft Hebbian learning and a feedback-driven neuro-modulator.** 

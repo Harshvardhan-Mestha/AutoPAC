@@ -1,0 +1,74 @@
+## Methodology for Numerai with Insights from Tabular Data Literature
+
+Based on the high-level idea, the Numerai dataset description, the literature review focusing on tabular data performance, and the guidelines for methodology writing, here's a proposed approach:
+
+**1. Model Selection:**
+
+* **GBDTs as Primary Candidates:** Given the Numerai dataset's size and complexity, along with the literature review's findings on GBDT effectiveness for larger datasets, we will prioritize GBDT models like CatBoost and XGBoost. These models have demonstrated strong performance on tabular data and can handle the potential irregularities within the Numerai features.
+* **NNs as Secondary Candidates:**  While GBDTs will be our primary focus, we will also explore neural network architectures like TabNet and FT-Transformer, especially if the data exhibits regularities after preprocessing.  
+* **Baselines for Comparison:**  Simple baseline models like Logistic Regression and Random Forest will be implemented to establish a performance baseline and assess the relative gains of more complex models.
+
+**2. Addressing Model Limitations:**
+
+* **Overfitting:**  To mitigate overfitting, we will employ techniques like early stopping, L1/L2 regularization, and dropout (for NNs). Additionally, we will carefully monitor validation performance during training to detect overfitting.
+* **Feature Importance and Interpretability:**  Understanding feature importance is crucial for both model improvement and gaining insights into the data. We will utilize techniques like permutation importance and SHAP values to analyze feature contributions and potentially inform feature engineering or selection.
+* **Data Leakage:**  We will be cautious of potential data leakage in the Numerai dataset, especially considering the overlapping nature of target values across eras. Proper cross-validation strategies that respect the temporal aspect of the data will be employed.
+
+**3. Integrating Literature Review Insights:**
+
+* **Hyperparameter Optimization (HPO):**  The literature review highlights the importance of HPO. We will utilize tools like Optuna to perform extensive HPO for each model, focusing on both accuracy and log loss.
+* **Meta-Learning:** While the paper's meta-learning analysis is not directly applicable due to dataset differences, we can explore meta-features of the Numerai data to gain insights into its characteristics and potentially guide model selection or hyperparameter tuning.
+
+**4. Data Preprocessing:**
+
+* **Handling Missing Values:**  We will investigate various missing value imputation techniques, such as mean/median imputation, KNN imputation, or model-based imputation, and choose the most effective approach based on validation performance.
+* **Feature Scaling:**  Quantile scaling will be applied to continuous features to address potential issues with skewed distributions and improve the performance of some algorithms.
+* **Feature Engineering:**  We may explore feature engineering techniques based on the insights gained from feature importance analysis and domain knowledge about financial markets.
+
+**5. Training and Evaluation:**
+
+* **Cross-Validation:**  Given the temporal nature of the Numerai data, we will implement a time-series splitting strategy for cross-validation to avoid data leakage and ensure reliable performance evaluation.
+* **Performance Monitoring:**  We will track both accuracy and log loss during training and validation to assess model performance and identify potential issues like overfitting.
+
+**6. Addressing Dataset Size:**
+
+* **Subsampling for NNs:**  If computational resources become a constraint for training NNs on the entire dataset, we will explore subsampling strategies similar to the TabPFN approach in the paper.
+* **Distributed Training:**  For very large datasets, we may consider distributed training frameworks to accelerate the training process.
+
+**Pseudocode:**
+
+```
+# 1. Load and Preprocess Data
+data = load_numerai_data()
+data = impute_missing_values(data)
+data = quantile_scale_features(data)
+
+# 2. Define Models and Hyperparameter Search Spaces
+models = [CatBoost(), XGBoost(), TabNet(), FTTransformer(), ...]
+hpo_spaces = define_hpo_spaces(models)
+
+# 3. Cross-Validation and Training
+for fold in time_series_split(data):
+    train_data, val_data = fold
+    for model in models:
+        # Hyperparameter Optimization
+        best_params = optimize_hyperparameters(model, hpo_space, train_data, val_data)
+        # Train with Best Parameters
+        model.set_params(best_params)
+        model.fit(train_data)
+        # Evaluate Performance
+        evaluate_performance(model, val_data)
+
+# 4. Analyze Results and Feature Importance
+analyze_performance_across_folds(models)
+analyze_feature_importance(models, data)
+
+# 5. Select Final Model and Retrain on Full Data
+final_model = select_best_model(models)
+final_model.fit(data)
+
+# 6. Make Predictions
+predictions = final_model.predict(test_data)
+```
+
+**This methodology aims to effectively leverage insights from the literature review on tabular data while addressing the specific characteristics and challenges of the Numerai dataset. The proposed approach prioritizes GBDT models due to their strengths, but also explores NNs and baseline models for comparison. By carefully addressing model limitations and employing rigorous data preprocessing, training, and evaluation techniques, this methodology strives to achieve optimal performance and gain valuable insights into the Numerai data.** 

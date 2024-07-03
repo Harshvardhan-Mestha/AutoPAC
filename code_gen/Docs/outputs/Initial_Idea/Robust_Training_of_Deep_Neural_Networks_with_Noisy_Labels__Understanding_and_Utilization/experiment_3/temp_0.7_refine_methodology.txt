@@ -1,0 +1,62 @@
+## Refining the Methodology: Addressing Key Questions
+
+**1. Explanation:**
+
+The proposed methodology is explained well overall, providing a clear step-by-step approach with justifications for each choice. However, some areas could benefit from further clarification:
+
+* **Identifying Mislabeled Samples:** The specific method for identifying potential mislabeled samples in the cross-validation process needs elaboration. This could involve setting thresholds on prediction differences or using statistical techniques like outlier detection.
+* **Weighting Scheme:** While the concept of reducing weights for mislabeled samples is mentioned, the exact weighting scheme (e.g., linear scaling, exponential decay) requires further detail.
+* **Ensemble Method:**  The type of ensemble method (e.g., averaging, stacking) and the rationale behind choosing a specific method should be explicitly stated.
+
+**2. Standard vs. Modified Methods:**
+
+The methodology primarily uses standard methods like GBTs, cross-validation, and ensemble learning. The key modification lies in adapting the concept of noisy label handling from the analyzed paper. This adaptation is justified given the inherent noise in the NumerAI dataset and the need for robust predictions.
+
+**3. Limitations and Problems:**
+
+The methodology acknowledges the potential limitations of GBTs and the challenges posed by noisy labels. However, additional limitations and potential problems to consider include:
+
+* **Computational Cost:** The iterative training process with cross-validation and ensemble learning can be computationally expensive, especially for large datasets and complex models.
+* **Overfitting Risk:**  While GBTs are less prone to overfitting than DNNs, the risk still exists, particularly when dealing with noisy labels and complex feature engineering.
+* **Weighting Bias:** Assigning lower weights to potentially mislabeled samples might introduce bias if the identification process is not accurate.
+
+**4. Appropriateness:**
+
+The chosen methods are generally appropriate for the NumerAI prediction task. GBTs are well-suited for tabular data and have proven effective in similar financial prediction problems. Addressing the noisy label issue directly aligns with the dataset's characteristics and the goal of robust predictions. 
+
+**5. Adaptation from Literature Review:**
+
+The methodology effectively adapts the key ideas from the literature review on noisy labels. However, further integration could enhance the approach:
+
+* **Loss Correction:**  Explore adapting the loss correction techniques from the paper to GBTs. This might involve modifying the loss function to account for the estimated noise transition matrix. 
+* **Co-teaching Adaptation:**  Investigate the feasibility of adapting the Co-teaching strategy to GBT ensembles. This could involve training multiple models with different subsets of data and exchanging information during the training process. 
+
+## Refined Methodology
+
+**Step 1: Model Selection and Understanding Limitations**
+
+* Choose GBT models (XGBoost, LightGBM) for their suitability for tabular data and robustness.
+* Acknowledge the limitations of GBTs regarding potential sensitivity to noisy labels and overfitting risk.
+
+**Step 2: Cross-Validation and Sample Weighting**
+
+* Implement 5-fold cross-validation, training a GBT model on each fold.
+* Identify potentially mislabeled samples based on the absolute difference between predicted and actual target values, exceeding a certain threshold determined through analysis of the target distribution.
+* Assign lower weights (e.g., 0.5) to potentially mislabeled samples during training to reduce their influence.
+
+**Step 3: Feature Engineering**
+
+* Explore creating new features that are more robust to noise, such as:
+    * **Ratios:** Create features based on ratios of existing features (e.g., price-to-earnings ratio, debt-to-equity ratio) to reduce the impact of individual feature noise.
+    * **Ranks:** Convert continuous features into ranks within each era to mitigate the influence of outliers and noise.
+    * **Domain-Specific Features:**  Incorporate domain knowledge to create features that capture specific aspects of the financial market relevant to the prediction task.
+
+**Step 4: Ensemble Learning**
+
+* Train an ensemble of GBT models with diverse hyperparameters or initialization seeds. 
+* Combine predictions using a stacking approach, where a meta-model learns to weight the predictions of individual models based on their performance on a hold-out validation set.
+
+**Step 5: Iterative Training and Early Stopping**
+
+* Train the ensemble iteratively, updating sample weights based on the previous iteration's meta-model predictions. This progressively refines the focus on cleaner samples.
+* Monitor validation performance and implement early stopping to prevent overfitting, using a metric like mean squared error or correlation. 

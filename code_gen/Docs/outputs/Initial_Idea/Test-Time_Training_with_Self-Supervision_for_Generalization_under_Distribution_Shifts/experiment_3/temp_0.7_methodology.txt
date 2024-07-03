@@ -1,0 +1,72 @@
+## Methodology for NumerAI Prediction with Test-Time Training
+
+Based on the high-level idea, the Numerai dataset description, and the insights from the Test-Time Training (TTT) paper, here's a potential methodology:
+
+**Model Selection:**
+
+* **XGBoost:** Given the tabular nature of the Numerai data and its proven effectiveness in similar financial prediction tasks, XGBoost is a strong candidate. 
+* **Limitations:** XGBoost, like many models, can suffer from overfitting and may not generalize well to unseen data distributions (different eras in this case).
+
+**Relevance of TTT:**
+
+* The TTT paper directly addresses the problem of generalization under distribution shifts, making it highly relevant to the Numerai challenge where model performance needs to be consistent across different eras.
+
+**Combining Ideas:**
+
+* We can use TTT to adapt the XGBoost model to each era's specific data distribution during prediction time, potentially mitigating overfitting and improving generalization.
+
+**Implementation Steps:**
+
+1. **Data Preparation:**
+    * **Feature Engineering:** Explore additional feature engineering techniques based on domain knowledge of financial markets. This could involve creating new features or transforming existing ones.
+    * **Missing Values:** Develop a strategy for handling missing values (NaNs) in both features and targets. This could involve imputation techniques or discarding rows/columns with excessive missing data.
+    * **Era Splitting:** Divide the data into training, validation, and test sets based on eras, ensuring no data leakage between sets.
+
+2. **Training:**
+    * **Main Task:** Train an XGBoost model on the training set, predicting the main target variable (stock-specific returns).
+    * **Auxiliary Task:** Design a self-supervised task relevant to the financial domain. Some potential options:
+        * **Feature Reconstruction:** Train an autoencoder to reconstruct a subset of input features.
+        * **Feature Prediction:** Train a model to predict certain features from other features within the same era.
+        * **Time Series Forecasting:** Train a model to predict feature values or target values for the next era based on previous eras.
+    * **Joint Training:** Train the XGBoost model jointly on both the main task and the chosen auxiliary task using a combined loss function.
+
+3. **Test-Time Training:**
+    * For each era in the test set:
+        * Update the XGBoost model parameters (or a subset of them) by minimizing the self-supervised loss on the data from that era. 
+        * Use the updated model to predict the target variable for that era.
+
+4. **Evaluation:**
+    * Evaluate the model's performance using era-specific metrics like mean correlation per era. 
+    * Compare the performance of the TTT-enhanced model with a baseline XGBoost model without TTT to assess the improvement in generalization.
+
+**Addressing Challenges:**
+
+* **Self-Supervised Task Design:** The effectiveness of TTT heavily depends on the chosen auxiliary task. Experimenting with different tasks and evaluating their impact on generalization is crucial.
+* **Computational Cost:** TTT increases prediction time. Consider techniques like early stopping or selecting a subset of parameters for updates to improve efficiency.
+* **Overfitting to Eras:**  Carefully monitor for overfitting to specific eras during test-time training. Techniques like regularization or limiting the number of update steps can help mitigate this risk.
+
+**Pseudocode:**
+
+```
+# Data Preparation
+train_data, val_data, test_data = load_and_split_numerai_data()
+train_data, val_data, test_data = handle_missing_values(train_data, val_data, test_data)
+
+# Training
+xgb_model = train_xgboost(train_data) # Train on main task
+auxiliary_model = train_self_supervised_model(train_data) # Train self-supervised task
+joint_model = train_jointly(xgb_model, auxiliary_model, train_data) # Joint training
+
+# Prediction with Test-Time Training
+predictions = []
+for era in test_data.eras:
+    era_data = test_data.get_era_data(era)
+    updated_model = update_model_with_ttt(joint_model, era_data)
+    era_predictions = updated_model.predict(era_data)
+    predictions.append(era_predictions)
+
+# Evaluation
+evaluate_performance(predictions, test_data) 
+```
+
+**This methodology provides a detailed roadmap for applying TTT to the Numerai prediction problem. The combination of XGBoost with a carefully designed self-supervised task and test-time training has the potential to yield a robust and generalizable model for consistent performance across different eras.** 

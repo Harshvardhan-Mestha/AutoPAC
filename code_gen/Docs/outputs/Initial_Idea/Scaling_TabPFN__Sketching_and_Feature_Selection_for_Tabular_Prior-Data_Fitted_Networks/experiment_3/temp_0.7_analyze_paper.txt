@@ -1,0 +1,43 @@
+## Literature Review: Scaling TabPFN: Sketching and Feature Selection for Tabular Prior-Data Fitted Networks
+
+**Focus:** Methodology and Findings related to scaling TabPFN for tabular data classification.
+
+**Methodology:**
+
+1. **Dataset Selection:** The authors selected 19 datasets from McElfresh et al. (2023) that exceeded the recommended feature or sample limitations for TabPFN (100 features and 1000 samples). This ensured the study focused on scenarios where scaling techniques were necessary. 
+2. **Model Comparison:** TabPFN was compared with CatBoost, a high-performing gradient boosting model, using a subset of the datasets. 
+3. **Evaluation Metrics:** The primary evaluation metric was average accuracy across 10 train/validation folds for each dataset. Statistical significance testing (Wilcoxon signed-rank test with Holm-Bonferroni correction) was used to assess performance differences.
+4. **Context Summarization Techniques:**
+    * **Sketching:** The authors investigated different methods for summarizing the training data (context) including: 
+        * **Random Sampling:** Selecting a random subset of samples.
+        * **K-Means Clustering:** Choosing K-means cluster centers as representative samples.
+        * **CoreSet:** Selecting a coreset using the faiss library. 
+    * **Feature Selection:** Three methods were explored to reduce feature dimensionality:
+        * **Random Selection:** Picking a random subset of features.
+        * **Mutual Information:** Selecting features with high mutual information with the target variable.
+        * **PCA:** Using Principal Component Analysis to extract the most important features.
+5. **Scaling Analysis:** The impact of varying the number of samples and features on model performance was also analyzed.
+
+**Findings:**
+
+* **Impact of Context Length:** Increasing the context length (number of training samples) generally improved performance for both TabPFN and CatBoost. However, the gains were more significant for CatBoost.
+* **Sketching Methods:** Random sampling of training data performed surprisingly well and was often as effective as more complex methods like K-means and CoreSet. This suggests that for TabPFN, focusing on obtaining a diverse subset of the data might be more important than sophisticated selection techniques.
+* **Feature Selection:** Feature selection had a significant impact on both models, but TabPFN showed greater sensitivity. Techniques like mutual information and PCA often outperformed random feature selection, indicating the importance of selecting informative features for in-context learning with TabPFN.
+* **Sensitivity to Features:** TabPFN appears to be more sensitive to the presence of irrelevant features compared to CatBoost. Reducing the feature space sometimes improved performance, suggesting the need for careful feature selection or engineering.
+
+**Discussion:**
+
+* The authors hypothesize that the effectiveness of random sampling might be due to the large sample size even after sketching, allowing for a form of statistical convergence.
+* They suggest further investigation into the connection between context optimization in tabular and language-based in-context learning models.
+
+**Additional Notes:**
+
+* The study primarily focused on basic summarization techniques and did not explore more advanced methods like active learning or efficient attention mechanisms.
+* The findings highlight the potential of TabPFN for tabular data classification, especially when combined with effective feature selection techniques.
+
+**Next Steps:**
+
+* Explore the effectiveness of active learning for selecting informative training samples for TabPFN.
+* Investigate the use of efficient attention mechanisms to improve the scalability of TabPFN for larger datasets.
+* Compare the performance of different feature selection techniques in more detail, including wrapper and embedded methods.
+* Analyze the types of features that are most beneficial for TabPFN and develop feature engineering strategies tailored for in-context learning. 

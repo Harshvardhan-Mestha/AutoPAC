@@ -1,0 +1,54 @@
+**Methodology for Conservative Predictions on Sequential Noisy Financial Data Using Continual Learning**
+
+### Step 1: Define the Problem
+The primary goal is to develop a continual learning procedure to predict 'target_10_val' labels as data arrives sequentially, adapting to daily changes in 'era' and noise levels. The data arrives 'day'-wise with labels provided only for rows older than 10 rows, mimicking delayed ground-truth availability.
+
+### Step 2: Model Selection
+Given the need for adaptability and robustness in a noisy, changing environment, a model combining Differentiable Decision Trees (DDT) and Multi-Layer Perceptrons (MLP) in a cascading framework is selected. This hybrid approach leverages the interpretable nature of DDT and the flexibility of MLPs to handle non-linear patterns in data.
+
+### Step 3: Data Preprocessing
+- **Normalization**: Ensure all data inputs (e.g., Open_n_val, Close_n_val) are normalized to have zero mean and unit variance to stabilize training.
+- **Feature Engineering**: Utilize existing features and develop new temporal features to capture recent trends and patterns without using the 'era' column.
+
+### Step 4: Continual Learning Framework Setup
+- **Initial Training**: Use the initial batch of data to train the base model. This model serves as the starting point for continual learning.
+- **Online Learning**: As each new day's data arrives:
+  - **Model Update**: Incorporate the new data into the model using a learning rate decay to gradually decrease the influence of new data, maintaining stability over time.
+  - **Noise Adaptation**: Estimate the noise level of the incoming data and adjust the model's sensitivity accordingly. This could involve adapting the learning rate or model parameters to focus more on signal than noise.
+
+### Step 5: Cascading Model Implementation
+- **Cascading Strategy**: Implement a cascading strategy where the output of one model serves as the input to the next, refining predictions:
+  - If the first model (DDT) is uncertain (based on a threshold like Gini impurity), pass the data to the next model (MLP) for further analysis.
+  - Continue this process through the cascade until a confident prediction is made or all models have been applied.
+
+### Step 6: Prediction and Evaluation
+- **Making Predictions**: For each row, use the cascaded models to make predictions. Only make predictions if the model's confidence is above a predefined threshold to ensure conservative trading decisions.
+- **Performance Metrics**: Evaluate the model using accuracy, support (percentage of data points with predictions), utility of predictions, and risk-adjusted returns. These metrics help assess the model's practical effectiveness in trading scenarios.
+
+### Step 7: Handling Practical Limitations
+- **Dealing with Unknown Noise Levels**: Develop a heuristic or model to estimate the noise level in incoming data based on recent prediction errors or volatility in feature values.
+- **Adapting to New Patterns**: Continuously monitor the model's performance and adapt the cascading thresholds and model parameters as needed to respond to new market conditions or anomalies in the data.
+
+### Pseudocode for the Methodology
+
+```plaintext
+Initialize model with initial training data
+For each new day of data:
+    Preprocess data (normalize, engineer features)
+    For each row in the day's data:
+        If row_num > 10 (has label):
+            Update model with row data and label using adjusted learning rate
+        Estimate current noise level based on recent data
+        Adjust model parameters based on estimated noise level
+        If model_1 (DDT) is uncertain:
+            Pass data to model_2 (MLP)
+        If model_2 is uncertain:
+            Continue to next model or make no prediction
+        Else:
+            Make prediction and evaluate confidence
+    Aggregate daily predictions and update performance metrics
+    Adjust cascading thresholds and parameters if necessary
+Report final performance metrics after all data is processed
+```
+
+This methodology ensures that the model adapts to both the inherent noise in the data and the evolving market conditions, making it robust and practical for real-time financial market predictions.

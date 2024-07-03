@@ -1,0 +1,51 @@
+## Literature Review: Dynamically Modular and Sparse General Continual Learning 
+
+**Paper**: Dynamically Modular and Sparse General Continual Learning by Arnav Varma, Elahe Arani, and Bahram Zonooz
+
+**Focus**: Methodology 
+
+**Summary**: This paper proposes Dynamos, a continual learning algorithm that aims to mitigate catastrophic forgetting by incorporating dynamic modularity and sparsity into a rehearsal-based approach. Dynamos utilizes agents within a deep neural network to dynamically deactivate irrelevant neurons based on the input, promoting efficient learning and reducing interference between tasks. 
+
+**Methodology Breakdown**:
+
+1. **Dynamic Sparsity and Modularity**:
+    * **Agents**: Each convolutional layer is equipped with an agent that learns to drop channels (filters) based on the input. This agent employs a self-attention network to generate channel-wise attention vectors, which are then converted into action probabilities for keeping or dropping each channel. 
+    * **Policy Gradients**: The agents are trained using policy gradients, where they are rewarded for dropping channels while maintaining accurate predictions and penalized for actions leading to incorrect predictions. This encourages sparsity and dynamic adaptation to different inputs.
+    * **Prototype Loss**: To specialize the modules within the network, a prototype loss is applied to the attention vectors. This loss pulls together vectors belonging to the same class and pushes apart those from different classes, promoting the formation of specialized modules for different tasks.
+
+2. **Multi-Scale Associations**:
+    * **Memory Buffer**: A memory buffer stores previously seen examples and their corresponding responses. This buffer is updated using reservoir sampling to maintain a representative sample of past data.
+    * **Consistency Losses**: When training on new data, samples from the memory buffer are also replayed. Consistency losses are applied to ensure that the network's responses to previously seen examples remain consistent over time, mitigating forgetting.
+
+3. **Overall Training Process**:
+    * The total loss function combines several components:
+        * **Task Performance Loss**: Cross-entropy loss for classification tasks, applied to both current and memory samples.
+        * **Reward Loss**: Encourages dynamic sparsity and modularity through the agents.
+        * **Prototype Loss**: Promotes specialization of modules.
+        * **Consistency Loss**: Maintains consistency between current and past responses.
+    * **Warm-up Stage**: Initially, the network is trained without the memory buffer and agents to establish a good starting point for the agents' search space.
+
+**Strengths**:
+
+* **Addresses Catastrophic Forgetting**: Dynamos effectively mitigates catastrophic forgetting by combining dynamic sparsity, modularity, and rehearsal.
+* **General Continual Learning**: The approach adheres to the desiderata of general continual learning, handling tasks without clear boundaries and overlapping data distributions.
+* **Biologically Plausible**: The dynamic activation of neurons and the specialization of modules are inspired by observed phenomena in the brain.
+* **Trial-to-Trial Variability**: The use of Bernoulli sampling introduces variability in the network's responses to the same input across different trials, mimicking a characteristic of biological neural networks.
+
+**Weaknesses**:
+
+* **Hyperparameter Tuning**: The method involves several hyperparameters that require careful tuning for optimal performance.
+* **Computational Cost**: The use of agents and self-attention networks can increase computational complexity compared to simpler continual learning methods.
+
+**Potential Future Work**:
+
+* **Exploring Different Agent Architectures**: Investigating alternative agent architectures, such as recurrent networks, to capture temporal dependencies within tasks.
+* **Adaptive Keep Ratio**: Developing methods to dynamically adjust the keep ratio based on task complexity or the degree of forgetting.
+* **Hierarchical Modularity**: Extending the approach to incorporate hierarchical modularity, where modules can be composed of sub-modules for more complex tasks.
+
+**Additional Notes**: 
+
+* The paper demonstrates the effectiveness of Dynamos on several datasets, including Seq-MNIST, Seq-SVHN, and MNIST-360. 
+* The visualization of filter activation rates and channel-wise attention vectors provides insights into the learned representations and the dynamic behavior of the network.
+
+**Overall, Dynamos presents a promising approach for continual learning with its biologically inspired mechanisms and effective mitigation of catastrophic forgetting. The method's ability to handle complex continual learning scenarios and its potential for further development make it a valuable contribution to the field.** 

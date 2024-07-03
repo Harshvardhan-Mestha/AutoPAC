@@ -1,0 +1,70 @@
+## Literature Review: Dynamos for Continual Learning 
+
+Based on the provided abstract and introduction, here's a breakdown of the paper "Dynamically Modular and Sparse General Continual Learning" using the chain of thought approach, with a focus on the methodology:
+
+**Problem:**
+
+* **Catastrophic forgetting in Deep Neural Networks (DNNs):** DNNs struggle with continual learning, where they learn from a stream of data with changing conditions. This leads to forgetting previously learned information, hindering their application in real-world scenarios like lifelong learning robots and self-driving cars.
+
+**Existing Approaches and their limitations:**
+
+* **Regularization-based methods:** Penalize changes to DNN parameters but often require additional information like task identity, making them unsuitable for general continual learning (GCL).
+* **Parameter isolation methods:** Assign distinct parameter subsets to different tasks but can lead to network growth and may not meet GCL requirements.
+* **Rehearsal-based methods:** Co-train on current and past data, mitigating forgetting but still susceptible to task interference as all parameters respond to all tasks.
+
+**Proposed Solution: Dynamos**
+
+* **Combines rehearsal with dynamic modularity and sparsity:** Inspired by the brain's sparse coding, Dynamos aims to activate relevant neuron subsets for specific stimuli, reducing task interference and catastrophic forgetting.
+* **Dynamic and sparse response:** 
+    * Employs agents in the DNN to dynamically zero out filter activations in convolutional layers based on the input.
+    * Agents are rewarded for choosing actions that remove activations (leading to sparsity) while maintaining accurate predictions and penalized for actions causing inaccurate predictions.
+    * Prototype loss encourages specialized features by pulling attention vectors of the same class together and pushing those of different classes apart.
+* **Multi-scale associations:**
+    * Maintains a memory buffer storing past examples.
+    * Retrains the network on both current and past examples, enforcing consistency between responses and reducing forgetting.
+
+**Methodology in Detail:**
+
+1. **Agent-based dynamic sparsity:**
+    * Each convolutional layer has an agent module that decides to keep or drop channels in the layer's output.
+    * The agent uses a self-attention network to generate a channel-wise attention vector, converted into action probabilities using a probability layer.
+    * Actions are sampled from a Bernoulli distribution based on these probabilities, determining which channels are kept or dropped.
+
+2. **Reward function for sparsity and accuracy:**
+    * Agents are rewarded for dropping channels while maintaining accurate predictions and penalized for actions leading to incorrect predictions.
+    * This encourages sparsity while ensuring the network's performance doesn't suffer.
+
+3. **Prototype loss for specialization:**
+    * Applied to channel-wise attention vectors to encourage specialization of modules for different classes.
+    * Pulls vectors of the same class together and pushes those of different classes apart, leading to distinct responses for different stimuli.
+
+4. **Memory buffer and multi-scale associations:**
+    * Stores past examples using reservoir sampling.
+    * Retrains the network on both current and past examples, ensuring consistent responses and reducing forgetting.
+    * Consistency losses are applied to ensure similar responses to the same stimuli over time.
+
+5. **Overall training loss:**
+    * Combines task performance loss, reward losses, prototype losses, and consistency losses.
+    * Weights are assigned to each loss term to balance their contributions.
+
+**Evaluation:**
+
+* **Class-Incremental Learning (CIL):** Dynamos outperforms CCGN (Conditional Convolutional Gated Network) on Seq-MNIST and Seq-SVHN datasets, showing higher accuracy while maintaining bounded memory consumption.
+* **General Continual Learning (GCL):** Dynamos demonstrates its effectiveness on MNIST-360, outperforming the baseline without dynamic modularity, indicating its ability to handle real-world data streams with blurred task boundaries. 
+
+**Model Characteristics:**
+
+* **Dynamic modularity and compositionality:** The network learns to activate different filter subsets for different tasks and classes, showing overlapping activations for similar inputs and distinct activations for dissimilar inputs. This suggests the learning of general-purpose features and efficient utilization of network capacity. 
+* **Trial-to-trial variability:** Due to the Bernoulli sampling, the network exhibits varied responses to the same input across different trials, mimicking the variability observed in the brain.
+
+**Strengths:**
+
+* Addresses catastrophic forgetting effectively in GCL scenarios.
+* Learns modular and specialized representations, leading to efficient resource utilization.
+* Simulates biologically plausible mechanisms observed in the brain.
+
+**Potential Future Work:**
+
+* Investigating the impact of different agent architectures and reward functions.
+* Exploring alternative approaches for encouraging specialization and modularity. 
+* Applying Dynamos to more complex continual learning tasks and datasets. 

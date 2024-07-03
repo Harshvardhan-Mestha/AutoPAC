@@ -1,0 +1,19 @@
+In our approach to analyzing the Numerai dataset, we commence with thorough data preprocessing steps, a
+cknowledging the dataset's unique structure characterized by eras denoting distinct periods.
+During preprocessing, we meticulously handle missing or categorical values, prioritizing the model's inclination towards numerical data for optimal performance.
+
+Subsequently, we employ Uniform Manifold Approximation and Projection (UMAP) to generate embeddings tailored to each era.
+By leveraging UMAP, we condense the multidimensional data into a lower-dimensional space, effectively capturing the essence of each era while preserving critical characteristics essential for subsequent analysis.
+
+To discern the underlying similarities between different eras, we compute the cosine similarity matrix based on the embeddings obtained from UMAP.
+This matrix serves as a pivotal tool in identifying eras with similar feature distributions, paving the way for more focused analysis.
+
+Using hierarchical clustering techniques, we group eras together based on their cosine similarity scores.
+This hierarchical approach facilitates the creation of clusters comprising similar eras, enabling deeper insights into the dataset's inherent structure and dynamics.
+
+Moving forward, we delve into TABPFN model training and evaluation, initializing placeholders for final results and models.
+Within each cluster, we employ dimensionality reduction techniques such as Principal Component Analysis (PCA) to condense features to fit within the TABPFN constraints.
+Each cluster is trained using the TABPFN model.
+
+Finally, we evaluate the ensemble TABPFN models, calculating the average accuracy as a metric of their effectiveness in capturing the underlying patterns within the Numerai dataset.
+Through this comprehensive approach, we aim to extract valuable insights and optimize predictive performance while navigating the complexities of the dataset's temporal nature and intricate feature relationships.

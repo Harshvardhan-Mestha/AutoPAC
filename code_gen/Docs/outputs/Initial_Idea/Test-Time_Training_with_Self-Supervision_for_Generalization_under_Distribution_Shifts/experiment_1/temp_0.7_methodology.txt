@@ -1,0 +1,76 @@
+## Methodology for Applying Test-Time Training to Numerai
+
+Based on the high-level idea, the analysis of the paper "Test-Time Training with Self-Supervision for Generalization under Distribution Shifts", and the characteristics of the Numerai dataset, here's a potential methodology:
+
+**1. Model Selection:**
+
+* **XGBoost:** Given the tabular nature of the Numerai data with numerous features, XGBoost is a strong candidate due to its effectiveness in handling such data and its ability to capture non-linear relationships. 
+* **Limitations:** XGBoost might struggle with handling missing values (NaNs) and could be susceptible to overfitting if not carefully regularized.
+
+**2. Relevance of Test-Time Training (TTT):**
+
+* **Applicability:** The Numerai competition involves predicting on future data with potential distribution shifts compared to the training data. TTT's ability to adapt to unseen test distributions aligns well with this challenge.
+* **Challenge:** Identifying a suitable self-supervised task for a financial prediction task like Numerai is not straightforward. The paper primarily focuses on image-related tasks, and directly applying rotation prediction wouldn't be meaningful here.
+
+**3. Overcoming Limitations and Integrating Ideas:**
+
+* **Handling NaNs:** Implement strategies like imputation (e.g., median/mean filling, KNN imputation) or consider tree-based models that can inherently handle missing values.
+* **Regularization:** Employ techniques like early stopping, feature selection, and parameter tuning (e.g., grid search, randomized search) to prevent overfitting.
+* **Self-Supervised Task:**  Instead of rotation, explore financial-specific tasks like:
+    * **Time-Series Forecasting:** Train a model to predict future values of a subset of features based on their past values.
+    * **Feature Reconstruction:** Use an autoencoder to learn a compressed representation of the features and then reconstruct the original features.
+
+**4. Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * **Handle NaNs:** Choose an appropriate imputation strategy or utilize models that can handle missing values inherently.
+    * **Feature Engineering:** Explore creating additional features based on domain knowledge or existing features (e.g., ratios, differences).
+    * **Feature Scaling:** Scale features using standardization or normalization techniques to ensure equal contribution during training. 
+2. **Joint Training:**
+    * **Main Task Model:** Train an XGBoost model on the Numerai training data with the provided target variable.
+    * **Self-Supervised Task Model:** Choose and implement one of the proposed self-supervised tasks (e.g., time-series forecasting, feature reconstruction) and train a separate model on the same training data.
+    * **Shared Representation:** Ensure both models share a common set of features or representations during training. 
+3. **Test-Time Training:**
+    * For each era in the test data:
+        * Fine-tune the shared representation of the main task model by minimizing the self-supervised task loss on the features of that era.
+        * Generate predictions for the target variable using the adapted main task model.
+4. **Evaluation:**
+    * Assess the performance using the competition's evaluation metric and compare it to a baseline model without TTT.
+
+**5. Pseudocode:**
+
+```
+# Data Preprocessing
+data = load_numerai_data()
+data = handle_missing_values(data)  # Imputation or model selection
+data = feature_engineering(data)  # Optional, based on domain knowledge
+data = feature_scaling(data)  # Standardize or normalize features
+
+# Joint Training
+main_model = XGBoost()
+main_model.fit(data[train_features], data[train_target])
+
+self_supervised_model = choose_and_train_self_supervised_model(data[train_features])
+
+# Test-Time Training and Prediction
+predictions = []
+for era in test_data:
+    adapted_features = self_supervised_model.fine_tune(era[test_features])
+    era_predictions = main_model.predict(adapted_features)
+    predictions.append(era_predictions)
+
+# Evaluation
+evaluate_performance(predictions, actual_targets)
+```
+
+**6. Training on the Entire Dataset:**
+
+* The proposed methodology inherently uses the entire training dataset during the joint training phase for both the main task and the self-supervised task. 
+* The test-time training happens on each era of the test data independently, so the size of the training data doesn't affect this stage.
+
+**7. Additional Considerations:**
+
+* Experiment with different self-supervised tasks and compare their impact on performance. 
+* Explore the online version of TTT if evidence of gradual distribution shifts across eras is observed.
+* Consider ensembling techniques that combine predictions from multiple models trained with different self-supervised tasks.
+* Monitor the computational cost of TTT and explore optimization strategies if needed. 

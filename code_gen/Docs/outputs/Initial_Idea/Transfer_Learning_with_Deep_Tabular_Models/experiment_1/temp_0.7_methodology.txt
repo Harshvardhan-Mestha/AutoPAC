@@ -1,0 +1,93 @@
+## Methodology for Numerai Tournament using Transfer Learning and DeepTabular Models
+
+Based on the high-level idea, dataset description, and insights from the "Transfer Learning with DeepTabular Models" paper, we can devise a methodology incorporating transfer learning to tackle the Numerai tournament.
+
+**Relevance of the Analyzed Paper:**
+
+The paper's findings are highly relevant. Numerai presents a scenario with limited downstream data (weekly eras) and the potential for leveraging auxiliary information through transfer learning. The paper demonstrates the effectiveness of deep tabular models with transfer learning, aligning with our goals.
+
+**Model Selection:**
+
+* **FT-Transformer:** Given its strong performance across various data levels in the paper and its ability to handle mixed feature types (numerical and categorical), FT-Transformer is a suitable candidate.
+
+**Limitations and Solutions:**
+
+* **Computational Cost:** FT-Transformer can be computationally expensive, especially during hyperparameter tuning. To mitigate this, we can explore efficient hyperparameter optimization techniques and leverage cloud-based GPU resources.
+* **Data Heterogeneity:** While Numerai's feature sets are well-designed, potential heterogeneity across eras might exist. We can utilize the pseudo-feature method from the paper to address this by imputing missing values based on other features and eras.
+
+**Methodology Steps:**
+
+1. **Data Preparation:**
+    * Download the Numerai training, validation, and tournament data.
+    * Split the training data into upstream and downstream sets. We can experiment with different split ratios and strategies, such as using older eras as upstream data and more recent eras as downstream data.
+    * Preprocess the data:
+        * Apply quantile transformation to numerical features for neural networks.
+        * Impute missing values (NaNs) using the pseudo-feature method. Train a model on available data to predict missing values for each feature.
+        * Encode categorical features if necessary.
+
+2. **Upstream Pre-training:**
+    * Train the FT-Transformer model on the upstream data using a multi-label classification setup. Each era's target and auxiliary targets can be treated as separate labels.
+    * Optimize hyperparameters using Optuna with Bayesian optimization, focusing on the validation set performance.
+
+3. **Downstream Fine-tuning:**
+    * Fine-tune the pre-trained FT-Transformer model on the downstream data using the target as the prediction label.
+    * Experiment with different fine-tuning setups (e.g., freezing vs. fine-tuning the feature extractor, using different heads).
+    * Use the validation set to select the best fine-tuning setup and epoch.
+
+4. **Tournament Prediction:**
+    * Use the fine-tuned model to generate predictions on the tournament data.
+
+5. **Iteration and Refinement:**
+    * Analyze the model's performance and errors.
+    * Explore different upstream-downstream split strategies.
+    * Experiment with different deep tabular models or ensemble methods.
+    * Refine the pseudo-feature imputation method.
+
+**Pseudocode:**
+
+```python
+# 1. Data Preparation
+# Download Numerai data
+
+# Split data into upstream and downstream
+
+# Preprocess data
+def preprocess_data(data):
+    # Quantile transformation for numerical features
+    # Impute missing values using pseudo-feature method
+    # Encode categorical features (if needed)
+    return preprocessed_data
+
+upstream_data = preprocess_data(upstream_data)
+downstream_data = preprocess_data(downstream_data)
+tournament_data = preprocess_data(tournament_data)
+
+# 2. Upstream Pre-training
+model = FTTransformer()
+optimizer = AdamW(model.parameters())
+
+def train_upstream(model, optimizer, data):
+    # Training loop for multi-label classification
+    # ...
+    return model
+
+model = train_upstream(model, optimizer, upstream_data)
+
+# 3. Downstream Fine-tuning
+def fine_tune_downstream(model, optimizer, data):
+    # Fine-tuning loop for single-label classification
+    # ...
+    return model
+
+model = fine_tune_downstream(model, optimizer, downstream_data)
+
+# 4. Tournament Prediction
+predictions = model(tournament_data)
+
+# 5. Iteration and Refinement
+# Analyze performance, experiment with different strategies, etc.
+```
+
+**Conclusion:**
+
+This methodology provides a detailed roadmap for applying transfer learning with deep tabular models to the Numerai tournament. By leveraging the insights from the analyzed paper and adapting them to the specific characteristics of the Numerai dataset, we can potentially develop a model capable of achieving strong and consistent performance. Remember, continuous iteration and refinement are crucial for success in this dynamic competition. 

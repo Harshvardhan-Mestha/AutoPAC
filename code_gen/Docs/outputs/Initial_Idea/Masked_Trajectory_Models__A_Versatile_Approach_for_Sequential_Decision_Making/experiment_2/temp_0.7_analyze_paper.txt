@@ -1,0 +1,43 @@
+## Literature Review: Masked Trajectory Models (MTM) - Focus on Methodology 
+
+Based on the provided abstract and introduction of the paper "Masked Trajectory Models for Prediction, Representation, and Control," here's a breakdown of the methodology with a critical and creative lens, focusing on potential strengths and weaknesses:
+
+**Core Idea:**
+
+MTM uses a self-supervised learning approach inspired by masked language models in NLP. It trains a bi-directional transformer model to reconstruct masked sections of a trajectory (state-action sequence). By learning to fill in the missing information, the model gains a versatile understanding of the environment and the policy generating the data.
+
+**Methodology:**
+
+1. **Trajectory Datasets:** MTM works with trajectory data containing multiple modalities like states, actions, and returns. 
+2. **Tokenization:** Each element in the trajectory is encoded into a common representation space using modality-specific encoders. Time and modality embeddings are added for context.
+3. **Masked Modeling:** The model is trained to reconstruct the full trajectory sequence given a randomly masked version. This is achieved by maximizing the log-likelihood of the original tokens given the masked input.
+4. **Architecture:** The model uses an encoder-decoder architecture with bi-directional transformers for both. The encoder processes unmasked tokens, and the decoder uses information from the encoder and mask tokens to predict the original sequence.
+5. **Masking Pattern:** A random autoregressive masking pattern is used, ensuring at least one masked token depends only on past information. This prepares the model for causal inference during deployment.
+
+**Strengths:**
+
+* **Versatility:** A single MTM model can be used for various tasks like forward/inverse dynamics, imitation learning, offline RL, and representation learning by simply adjusting the masking pattern at inference time. 
+* **Heteromodality:** MTM can handle missing data and learn from datasets with different modalities (e.g., state-only and state-action trajectories).
+* **Data Efficiency:** The diverse training objectives due to random masking might lead to better utilization of data and improved sample efficiency.
+* **Representation Learning:** MTM learns effective state representations that can benefit downstream tasks and accelerate learning in traditional RL algorithms. 
+
+**Weaknesses / Open Questions:**
+
+* **Computational Cost:**  The use of transformers and the need for extensive training data might make MTM computationally expensive compared to simpler models.
+* **Long-term Dependencies:** The effectiveness of MTM for tasks with long-term dependencies and complex dynamics needs further investigation.
+* **Masking Strategy:** The impact of different masking strategies and ratios on performance requires further analysis and optimization for specific tasks.
+* **Online Learning:** The paper primarily focuses on offline RL. Extending MTM to online learning settings is an important direction for future work. 
+
+**Creative Extensions:**
+
+* **Hierarchical MTM:** Explore hierarchical architectures to capture temporal abstractions at multiple levels.
+* **Multi-task MTM:** Train a single model on diverse tasks simultaneously using appropriate masking patterns and auxiliary losses.
+* **Unsupervised Skill Discovery:** Leverage MTM's ability to learn representations and dynamics to discover skills in an unsupervised manner.
+* **Transfer Learning:** Investigate the transferability of MTM models to different domains and tasks.
+
+**Next Steps:**
+
+1. **Deeper Dive into Results:** Analyze the provided results in detail, focusing on the performance of MTM compared to baselines and ablations for different tasks and datasets. 
+2. **Implementation Details:** Examine the model architecture and hyperparameters to understand the practical considerations for training MTM.
+3. **Related Work:** Explore related work on self-supervised learning, transformers in RL, and other versatile model approaches to compare and contrast with MTM. 
+4. **Codebase Analysis:** If available, study the codebase to gain further insights into the implementation and potentially experiment with the model. 

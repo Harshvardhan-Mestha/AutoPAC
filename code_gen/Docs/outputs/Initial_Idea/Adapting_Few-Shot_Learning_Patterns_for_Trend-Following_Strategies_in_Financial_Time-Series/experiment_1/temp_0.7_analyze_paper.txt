@@ -1,0 +1,67 @@
+## Literature Review: FEW-SHOT LEARNING PATTERNS IN FINANCIAL TIME-SERIES FOR TREND-FOLLOWING STRATEGIES
+
+**Focus:** Methodology 
+
+**Paper Summary:**
+
+This paper proposes X-Trend, a novel trend-following forecasting model for financial time series. X-Trend leverages few-shot learning to adapt to new market regimes quickly, addressing the limitations of traditional forecasting models that struggle with non-stationary market conditions. 
+
+**Methodology Breakdown:**
+
+1. **Problem Definition:**
+    * The goal is to predict future trends in financial time series and generate trading positions (long/short) to maximize portfolio returns.
+    * The challenge lies in the non-stationary nature of financial markets and the need to adapt to new regimes with limited data.
+
+2. **Episodic Learning:**
+    * X-Trend employs an episodic learning approach, where the model learns to make predictions for a target time series (asset) by leveraging a context set of time series from other assets.
+    * This framework enables both few-shot learning (where the context set may include past data from the same asset) and zero-shot learning (where the target asset is entirely new).
+
+3. **Data Representation:**
+    * **Input Features:** The model uses a combination of technical indicators as input features:
+        * Normalized returns at different time scales (e.g., 1 day, 21 days, 63 days)
+        * MACD indicators at various time scales (e.g., (8,24), (16,28))
+        * Asset category (e.g., equities, commodities) encoded as entity embeddings
+    * **Sequence Representations:** 
+        * **Encoder:** The encoder utilizes LSTMs with a Variable Selection Network (VSN) to process the input features and generate hidden state representations for each time step in the context and target sequences. 
+        * **Decoder:** The decoder also utilizes LSTMs and VSNs, taking the target sequence and the output of the encoder as input to generate a final representation. 
+
+4. **Cross-Attention Mechanism:**
+    * A key innovation of X-Trend is the use of a cross-attention mechanism. The target sequence attends to the context set, allowing it to learn and transfer relevant patterns from similar regimes in other assets.
+    * This mechanism involves computing attention weights based on the similarity between the target sequence representation and the representations of the context sequences.
+
+5. **Context Set Construction:**
+    * The paper explores three methods for constructing the context set:
+        * **Final Hidden State:** Randomly sample sequences and use their final hidden states as context.
+        * **Time-Equivalent Hidden State:** Sample sequences with the same length as the target and attend to corresponding time steps.
+        * **Change-Point Detection (CPD) Segmented Representations:** Segment the context set into regimes using a Gaussian Process-based CPD algorithm and attend to the final hidden states of these segments.
+
+6. **Prediction and Loss Function:**
+    * X-Trend has two main variants:
+        * **X-Trend-G:** Assumes Gaussian distribution for next-day returns and uses Maximum Likelihood Estimation (MLE) as the loss function.
+        * **X-Trend-Q:** Employs Quantile Regression (QRE) to estimate the full distribution of next-day returns, focusing on capturing tail events.
+    * Both variants utilize a Predictive distribution To Position (PTP) head to generate trading signals based on the predicted returns.
+    * A joint loss function combining either MLE or QRE with a Sharpe ratio loss is used to optimize the model. 
+
+7. **Zero-Shot Learning:**
+    * For zero-shot learning, the model excludes the target asset's category embedding to avoid bias towards unseen assets.
+    * The focus is on leveraging the context set to identify similarities with previously seen assets and transfer knowledge effectively.
+
+**Key Findings:**
+
+* X-Trend demonstrates significant improvement in risk-adjusted returns (Sharpe ratio) compared to baseline models, especially during turbulent market periods. 
+* The model exhibits faster recovery from drawdowns, highlighting its ability to adapt to new regimes effectively.
+* X-Trend achieves profitable zero-shot trading, showcasing its ability to generalize to unseen assets.
+* CPD-segmented context sets further improve performance by focusing on the most relevant and informative regimes.
+* The choice of loss function (MLE vs. QRE) and the inclusion of entity embeddings impact performance in few-shot and zero-shot settings.
+
+**Strengths:**
+
+* Novel application of few-shot learning to financial trend forecasting.
+* Interpretable cross-attention mechanism provides insights into the model's decision-making process.
+* Effective adaptation to new market regimes and generalization to unseen assets.
+
+**Weaknesses:**
+
+* The assumption of Gaussian returns in X-Trend-G may not be ideal for all market conditions.
+* The model's complexity may require significant computational resources. 
+* The performance of zero-shot learning may degrade during extremely volatile periods. 

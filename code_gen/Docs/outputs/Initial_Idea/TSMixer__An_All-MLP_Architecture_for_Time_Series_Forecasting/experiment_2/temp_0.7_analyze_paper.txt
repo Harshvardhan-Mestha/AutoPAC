@@ -1,0 +1,40 @@
+## Literature Review: TSMixer: An All-MLP Architecture for Time Series Forecasting
+
+**Paper Summary:**
+
+This paper introduces TSMixer, a novel architecture for time series forecasting based on multi-layer perceptrons (MLPs). It challenges the dominance of recurrent and attention-based models by demonstrating that carefully designed MLPs can achieve comparable or even superior performance on various benchmarks, including the challenging M5 competition dataset. The key idea is to efficiently extract information by "mixing" along both time and feature dimensions, effectively capturing temporal patterns and cross-variate relationships.
+
+**Methodology Focus:**
+
+1. **Theoretical Foundation:**
+    * The paper starts by analyzing the capabilities of linear models for time series forecasting. It highlights their ability to capture periodic and smooth trends effectively, providing theoretical justification for building upon this foundation. 
+    * It contrasts linear models with "data-dependent" models like RNNs and Transformers, emphasizing the benefit of "time-step-dependent" weights in linear models for learning temporal patterns without overfitting.
+
+2. **TSMixer Architecture:**
+    * Building upon the strengths of linear models, TSMixer stacks MLPs with non-linearities and incorporates normalization and residual connections for efficient learning.
+    * The core innovation lies in the alternating application of MLPs in the time and feature domains:
+        * **Time-mixing MLPs:** Shared across features, they capture temporal patterns similar to stacked linear models.
+        * **Feature-mixing MLPs:** Shared across time steps, they leverage relationships between different variables.
+    * This design allows efficient utilization of both temporal and cross-variate information while keeping the parameter count manageable.
+
+3. **Extension for Auxiliary Information (TSMixer-Ext):**
+    * The paper extends TSMixer to handle scenarios with static features (e.g., location) and future time-varying features (e.g., promotions).
+    * It introduces an "align" stage to project features with different shapes into a common shape, enabling their concatenation and joint processing through feature-mixing layers.
+
+4. **Evaluation:**
+    * TSMixer is evaluated on seven long-term forecasting benchmarks and the M5 competition dataset.
+    * On the benchmarks, it demonstrates comparable performance to state-of-the-art univariate models and outperforms other multivariate models, highlighting its ability to effectively leverage or ignore cross-variate information depending on the dataset.
+    * On M5, TSMixer-Ext achieves state-of-the-art performance, showcasing its ability to handle complex real-world scenarios with auxiliary information.
+
+**Key Findings and Insights:**
+
+* **Linear models are powerful for capturing temporal patterns:** Their time-step-dependent nature makes them well-suited for learning periodicities and smooth trends, often found in real-world time series.
+* **TSMixer effectively combines temporal and cross-variate information:**  The alternating "mixing" along time and feature dimensions allows for efficient information extraction without overfitting.
+* **The importance of auxiliary information:** TSMixer-Ext demonstrates the significant benefit of incorporating static and future time-varying features for real-world forecasting tasks.
+* **Efficiency:** TSMixer offers a good balance between accuracy and computational cost, achieving fast inference speeds with a relatively small model size. 
+
+**Potential Future Work:**
+
+* **Interpretability:** Exploring methods to understand how TSMixer makes predictions and the relative importance of different features.
+* **Scalability:** Investigating the performance of TSMixer on even larger datasets and exploring distributed training strategies.
+* **Application to other domains:** Adapting TSMixer to different types of time series data and exploring its use in various forecasting tasks beyond the ones presented in the paper. 

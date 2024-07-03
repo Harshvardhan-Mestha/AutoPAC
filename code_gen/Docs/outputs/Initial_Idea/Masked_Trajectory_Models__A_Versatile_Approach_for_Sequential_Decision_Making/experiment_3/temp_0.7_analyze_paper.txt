@@ -1,0 +1,42 @@
+## Literature Review: Masked Trajectory Models (MTM) - Focus on Methodology
+
+Based on the provided abstract and introduction of the paper "Masked Trajectory Models for Prediction, Representation, and Control", here's a breakdown of the methodology with a critical and creative lens:
+
+**Core Idea:**
+
+MTM utilizes masked prediction as a self-supervised learning objective for sequential decision-making tasks. It draws inspiration from the success of masked language modeling in NLP and masked image modeling in computer vision.
+
+**Methodology:**
+
+1. **Trajectory Datasets:** MTM operates on trajectory data containing various modalities like states, actions, and rewards. 
+2. **Tokenization and Embedding:** Each element in the trajectory is "tokenized" and lifted to a common representation space using modality-specific encoders. Additional embeddings for time and modality type are added.
+3. **Masked Modeling:** The core objective is to reconstruct the original trajectory sequence given a randomly masked version of it. This is achieved using a bidirectional transformer encoder-decoder architecture.
+4. **Masking Patterns:**
+    * **Training:** A random autoregressive masking pattern is employed. This means elements are randomly masked, with the constraint that at least one masked token has no future unmasked tokens, forcing the model to learn temporal dependencies.
+    * **Inference:** Different masking patterns are used at inference time depending on the desired capability:
+        * **Offline RL:** Return-conditioned behavior cloning (RCBC) mask is used, similar to Decision Transformer.
+        * **Behavior Cloning (BC):** Predict next action given state-action history.
+        * **Inverse Dynamics (ID):** Predict action given current and desired future state.
+        * **Forward Dynamics (FD):** Predict next state given history and current action.
+        * **State Representation Learning:** The encoder of the pre-trained MTM is used to obtain state representations for downstream tasks.
+
+**Critical Analysis:**
+
+* **Masking Strategy:** The choice of random autoregressive masking is interesting. It forces the model to learn temporal dependencies while still being applicable in a causal setting during inference. However, the impact of different masking ratios and patterns needs further investigation.
+* **Heterogeneity:** The ability to handle heteromodal data is a significant advantage. However, the proposed two-stage action inference procedure for heteromodal settings might introduce additional complexity and potential error propagation.
+* **Evaluation:** The paper evaluates MTM on various tasks, demonstrating its versatility. However, comparisons with other state-of-the-art methods for each specific task (e.g., forward/inverse dynamics models) would provide a more complete picture.
+
+**Creative Ideas and Extensions:**
+
+* **Online Setting:** Explore adapting MTM to online RL settings for more sample-efficient learning. 
+* **Long-Horizon Tasks:** Investigate techniques to scale MTM to longer trajectory sequences and handle long-horizon dependencies effectively.
+* **Hierarchical Representations:** Explore incorporating hierarchical structures within the model to capture different levels of temporal abstraction.
+* **Other Modalities:** Extend MTM to handle more complex modalities like images and videos, potentially enabling applications in visual control.
+
+**Further Investigation:**
+
+* Analyze the impact of different masking strategies on the performance of MTM across various tasks.
+* Compare the efficiency and accuracy of MTM's state representations with other representation learning methods specifically designed for RL. 
+* Explore the potential of MTM for transfer learning and multi-task learning in the context of sequential decision-making.
+
+**Overall, MTM presents a promising and versatile approach for sequential decision-making with several avenues for further exploration and improvement.** 

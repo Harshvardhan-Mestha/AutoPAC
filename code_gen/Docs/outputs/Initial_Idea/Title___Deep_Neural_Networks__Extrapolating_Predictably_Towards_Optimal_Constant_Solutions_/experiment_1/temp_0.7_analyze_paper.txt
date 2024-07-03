@@ -1,0 +1,49 @@
+## Literature Review: Deep Neural Networks Tend To Extrapolate Predictably
+
+**Paper**: Deep Neural Networks Tend To Extrapolate Predictably by Katie Kang, Amrith Setlur, Claire Tomlin, Sergey Levine
+
+**Focus**: Methodology and Findings 
+
+### Summary
+
+This paper investigates the behavior of deep neural networks when presented with out-of-distribution (OOD) inputs. Contrary to the common belief that neural networks become unpredictable and overconfident with OOD data, the authors find a surprisingly consistent pattern. As inputs deviate further from the training distribution, the network's predictions tend to converge towards a constant value, often approximating the "optimal constant solution" (OCS). The OCS represents the best prediction the network can make without observing any input, essentially a cautious default.
+
+### Methodology
+
+The authors conducted a series of experiments to support their hypothesis:
+
+* **Datasets**: They used 8 datasets across vision and NLP domains, including CIFAR10-C, ImageNet-R, and Wilds Amazon, to ensure the findings were not specific to a particular domain.
+* **Distribution Shifts**: Both natural and synthetic distribution shifts were employed, like image corruptions, style variations, and different subclasses within the same class. 
+* **Loss Functions**:  Cross-entropy for classification, MSE for selective classification, and Gaussian NLL for regression were used to demonstrate the generality of the phenomenon across different tasks.
+* **Architectures**: CNNs and transformers were tested to show that the behavior is not architecture-dependent.
+
+**Evaluation**:
+
+* **OOD Score**: A low-capacity model was trained to discriminate between training and evaluation data, with the average predicted likelihood of the evaluation data belonging to the evaluation distribution used as the OOD score.
+* **Distance to OCS**: KL divergence was used to measure the distance between the model's predicted distribution and the OCS distribution for cross-entropy and Gaussian NLL models. MSE was used for models trained with the MSE loss.
+
+**Analysis**:
+
+* The authors analyzed the norm of feature representations and their alignment with weight matrices, observing that OOD inputs lead to smaller-magnitude representations, particularly in later layers. This suggests that OOD inputs have less influence on the network's output, making it more reliant on constant components like biases.
+* A theoretical analysis of deep homogeneous networks with ReLU activations further supported this mechanism.
+
+### Findings
+
+* **Reversion to the OCS**: As the OOD score increased, the distance between network predictions and the OCS consistently decreased across various datasets, loss functions, and architectures. 
+* **Mechanism**: OOD inputs result in smaller-magnitude representations due to less alignment with weight matrices, causing the network's output to be dominated by constant components, which tend to approximate the OCS.
+* **Risk-Sensitive Decision Making**: The authors propose leveraging the OCS for risk-sensitive decision making. By designing the loss function such that the OCS aligns with cautious behavior, the network automatically becomes more cautious with OOD inputs. This was demonstrated in a selective classification task where the network learned to abstain more often with increasing OOD scores.
+
+### Strengths
+
+* **Extensive empirical evidence**: The paper provides convincing evidence for the "reversion to the OCS" hypothesis across a wide range of settings.
+* **Insightful analysis**: The proposed mechanism offers a plausible explanation for the observed behavior.
+* **Practical implications**: The findings have potential applications in risk-sensitive decision making and improving the robustness of neural networks to OOD inputs.
+
+### Limitations and Future Work
+
+* The paper acknowledges that the understanding of this phenomenon is not complete. Further research is needed to determine the specific conditions under which "reversion to the OCS" occurs and to what extent it can be relied upon.
+* Extending the investigation to more complex multi-step decision-making problems and exploring the OOD behavior of other algorithms like reinforcement learning would be valuable future directions.
+
+### Conclusion
+
+This paper presents a significant finding that challenges the conventional wisdom about neural network behavior with OOD inputs. The "reversion to the OCS" phenomenon offers a new perspective on understanding and potentially controlling the behavior of neural networks in real-world scenarios where OOD inputs are inevitable. The proposed mechanism and its potential applications in risk-sensitive decision making open up exciting avenues for future research and development of more robust and reliable AI systems. 

@@ -1,0 +1,81 @@
+## Methodology for Numerai with Insights from Noisy Label Research 
+
+The objective is to develop a methodology for building a model on the Numerai dataset, incorporating insights from the paper "Understanding and Utilizing Deep Neural Networks Trained with Noisy Labels." This involves addressing potential label noise and leveraging techniques like INCV and improved Co-teaching. 
+
+**1. Model Selection:**
+
+* **XGBoost:** Considering the tabular nature of the Numerai dataset and its focus on feature interactions, XGBoost is a suitable choice. It excels in handling mixed data types, missing values, and is known for its robustness and performance. 
+* **Limitations:** XGBoost, like any model, can be susceptible to overfitting, especially with noisy labels or highly correlated features.
+
+**2. Relevance of Noisy Label Research:**
+
+* **Potential Label Noise:** The Numerai targets represent "alpha," which is inherently difficult to predict and subject to market dynamics. This suggests the possibility of inherent noise or errors in the labels.
+* **Applicability of INCV:**  INCV can be adapted to identify potentially mislabeled data points in the Numerai dataset, leading to a cleaner training set. 
+* **Co-teaching Adaptation:**  The improved Co-teaching strategy can be employed to train two XGBoost models collaboratively, mitigating the impact of any remaining noise and improving generalization.
+
+**3. Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * **Missing Value Imputation:**  Address missing values using appropriate techniques like median/mode imputation or more advanced methods like k-NN imputation.
+    * **Feature Engineering:** Explore potential feature engineering based on domain knowledge or automated feature generation techniques.
+2. **Noise Identification (INCV):**
+    * **Adapt INCV Algorithm:** Modify the INCV algorithm from the paper to suit XGBoost and the Numerai target format.
+    * **Iterative Training and Selection:** Train an XGBoost model on a subset of data and use it to identify potential clean samples from the remaining data based on prediction consistency.
+    * **Repeat and Refine:**  Iterate the process, expanding the clean subset and potentially removing samples with high prediction errors.
+3. **Model Training (Improved Co-teaching):**
+    * **Initial Training on Clean Subset:** Train two XGBoost models independently on the clean subset identified by INCV.
+    * **Gradual Incorporation of Remaining Data:**  Gradually introduce the remaining data into the training process.
+    * **Sample Selection and Update:** In each boosting round, each model selects a subset of samples with small training losses and uses them to update its peer model. The number of selected samples can be dynamically adjusted based on the estimated noise level.
+4. **Model Evaluation and Ensembling:** 
+    * **Evaluate Individual Models:** Assess the performance of each XGBoost model on a hold-out validation set using appropriate metrics like mean correlation or rank correlation.
+    * **Ensemble Creation:**  Consider creating an ensemble of the two models to potentially improve robustness and performance.
+
+**4.  Addressing Dataset Size:**
+
+* **Training on the Entire Dataset:**  The proposed methodology can be applied even if the entire dataset needs to be used for training. The INCV process helps identify a cleaner subset within the dataset, which is used for the initial training phase. The remaining data is then incorporated gradually, ensuring that the models are exposed to the full range of information.
+
+**5. Pseudocode:**
+
+```
+# Data Preprocessing
+data = load_numerai_data()
+data = impute_missing_values(data)
+data = feature_engineering(data)
+
+# INCV for Noise Identification
+clean_subset, remaining_data = INCV(data, num_iterations, model_training_function)
+
+# Improved Co-teaching for Model Training
+model1, model2 = co_teaching_xgboost(clean_subset, remaining_data, num_rounds, sample_selection_function)
+
+# Model Evaluation and Ensembling
+performance1 = evaluate_model(model1, validation_data)
+performance2 = evaluate_model(model2, validation_data)
+ensemble_model = create_ensemble(model1, model2)
+ensemble_performance = evaluate_model(ensemble_model, validation_data)
+
+# Helper Functions
+def INCV(data, num_iterations, model_training_function):
+    # Implement INCV algorithm adapted for XGBoost and Numerai target format
+    # ...
+    return clean_subset, remaining_data
+
+def co_teaching_xgboost(clean_subset, remaining_data, num_rounds, sample_selection_function):
+    # Implement improved Co-teaching training process for XGBoost
+    # ...
+    return model1, model2
+
+def evaluate_model(model, validation_data):
+    # Evaluate model performance using appropriate metrics 
+    # ...
+    return performance
+
+def create_ensemble(model1, model2):
+    # Create an ensemble of the two XGBoost models
+    # ...
+    return ensemble_model
+```
+
+**6. Conclusion:**
+
+This methodology provides a comprehensive approach for building a robust and accurate model on the Numerai dataset. By integrating insights from noisy label research, it addresses potential label noise issues and leverages advanced training strategies to improve generalization and performance. 

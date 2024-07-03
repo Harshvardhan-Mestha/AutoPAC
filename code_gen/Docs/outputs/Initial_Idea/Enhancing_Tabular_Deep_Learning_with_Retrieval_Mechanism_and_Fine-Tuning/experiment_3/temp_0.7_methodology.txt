@@ -1,0 +1,90 @@
+## Methodology for NumerAI Prediction using Retrieval-Augmented Deep Learning
+
+### Relevance of Literature and Addressing Limitations:
+
+The paper "Fine-Tuning the Retrieval Mechanism for Tabular Deep Learning" offers valuable insights relevant to the NumerAI challenge. However, we need to address certain limitations before applying the methodology directly:
+
+*   **Regression Task:** The paper primarily focuses on classification tasks, while NumerAI requires predicting continuous target values (stock returns).
+*   **Data Scale:** NumerAI datasets can be quite large, potentially exceeding the capacity of the TabPFN model and available hardware.
+
+### Proposed Methodology:
+
+**1. Model Selection:**
+
+*   Instead of TabPFN, we'll explore **TabTransformer** as the base model. It's designed for both classification and regression tasks on tabular data and has shown promising results in various benchmarks. 
+*   Additionally, we'll consider **SAINT (Self-Attention and Intersample Attention Transformer)** due to its effectiveness in capturing relationships between data points, which is crucial for stock market prediction.
+
+**2. Retrieval Mechanism:**
+
+*   We'll implement a **k-Nearest Neighbors (kNN) based retrieval mechanism** to identify the most relevant historical data points (eras) for each prediction. This allows the model to learn from similar market conditions in the past.
+*   The distance metric for kNN can be based on a combination of features, potentially including:
+    *   **Era-based features:** Macroeconomic indicators, market volatility measures, etc.
+    *   **Stock-specific features:** Technical indicators, fundamental ratios, etc.
+
+**3. Training and Fine-tuning:**
+
+*   **Pre-training:** We'll pre-train the chosen model (TabTransformer or SAINT) on a large corpus of historical stock market data, potentially including data from other sources beyond NumerAI, to learn general market dynamics.
+*   **Fine-tuning:** The pre-trained model will then be fine-tuned on the NumerAI training data, incorporating the retrieved historical data points as additional context during training. 
+*   **Target Engineering:** We'll explore creating additional target variables based on different time horizons and residualization methods to capture various aspects of stock returns and improve model performance.
+
+**4. Handling Data Scale:**
+
+*   **Chunking:** To address the scalability issue, we'll split the data into smaller chunks and train the model on each chunk iteratively, accumulating knowledge over time. 
+*   **Distributed Training:** For very large datasets, distributed training techniques can be employed to parallelize the process across multiple machines.
+
+**5. Evaluation:**
+
+*   We'll evaluate the model's performance using metrics such as mean squared error, R-squared, and correlation with the actual stock returns.
+*   **Cross-validation with overlapping eras:**  Special care will be taken to account for the overlapping nature of target values in different eras during cross-validation.
+
+### Pseudocode:
+
+```
+# 1. Data Preparation
+# Load NumerAI data and split into features (X) and target (y)
+X_train, y_train = load_numerai_data("train")
+X_val, y_val = load_numerai_data("validation")
+
+# 2. Feature Engineering
+# Create additional features based on domain knowledge
+
+# 3. Retrieval Mechanism
+# Define distance function for kNN based on relevant features
+def distance_function(era1, era2):
+    # Calculate distance based on era-based and stock-specific features
+    ...
+
+# 4. Model Selection and Training
+model = TabTransformer()  # or SAINT()
+
+# Pre-training on large stock market data (optional)
+model.pretrain(large_stock_data)
+
+# Fine-tuning on Numerai data with retrieval augmentation
+for chunk in data_chunks(X_train, y_train):
+    # Retrieve k nearest neighbors for each era in the chunk
+    neighbors = knn_retrieval(chunk, X_train, distance_function)
+    # Combine chunk data with retrieved neighbors
+    augmented_chunk = combine_data(chunk, neighbors)
+    # Train the model on the augmented chunk
+    model.train(augmented_chunk)
+
+# 5. Evaluation
+# Evaluate model performance on validation data
+predictions = model.predict(X_val)
+evaluate(predictions, y_val)
+
+# 6. Prediction on Live Data
+# Load live data
+X_live = load_numerai_data("live")
+# Retrieve k nearest neighbors for each era in live data
+neighbors = knn_retrieval(X_live, X_train, distance_function)
+# Combine live data with retrieved neighbors
+augmented_live = combine_data(X_live, neighbors)
+# Generate predictions on live data
+live_predictions = model.predict(augmented_live)
+# Submit predictions to Numerai
+submit_predictions(live_predictions)
+```
+
+This methodology combines the strengths of retrieval-augmented deep learning with considerations specific to the NumerAI competition. By addressing the limitations of the original paper and adapting the approach to the unique characteristics of the NumerAI dataset and task, we aim to achieve strong and consistent performance in predicting stock returns. 

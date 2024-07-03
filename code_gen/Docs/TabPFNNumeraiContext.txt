@@ -1,0 +1,11 @@
+TABPFN is a pre-trained transformer based model which can do supervised classification for small
+tabular datasets in less than a second, needs no hyperparameter tuning and is competitive with stateof-
+the-art classification methods. TabPFN performs in-context learning (ICL),Therefore if multiple datasets are used on the same model then the previous
+dataset will have no influence on the next dataset.
+The model can fit up to 1000 training examples(datapoints),100 features and 10 classes. The model
+performs well on numerical data and has achieved State of the Art on datasets with numerical features
+and no missing values. The model is not the state of the Art on categorical features.
+This dataset comprises 2132 ordinal features and
+involves 48 target variables. Notably, the data is categorized into eras, representing distinct points in
+time. Feature values are as-of the era, while target values are forward-looking relative to that specific
+point in time.

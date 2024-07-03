@@ -1,0 +1,72 @@
+## Methodology for Numerai Tournament Participation
+
+Based on the literature review of "Visual Time Series Forecasting: An Image-driven Approach" and the characteristics of the Numerai dataset, we will explore a methodology that combines the strengths of both numerical and visual approaches while addressing their limitations.
+
+**1. Relevance of Visual Forecasting to Numerai:**
+
+The paper's approach is partially relevant to the Numerai problem.  While Numerai data is not strictly a time series problem in the traditional sense, the temporal aspect (era) and the goal of predicting future stock returns share similarities with time series forecasting. However, directly applying the image-based approach might not be the most effective strategy due to the following reasons:
+
+* **High dimensionality:** The Numerai dataset has numerous features, making it difficult to represent effectively as an image without losing information or introducing noise.
+* **Feature interactions:**  The predictive power of features is known to be inconsistent over time and relies on complex interactions.  Simply visualizing the features might not capture these interactions effectively.
+
+**2. Proposed Methodology:**
+
+Given the limitations of directly applying the visual forecasting approach, we propose a hybrid methodology that combines feature engineering, numerical modeling, and potentially image-based representations for specific subsets of features.
+
+**Step 1: Feature Engineering and Selection:**
+
+* **Feature analysis:** Analyze the feature importance and interactions using techniques like permutation importance, SHAP values, or decision tree analysis.
+* **Feature selection:** Select a subset of relevant and informative features based on the analysis. This could involve removing redundant or uninformative features.
+* **Feature engineering:** Create new features based on domain knowledge or by combining existing features.  This could involve ratios, differences, or other transformations that capture relevant relationships. 
+
+**Step 2: Numerical Modeling:**
+
+* **Model selection:** Choose a suitable machine learning model for tabular data, such as XGBoost, LightGBM, or a neural network architecture like LSTMs or transformers. The choice will depend on the characteristics of the selected features and the desired level of interpretability.
+* **Training and validation:** Train the model on the Numerai training data, using appropriate validation techniques like cross-validation to avoid overfitting and ensure generalization to unseen data.
+* **Ensemble methods:** Explore ensemble methods like stacking or blending to combine predictions from multiple models and potentially improve performance.
+
+**Step 3: Visual Representation (Optional):**
+
+* **Identify subsets of features:** Analyze the feature importance and correlations to identify potential subsets of features that might be suitable for visual representation.  For example, groups of technical indicators or fundamental ratios could be explored.
+* **Image creation:** Convert the selected feature subsets into images, potentially using techniques like heatmaps or dimensionality reduction methods like t-SNE to preserve relationships between features.
+* **Image-based modeling:** Train a convolutional neural network (CNN) on the created images, similar to the VisualAE approach, to extract additional information and potentially improve predictions.
+* **Integration with numerical model:** Combine the predictions from the CNN with the numerical model using ensemble techniques or by incorporating the image features as additional inputs to the numerical model.
+
+**Step 4: Evaluation and Refinement:**
+
+* **Evaluate performance:** Evaluate the performance of the model using the Numerai evaluation metrics, focusing on correlation and consistency across eras.
+* **Iterative refinement:** Based on the evaluation results, refine the feature engineering, model selection, and hyperparameter tuning to improve performance.
+
+**3. Addressing Data Handling:**
+
+* **Handling missing values:** Implement appropriate strategies for handling missing values in the features and targets, such as imputation techniques (e.g., mean/median imputation, KNN imputation) or by creating indicator features for missingness.
+* **Training on the entire dataset:** Utilize cloud computing resources or distributed training frameworks to handle the large Numerai dataset efficiently.
+
+**4. Pseudocode:**
+
+```
+# Step 1: Feature Engineering and Selection
+features = load_numerai_data()
+feature_importances = calculate_feature_importances(features, target)
+selected_features = select_features(features, feature_importances)
+engineered_features = engineer_features(selected_features)
+
+# Step 2: Numerical Modeling
+model = choose_model(engineered_features, target)
+model.train(engineered_features, target)
+predictions = model.predict(test_features)
+
+# Step 3: Visual Representation (Optional)
+image_features = create_images(selected_feature_subsets)
+cnn_model = train_cnn(image_features)
+image_predictions = cnn_model.predict(test_image_features)
+combined_predictions = combine_predictions(predictions, image_predictions)
+
+# Step 4: Evaluation and Refinement
+performance = evaluate(combined_predictions, target)
+# Refine feature engineering, model selection, and hyperparameters based on performance
+```
+
+**5. Conclusion:**
+
+This methodology outlines a comprehensive approach to tackle the Numerai tournament by combining numerical and potentially visual techniques. The focus on feature engineering, model selection, and evaluation will allow for iterative refinement and improvement of the predictions. The optional inclusion of visual representations offers an additional avenue for exploration and potential performance gains. 

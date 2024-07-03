@@ -1,0 +1,64 @@
+## Literature Review: Deep Incremental Learning for Financial Temporal Tabular Datasets with Distribution Shifts
+
+**Focus:** Methodology 
+
+**Paper:** DEEP INCREMENTAL LEARNING FOR FINANCIAL TEMPORAL TABULAR DATASETS WITH DISTRIBUTION SHIFTS by Thomas Wong and Mauricio Barahona
+
+**Summary:**
+
+This paper presents a deep incremental learning (DIL) framework for financial prediction tasks. It addresses the challenges of distributional shifts and non-stationarity in financial data streams by combining multiple machine learning models hierarchically. The framework utilizes gradient boosting decision trees (GBDTs) as its core building block due to their robustness and scalability. 
+
+**Methodology Breakdown:**
+
+1. **Data Formulation:**
+    * The paper focuses on **temporal tabular datasets**, where data at each time point is represented by features computed from historical time series. 
+    * It acknowledges the existence of **data lag** (embargo) in financial applications, where target values become known only after a certain period.
+    * The paper utilizes the **Numerai dataset** for its case study. This dataset comprises obfuscated stock market features and targets, posing challenges due to non-stationarity and distribution shifts.
+
+2. **Base Learners:** 
+    * The framework employs GBDT models (specifically XGBoost) as the primary base learners due to their superior performance on large tabular datasets with skewed distributions. 
+    * It briefly mentions the possibility of using other models like Multi-Layer Perceptrons (MLPs) but focuses on GBDTs for their robustness and scalability.
+
+3. **Deep Incremental Learning Architecture:**
+    * The DIL model adopts a **hierarchical, layered structure**. Each layer consists of an ensemble of GBDT models trained on different segments of the temporal data.
+    * **Lookback windows** define the training data size for each layer, allowing the models to adapt to recent trends while retaining historical context. 
+    * **Features** used in each layer include both original features from the dataset and **predictions from previous layers**, creating a feedback loop for incremental learning.
+    * The model exhibits **self-similarity** as each layer employs the same type of base learners (GBDTs) and the structure is extended hierarchically. 
+    * The framework boasts the **universal approximation property** due to the inherent capabilities of GBDTs and the compositional nature of the architecture.
+    * The model incorporates elements of **bagging** (ensembling within layers) and **boosting** (hierarchical information flow) to enhance prediction accuracy and robustness.
+
+4. **Model Training and Ensembling:**
+    * The paper explores various **ensembling strategies** based on:
+        * **Training size:** Combining models trained on different lengths of historical data to address the uncertainty of optimal training size.
+        * **Learning rates:** Combining models with different learning rates to capture both fast and slow-changing features.
+        * **Targets:** Combining models trained on different targets (including risk-adjusted ones) to improve the risk-return profile of the portfolio.
+        * **Feature sets:** Employing Jackknife sampling based on feature groups to create diverse models and enhance ensemble performance.
+
+5. **Dynamic Hedging:**
+    * The paper proposes using the **variance between model predictions** as a measure of investor disagreement and a signal for dynamic hedging.
+    * The **Tail Risk strategy**, based on prediction variance, is combined with the **Baseline strategy** (simple average of predictions) to improve portfolio performance during bear markets.
+
+**Key Findings:**
+
+* GBDT models, specifically XGBoost, demonstrate superior performance for the Numerai dataset compared to other methods.
+* Data and feature sampling techniques significantly impact model performance and diversity.
+* The Ansatz formula for determining learning rates based on the number of boosting rounds proves effective for GBDT models.
+* Combining models with different complexities and training parameters through deep incremental learning leads to more robust predictions and better risk management.
+* Using prediction variance as a measure of investor disagreement enables effective dynamic hedging strategies, particularly during bear markets.
+
+**Strengths:**
+
+* The paper addresses the critical issue of distributional shifts in financial data streams.
+* The proposed DIL framework is flexible and can incorporate various base learners and ensembling strategies.
+* The methodology is well-explained and supported by empirical results. 
+
+**Weaknesses:**
+
+* The paper primarily focuses on GBDT models and does not extensively explore other potential base learners.
+* The computational complexity of the DIL framework might be a concern for real-time applications.
+
+**Further Research:**
+
+* Exploring the integration of other deep learning models, such as deep tabular models, into the DIL framework.
+* Investigating the use of adaptive learning rate techniques and online boosting methods within the framework.
+* Benchmarking the performance of the DIL framework against other incremental learning approaches on diverse financial datasets. 

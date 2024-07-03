@@ -1,0 +1,106 @@
+## Methodology for Numerai Prediction with Test-Time Training
+
+Considering the Numerai dataset and the insights from the "Test-Time Training with Self-Supervision" paper, here's a potential methodology incorporating TTT principles to enhance prediction accuracy.
+
+**Model Selection:**
+
+* **XGBoost:** Given the tabular nature of the Numerai dataset with its diverse feature set, XGBoost emerges as a strong candidate. Its effectiveness in handling mixed variable types (numerical and categorical) and its robustness to missing values align well with the dataset characteristics.
+
+**Addressing XGBoost Limitations:**
+
+* **Distribution Shifts:** XGBoost, like many models, can struggle when the training and test data distributions differ. This is where TTT can be beneficial.
+
+**Relevance of TTT Paper:**
+
+* The paper's focus on adapting to distribution shifts at test time directly addresses XGBoost's limitation. However, directly applying rotation prediction as a self-supervised task isn't feasible for the Numerai dataset.
+
+**Adapted Strategy with TTT Principles:**
+
+1. **Feature Engineering:**
+    * **Lag Features:** Create lagged features representing past values of existing features. This captures temporal trends and potentially helps the model adapt to shifts in market dynamics over time.
+    * **Rolling Statistics:** Calculate rolling means and standard deviations for features over a window of past eras. This provides information about recent trends and volatility. 
+
+2. **Joint Training:**
+    * Train XGBoost on both the original features and the engineered features (lag features and rolling statistics) using the provided training data.
+    * This allows the model to learn relationships between current features and past trends, preparing it for potential distribution shifts.
+
+3. **Test-Time Training:**
+    * For each new era in the test set:
+        * Calculate the lag features and rolling statistics based on the available data from past eras.
+        * Fine-tune the XGBoost model on these newly engineered features for the current era.
+        * This adapts the model to the specific characteristics of the current market conditions.
+        * Generate predictions for the target variable using the fine-tuned model.
+
+**Training on the Entire Dataset:**
+
+* The proposed methodology can be applied to the entire dataset by iterating through each era sequentially. The model would continuously learn and adapt as it encounters new data, potentially leading to improved performance over time.
+
+**Pseudocode:**
+
+```
+# Training Phase
+# Load training data
+features_train, targets_train = load_numerai_data("train")
+
+# Engineer lag features and rolling statistics
+engineered_features_train = engineer_features(features_train)
+
+# Combine original and engineered features
+all_features_train = concatenate(features_train, engineered_features_train)
+
+# Train XGBoost model
+model = XGBoost.train(all_features_train, targets_train)
+
+# Testing Phase
+# Load test data
+features_test = load_numerai_data("test")
+
+# Iterate through each era in the test set
+for era in eras_test:
+    # Extract features for the current era
+    features_current_era = features_test[features_test["era"] == era]
+    
+    # Engineer lag features and rolling statistics based on past data
+    engineered_features_current_era = engineer_features(features_current_era, use_past_data=True)
+    
+    # Combine original and engineered features for the current era
+    all_features_current_era = concatenate(features_current_era, engineered_features_current_era)
+    
+    # Fine-tune the model on the current era's features
+    model.fine_tune(all_features_current_era)
+    
+    # Generate predictions for the target variable
+    predictions = model.predict(all_features_current_era)
+    
+    # Store or submit predictions
+    save_predictions(era, predictions)
+
+# Function to engineer features
+def engineer_features(features, use_past_data=False):
+    # Create lag features (if past data is available)
+    if use_past_data:
+        lag_features = create_lag_features(features)
+    else:
+        lag_features = []
+    
+    # Calculate rolling statistics (if past data is available)
+    if use_past_data:
+        rolling_stats = calculate_rolling_stats(features)
+    else:
+        rolling_stats = []
+    
+    # Combine and return engineered features
+    return concatenate(lag_features, rolling_stats)
+
+# ... Implement functions to create lag features and calculate rolling statistics ...
+```
+
+**Potential Challenges:**
+
+* **Feature Engineering Complexity:** Designing effective lag features and rolling statistics might require experimentation and domain knowledge about financial markets.
+* **Overfitting During Fine-tuning:**  Carefully choosing the fine-tuning parameters and potentially using regularization techniques is crucial to avoid overfitting to the specific characteristics of each era. 
+
+**Expected Outcomes:**
+
+* By incorporating TTT principles and adapting to each era's unique market conditions, this methodology has the potential to improve prediction accuracy and consistency over time compared to a static XGBoost model. 
+* The use of lag features and rolling statistics can provide valuable insights into temporal trends and volatility, enhancing the model's adaptability to distribution shifts. 

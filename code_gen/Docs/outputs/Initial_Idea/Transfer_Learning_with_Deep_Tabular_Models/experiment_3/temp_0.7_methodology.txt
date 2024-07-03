@@ -1,0 +1,117 @@
+## Methodology for Numerai with Transfer Learning and Deep Tabular Models 
+
+While the explored paper primarily focuses on medical data, the core principles of transfer learning with deep tabular models can be applied to the Numerai dataset with some modifications and considerations.
+
+### Relevance of the Paper 
+
+The paper's findings are relevant to the Numerai problem in several ways:
+
+* **Limited Downstream Data:** Numerai's weekly data releases can be considered as scenarios with limited downstream data, where transfer learning can be beneficial.
+* **Feature Set Mismatches:** The different feature sets ("small", "medium", "large") within the Numerai dataset present a challenge similar to the feature set mismatch problem addressed by the pseudo-feature method.
+* **Related Tasks:** The various auxiliary targets in Numerai, representing different types of stock returns, can be viewed as related tasks, offering opportunities for knowledge transfer.
+
+### Model Selection 
+
+Considering the characteristics of the Numerai dataset and the findings of the paper, the **FT-Transformer** appears to be a suitable model choice for the following reasons:
+
+* **Performance:** The paper demonstrates FT-Transformer's strong performance across various data levels, particularly in higher data regimes.
+* **Feature Embeddings:** FT-Transformer's ability to handle both categorical and numerical features through embeddings aligns well with the diverse feature types in Numerai.
+* **Transfer Learning:** The model's architecture is well-suited for transfer learning, as shown in the paper.
+
+### Addressing Limitations 
+
+* **Computational Cost:** To mitigate the computational cost, we can explore techniques like early stopping, gradient checkpointing, and mixed-precision training. Additionally, efficient implementations of the FT-Transformer can be explored.
+* **Feature Set Mismatches:**  The pseudo-feature method can be employed to handle the different feature sets in Numerai. We can pre-train the model on the "large" feature set and use it to impute pseudo-values for missing features in the "small" and "medium" sets.
+* **Task Relatedness:** While the auxiliary targets in Numerai are related, they may not be as closely related as the medical diagnoses in the paper. We can explore techniques like multi-task learning to leverage the relationships between these tasks effectively.
+
+### Methodology 
+
+1. **Data Preprocessing:**
+    * Apply quantile transformation with a standard output distribution to numerical features for normalization.
+    * Impute missing values with mean values for numerical features and a new category for categorical features.
+    * Split the data into training, validation, and test sets, ensuring proper handling of overlapping target values across eras.
+
+2. **Pre-training:**
+    * Pre-train the FT-Transformer model on the "large" feature set using all available historical data.
+    * Utilize supervised learning with the main target as the training objective. 
+    * Tune hyperparameters on the full upstream data using the validation set.
+
+3. **Pseudo-Feature Imputation:** 
+    * Fine-tune the pre-trained model on the "small" and "medium" feature sets to predict the missing features from the "large" set. 
+    * Use the fine-tuned models to impute pseudo-values for the missing features in the respective datasets.
+
+4. **Fine-tuning:**
+    * Fine-tune the pre-trained model on the current week's data (limited downstream data) using the chosen feature set ("small", "medium", or "large" with imputed features).
+    * Use an MLP head for the final prediction layer.
+    * Fine-tune the entire model end-to-end with a small learning rate.
+    * Select the best epoch based on performance on a validation set or a pre-defined number of epochs if data is extremely limited.
+
+5. **Evaluation:**
+    * Evaluate the model's performance on the test set using metrics relevant to the Numerai competition, such as correlation and Sharpe ratio.
+
+### Pseudocode 
+
+```
+# Preprocessing
+def preprocess_data(data, feature_set):
+    # Apply quantile transformation to numerical features
+    # Impute missing values
+    # Split data into train, validation, and test sets
+    return train_data, val_data, test_data
+
+# Pre-training
+def pretrain_model(model, train_data, val_data):
+    # Train FT-Transformer on "large" feature set with main target
+    # Tune hyperparameters using Optuna 
+    return pretrained_model
+
+# Pseudo-feature imputation
+def impute_features(pretrained_model, data, missing_features):
+    # Fine-tune model to predict missing features
+    # Impute missing features with predictions
+    return data_with_imputed_features
+
+# Fine-tuning 
+def finetune_model(model, train_data, val_data):
+    # Fine-tune model on current week's data with chosen feature set
+    # Use MLP head for prediction
+    # Fine-tune end-to-end with small learning rate 
+    # Select best epoch 
+    return finetuned_model
+
+# Evaluation
+def evaluate_model(model, test_data):
+    # Evaluate model performance using relevant metrics
+    # (e.g., correlation, Sharpe ratio) 
+    return performance_metrics
+
+# Main 
+if __name__ == "__main__":
+    # Load Numerai data 
+    data = load_numerai_data()
+
+    # Choose feature set 
+    feature_set = "large"  # or "small", "medium"
+
+    # Preprocess data 
+    train_data, val_data, test_data = preprocess_data(data, feature_set)
+
+    # Pre-train model 
+    pretrained_model = pretrain_model(FTTransformer(), train_data, val_data)
+
+    # Impute missing features if needed 
+    if feature_set != "large":
+        train_data = impute_features(pretrained_model, train_data, missing_features)
+        test_data = impute_features(pretrained_model, test_data, missing_features) 
+    
+    # Fine-tune model 
+    finetuned_model = finetune_model(pretrained_model, train_data, val_data) 
+
+    # Evaluate model
+    performance_metrics = evaluate_model(finetuned_model, test_data)
+
+    # Print results 
+    print(performance_metrics)
+```
+
+This methodology provides a detailed framework for applying transfer learning with deep tabular models to the Numerai dataset, addressing potential limitations and leveraging insights from the analyzed paper. Remember that further experimentation and adaptation may be necessary to optimize performance for the specific characteristics of the Numerai competition. 

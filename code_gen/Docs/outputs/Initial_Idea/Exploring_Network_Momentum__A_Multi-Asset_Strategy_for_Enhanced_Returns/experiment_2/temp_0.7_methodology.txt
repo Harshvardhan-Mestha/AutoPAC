@@ -1,0 +1,84 @@
+## Methodology: Applying Network Momentum to Numerai
+
+While the paper "Network Momentum across Asset Classes" offers valuable insights, directly applying its methodology to the Numerai dataset presents challenges due to key differences between futures contracts and individual stocks. 
+
+**Challenges and Adaptations:**
+
+1. **Data Frequency:** The paper utilizes daily data for futures contracts, while Numerai provides weekly data for individual stocks. This necessitates adapting the lookback windows and momentum features to a weekly timeframe.
+2. **Economic Ties:** The paper's graph learning relies on momentum spillover, assuming inherent economic ties between assets. Numerai's data lacks explicit economic connections between stocks, requiring alternative approaches to construct the network.
+
+**Proposed Methodology:**
+
+Given these challenges, we propose a modified methodology incorporating elements of the paper's approach while addressing the specific characteristics of the Numerai dataset.
+
+**1. Feature Engineering:**
+
+* **Weekly Momentum Features:** Calculate weekly analogues of the paper's eight individual momentum features, including:
+    * Volatility-scaled returns over the past 1 week, 1 month, 3 months, 6 months, and 1 year.
+    * Normalized MACD indicators with weekly scales (e.g., (5,15), (10,30), (20,60)).
+* **Additional Features:** Explore incorporating relevant features from the Numerai dataset, such as:
+    * Fundamental features (e.g., P/E ratio, dividend yield)
+    * Technical indicators (e.g., RSI, Bollinger Bands)
+    * Market data (e.g., short interest, analyst ratings)
+
+**2. Network Construction:**
+
+* **Clustering-Based Network:**
+    * Apply clustering algorithms (e.g., K-Means, DBSCAN) to group stocks based on their feature similarities.
+    * Construct a network where each cluster represents a node, and edges represent the strength of similarity between clusters (e.g., based on inter-cluster distances).
+* **Correlation-Based Network:**
+    * Calculate the correlation matrix of stock returns.
+    * Define a threshold to identify significant correlations and create edges between stocks with correlations exceeding the threshold. 
+* **Hybrid Approach:**
+    * Combine clustering and correlation-based methods to leverage both feature similarities and return relationships.
+
+**3. Network Momentum and Prediction:**
+
+* **Network Momentum Features:** Calculate network momentum features for each stock as a weighted average of the individual momentum features of stocks within its cluster or connected to it via significant correlations.
+* **Model Selection:** Explore various models for predicting future returns, considering their suitability for tabular data and time series forecasting:
+    * **Linear Regression:** A simple and interpretable model, but may not capture complex relationships.
+    * **XGBoost:** A powerful ensemble learning method capable of handling non-linear relationships and feature interactions.
+    * **Recurrent Neural Networks (RNNs):** Suitable for time series data, allowing the model to learn from past patterns.
+
+**4. Training and Evaluation:**
+
+* **Training Data:** Utilize the entire Numerai training dataset, taking care to address potential data leakage due to overlapping target values across eras. Consider techniques like:
+    * Purged cross-validation: Remove overlapping eras from both training and validation sets.
+    * Embargo periods: Exclude recent eras from the training set to avoid leakage from future information. 
+* **Evaluation Metrics:** Evaluate model performance using metrics aligned with Numerai's evaluation criteria, such as:
+    * Correlation: Measures the linear relationship between predicted and actual returns.
+    * Sharpe Ratio: Assesses risk-adjusted returns.
+    * Feature Exposure:  Analyzes the model's reliance on specific features to avoid overfitting and promote generalizability.
+
+**5. Addressing Limitations:**
+
+* **Data Leakage:** Carefully handle overlapping target values and implement appropriate cross-validation techniques.
+* **Model Selection:** Evaluate different models to find the best fit for the data and prediction task.
+* **Network Construction:** Explore various network construction methods and their impact on performance. 
+
+**Pseudocode:**
+
+```
+# 1. Feature Engineering
+# Calculate weekly momentum features and additional features
+
+# 2. Network Construction
+# Apply clustering or correlation-based methods to create a network
+
+# 3. Network Momentum and Prediction
+# Calculate network momentum features for each stock
+# Select a suitable prediction model (e.g., XGBoost)
+
+# 4. Training and Evaluation
+# Implement purged cross-validation or embargo periods
+# Train the model on the training data
+# Evaluate performance using Numerai-aligned metrics
+
+# 5. Refinement and Improvement
+# Analyze results and identify areas for improvement
+# Explore different models, network construction methods, and feature engineering techniques
+```
+
+**Conclusion:**
+
+This proposed methodology adapts the concept of network momentum to the Numerai dataset, offering a framework for building a predictive model that leverages the collective behavior of stocks. By carefully addressing the challenges and limitations, we can potentially develop a successful strategy for the Numerai competition. 

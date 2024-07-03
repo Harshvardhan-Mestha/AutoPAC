@@ -1,0 +1,43 @@
+## Literature Review: Ghostbuster - AI-Generated Text Detection
+
+Based on the provided paper and the systematic approach for reading research papers, here's a breakdown of the methodology with critical analysis and notes:
+
+**1. Problem & Solution:**
+
+* **Problem:** The rise of powerful language models (e.g., ChatGPT) raises concerns about the authenticity and trustworthiness of text, particularly in academic and journalistic settings. 
+* **Solution:** Ghostbuster is proposed as a system for detecting AI-generated text, aiming for strong generalization across different domains, prompting strategies, and language models.
+
+**2. Methodology:**
+
+* **Three-Stage Training Process:**
+    1. **Probability Computation:** Documents are processed through a series of weaker language models (unigram, trigram, GPT-3 ada, and davinci) to obtain per-token probability vectors. 
+    2. **Feature Selection:** A structured search is conducted over combinations of vector and scalar functions applied to the probability vectors. This creates features like `var(unigram_probs > ada_probs - davinci_probs)`. Forward feature selection chooses the best features.
+    3. **Classifier Training:** A logistic regression classifier is trained on the selected features and additional handcrafted features (e.g., outlier counts, average token probabilities).
+
+**3. Critical Analysis:**
+
+* **Strengths:**
+    * **Structured Search:** This approach allows for model capacity increase without resorting to a fully neural architecture, potentially reducing overfitting.
+    * **Weaker Language Models:** Using weaker models for probability computation makes Ghostbuster applicable to detecting text from black-box or unknown models.
+    * **Generalization:** The results demonstrate good generalization across domains, prompts, and even different language models (to some extent).
+    * **Interpretability:** The features are relatively interpretable compared to a purely neural model.
+* **Weaknesses & Limitations:**
+    * **Performance on Short Documents:** Accuracy degrades significantly for documents with less than 100 tokens, limiting its applicability for shorter texts like social media posts or paragraphs within larger documents.
+    * **Non-Native English Text:** Performance drops on some non-native English datasets, raising concerns about bias and fairness. 
+    * **Robustness to Edits:** While robust to many perturbations, targeted paraphrasing attacks can significantly decrease accuracy.
+    * **Ethical Considerations:** The authors acknowledge the potential for misuse and emphasize the need for human oversight and caution, especially in high-stakes scenarios like academic integrity.
+
+**4. Creative Extensions & Future Work:**
+
+* **Paragraph-Level Detection:** Developing methods to identify AI-generated content within documents containing both human and AI-written text would be valuable. 
+* **Improved Robustness:** Exploring techniques to make the model more resistant to paraphrasing and adversarial attacks is crucial.
+* **Bias Mitigation:** Addressing the performance gap on non-native English text and ensuring fairness across different demographics is essential.
+* **Explainability:** Providing explanations for classification decisions could enhance user trust and understanding of the model's behavior.
+
+**5. Additional Notes:**
+
+* The paper introduces three new datasets for benchmarking AI-generated text detection: creative writing, news articles, and student essays. This is a valuable contribution to the research community.
+* The comparison with existing methods like DetectGPT and GPTZero highlights the strengths of Ghostbuster, particularly in terms of generalization.
+* The analysis of entropy rate trends in token probabilities offers interesting insights into the distributional differences between human and AI-generated text.
+
+**Overall, Ghostbuster presents a promising approach to AI-generated text detection with strong generalization capabilities. However, addressing limitations related to short documents, bias, and robustness is crucial for real-world applications. Further research in this area is essential to ensure responsible and ethical use of such technology.**

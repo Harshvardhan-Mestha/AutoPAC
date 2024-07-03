@@ -1,0 +1,46 @@
+## Literature Review: Visual Time Series Forecasting: An Image-driven Approach
+
+**Paper Summary:**
+
+This paper proposes a novel approach to time series forecasting by transforming the problem into the computer vision domain. Instead of predicting future values directly, the method predicts the next image in a sequence of images representing the time series data. This approach offers several advantages:
+
+* **Flexibility:** It is data-driven and non-parametric, making it adaptable to various data forms.
+* **Uncertainty Estimation:** It inherently provides uncertainty estimates as it predicts distributions over pixels rather than pointwise values.
+* **Independence:** The predictions are independent of other techniques, potentially contributing to ensemble methods.
+* **Robustness:** Transforming continuous data to a discrete space via visualization leads to more stable predictions.
+
+**Methodology Analysis:**
+
+1. **Data Preprocessing:**
+    * **Conversion to Images:** The numeric time series data is converted into images by plotting the values on the y-axis against time on the x-axis. 
+    * **Normalization:** The images are standardized by scaling pixel values to [0,1], negating them, and normalizing each column to sum to 1, effectively representing each column as a probability distribution.
+
+2. **Model Architecture:**
+    * The paper employs a convolutional autoencoder (VisualAE) for image-to-image regression.
+    * **Encoder:** A series of convolutional layers extract features and compress the input image into a lower-dimensional embedding.
+    * **Decoder:** Mirrored convolutional layers reconstruct the forecast image from the embedding.
+
+3. **Loss Function:**
+    * Jensen-Shannon Divergence (JSD) is used to compare the predicted and ground truth images, focusing on the probability distributions represented by each column.
+
+4. **Evaluation Metrics:**
+    * **Numeric Metrics:** SMAPE and MASE are used to assess the accuracy of the numeric forecasts obtained from the predicted images.
+    * **Image-based Metrics:** IoU and JSD are used to evaluate the similarity between the predicted and ground truth images directly.
+
+**Key Findings:**
+
+* **Performance:** VisualAE outperforms baseline methods (ARIMA, NumAE, RandomWalk) on image-based metrics (IoU, JSD) across various datasets with different levels of complexity and predictability.
+* **Numeric vs. Image Metrics:** The paper highlights the limitations of traditional numeric metrics, showing inconsistencies and cases where they fail to capture the quality of the visual forecasts. 
+* **Benefits of Visual Approach:** The study demonstrates the value of incorporating visual representations in time series forecasting, particularly for capturing uncertainty and complex patterns.
+
+**Strengths and Weaknesses:**
+
+* **Strengths:** The proposed method is novel, flexible, and provides uncertainty estimates. The use of image-based metrics offers a valuable addition to traditional evaluation methods.
+* **Weaknesses:** The reliance on convolutional autoencoders may limit the ability to capture long-term dependencies in the data. The interpretability of the model's predictions remains a challenge.
+
+**Further Research Directions:**
+
+* Exploring alternative deep learning architectures, such as recurrent neural networks or transformers, to capture temporal dependencies more effectively.
+* Investigating methods for interpreting the model's predictions and understanding the features it learns.
+* Applying the visual forecasting approach to other domains beyond finance, such as healthcare or environmental monitoring.
+* Exploring the potential of combining visual forecasts with traditional statistical methods for improved accuracy and interpretability. 

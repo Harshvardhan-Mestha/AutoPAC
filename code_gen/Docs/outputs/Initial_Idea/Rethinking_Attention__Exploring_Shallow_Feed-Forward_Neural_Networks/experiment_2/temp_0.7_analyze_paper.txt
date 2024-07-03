@@ -1,0 +1,66 @@
+## Literature Review: Rethinking Attention 
+
+Based on the provided abstract and your instructions on focusing on the methodology, here's a breakdown of the paper "Rethinking Attention: Exploring Shallow Feed-Forward Neural Networks as an Alternative to Attention Layers in Transformers" using the chain of thought approach:
+
+**1. Problem and Proposed Solution:**
+
+* **Problem:** The paper investigates whether the computationally expensive attention mechanism in Transformers is necessary for achieving state-of-the-art performance in sequence-to-sequence tasks like language translation.
+* **Proposed Solution:** The authors propose replacing key components of the attention mechanism with shallow feed-forward neural networks (FF networks) trained via knowledge distillation from the original Transformer model.
+
+**2. Methodology:**
+
+* **Baseline Model (Teacher):** The original Transformer model with its encoder-decoder architecture and attention mechanism serves as the baseline.
+* **Replacement Models (Students):**
+    * **Encoder Self-Attention Replacement:** Four different levels of abstraction are explored:
+        * **ALR (Attention Layer Replacement):** Replaces the multi-head attention (MHA) block with an FF network.
+        * **ALRR (Attention Layer with Residual Connection Replacement):** Replaces both MHA and the residual connection with an FF network.
+        * **ASLR (Attention Separate Heads Layer Replacement):** Replaces each head of the MHA with a separate FF network.
+        * **ELR (Encoder Layer Replacement):** Replaces the entire encoder layer with an FF network.
+    * **Full Transformer Attention Replacement:** Based on the encoder results, the ALR method is applied to replace self-attention and cross-attention in the decoder. 
+* **Knowledge Distillation:** The FF networks are trained using the intermediate activations (input-output pairs) of the corresponding attention modules in the baseline model.
+* **Data Transformations:**
+    * Sentences are padded to a fixed length and masked to handle varying lengths.
+    * A maximum sentence length of 50 is used.
+* **Training Details:**
+    * Six independent FF networks are trained for each attention block.
+    * Adam optimizer with a learning rate of 0.001 and batch size of 1400 is used.
+    * Training is conducted for 20 epochs.
+* **Evaluation:**
+    * The BLEU score is used to evaluate the performance of the models on the IWSLT2017 dataset (French-English, English-French, German-English, and English-German subsets).
+
+**3. Results and Discussion:**
+
+* The proposed approaches achieve comparable performance to the baseline Transformer model, suggesting that attention mechanisms may not be strictly necessary.
+* ALR emerges as the most effective approach for encoder self-attention replacement due to its balance of performance and parameter efficiency.
+* Replacing decoder self-attention with FF networks also yields promising results.
+* However, replacing decoder cross-attention leads to a significant performance drop, indicating limitations in the expressiveness of the shallow FF networks for modeling complex interactions between sequences. 
+* A major drawback of the replacement models is the increased number of parameters compared to the baseline.
+
+**4. Strengths and Weaknesses of the Methodology:**
+
+* **Strengths:**
+    * The study explores various levels of abstraction for replacing attention modules, providing a comprehensive analysis.
+    * Knowledge distillation is a well-established technique for transferring knowledge from a complex model to a simpler one.
+    * The use of the BLEU score allows for objective evaluation and comparison with other models.
+* **Weaknesses:**
+    * The reliance on knowledge distillation limits the exploration of training these models from scratch. 
+    * The increased number of parameters in the replacement models raises concerns about computational efficiency and potential overfitting.
+    * The study primarily focuses on language translation and may not generalize to other sequence-to-sequence tasks.
+
+**5. Future Research Directions:**
+
+* Exploring advanced optimization techniques to train the "attentionless Transformers" from scratch.
+* Investigating more complex FF network architectures to improve the modeling of cross-attention.
+* Evaluating the proposed approaches on a wider range of sequence-to-sequence tasks. 
+* Analyzing the trade-off between performance and parameter efficiency in the replacement models. 
+
+**6. Critical Analysis and Creative Thinking:**
+
+* **Critical Questions:**
+    * Could the performance drop in cross-attention replacement be mitigated by using deeper FF networks or alternative architectures like convolutional neural networks?
+    * Are there specific types of sequence-to-sequence tasks where attention mechanisms remain crucial for achieving optimal performance?
+    * How does the computational cost of the replacement models compare to the baseline Transformer, considering both training and inference?
+* **Creative Ideas:**
+    *  The findings could inspire the development of novel sequence-to-sequence models that leverage the strengths of both attention mechanisms and FF networks. 
+    * Exploring the application of similar replacement techniques to other complex neural network architectures beyond Transformers. 
+    * Investigating the interpretability of the FF networks to gain insights into the learned representations and how they relate to the original attention mechanisms. 

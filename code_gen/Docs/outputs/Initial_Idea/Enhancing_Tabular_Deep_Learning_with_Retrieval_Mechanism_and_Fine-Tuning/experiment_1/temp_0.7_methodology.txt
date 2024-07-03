@@ -1,0 +1,93 @@
+## Applying Retrieval-Based Fine-Tuning to Numerai: A Methodology
+
+Based on the analysis of "Fine-Tuning the Retrieval Mechanism for Tabular Deep Learning" and the characteristics of the Numerai dataset, here's a proposed methodology:
+
+**1. Relevance of the Paper:**
+
+The paper is highly relevant to the Numerai challenge. Both involve tabular data prediction where deep learning models often struggle to match the performance of tree-based models. The paper's focus on retrieval mechanisms and fine-tuning aligns well with the goal of improving deep learning performance on this specific dataset.
+
+**2. Model Selection:**
+
+* **TabTransformer:**  Given the paper's success with TabPFN and its limitations with regression, TabTransformer emerges as a strong candidate. It's designed for tabular data, utilizes attention mechanisms, and has shown promising results in various tasks, including regression.
+
+**3. Addressing Limitations:**
+
+* **Scalability:** The Numerai dataset is large, potentially exceeding the context length limitations of standard transformers. To address this:
+    * **Chunking:** Divide the dataset into smaller chunks that fit within the model's context window. Train the model on each chunk and ensemble the predictions.
+    * **Hierarchical Retrieval:** Implement a two-level retrieval system. First, retrieve relevant eras (weeks) based on some similarity metric. Then, within each retrieved era, use the standard retrieval mechanism to find similar data points.
+
+**4. Methodology (Step-by-Step):**
+
+1. **Data Preprocessing:**
+    * Handle missing values (NaNs) using imputation techniques like mean/median filling or more advanced methods like KNN imputation.
+    * Apply feature scaling to normalize the data. Consider techniques like StandardScaler or MinMaxScaler.
+    * Encode categorical features using one-hot encoding or embedding techniques.
+
+2. **Model Training:**
+    * **Chunking (if necessary):**
+        * Split the data into chunks based on eras or a fixed number of data points.
+        * For each chunk, create support and query sets as described in the paper.
+        * Fine-tune the TabTransformer model on each chunk using the retrieval mechanism.
+        * Save the model checkpoints for each chunk.
+    * **Hierarchical Retrieval (if necessary):**
+        * Implement a similarity metric to compare eras (e.g., cosine similarity of average feature vectors).
+        * For each query era, retrieve the top-k most similar eras from the training data.
+        * Within each retrieved era and the query era, apply the standard retrieval mechanism to find similar data points for each prediction.
+        * Fine-tune the TabTransformer model using this hierarchical retrieval approach.
+
+3. **Prediction:**
+    * **Chunking:**
+        * For each chunk of the test data, load the corresponding fine-tuned model.
+        * Create support sets from the training data and query sets from the test chunk.
+        * Generate predictions using the fine-tuned models and ensemble the results.
+    * **Hierarchical Retrieval:**
+        * For each query era in the test data, retrieve similar eras from the training data using the defined similarity metric.
+        * Apply the hierarchical retrieval mechanism as described in the training step.
+        * Generate predictions using the fine-tuned model.
+
+4. **Evaluation:**
+    * Evaluate the model's performance using appropriate metrics for regression tasks, such as mean squared error (MSE), root mean squared error (RMSE), or mean absolute error (MAE).
+    * Analyze the results and compare them to baseline models or previous submissions to assess the effectiveness of the methodology.
+
+**5. Pseudocode:**
+
+```
+# Data Preprocessing
+def preprocess_data(data):
+    # Handle missing values
+    # ...
+    # Feature scaling
+    # ...
+    # Categorical encoding
+    # ...
+    return processed_data
+
+# Model Training with Chunking
+def train_with_chunking(data, model, chunk_size):
+    for chunk in chunks(data, chunk_size):
+        support_set, query_set = create_sets(chunk)
+        fine_tuned_model = fine_tune(model, support_set, query_set)
+        save_model(fine_tuned_model)
+
+# Model Training with Hierarchical Retrieval
+def train_with_hierarchical_retrieval(data, model, similarity_metric, k):
+    # Implement retrieval and fine-tuning logic as described
+    # ...
+
+# Prediction with Chunking
+def predict_with_chunking(test_data, chunk_size):
+    predictions = []
+    for chunk in chunks(test_data, chunk_size):
+        model = load_model(chunk_id)
+        support_set = create_support_set(train_data)
+        query_set = create_query_set(chunk)
+        chunk_predictions = model.predict(support_set, query_set)
+        predictions.extend(chunk_predictions)
+    return predictions 
+```
+**6. Additional Considerations:**
+
+* Experiment with different chunking sizes or similarity metrics to find the optimal configuration.
+* Explore alternative retrieval mechanisms or attention mechanisms within the TabTransformer model.
+* Consider using techniques like early stopping and learning rate scheduling to prevent overfitting and improve convergence during fine-tuning.
+* Analyze the model's predictions and feature importances to gain insights into its behavior and identify potential areas for improvement. 

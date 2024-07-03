@@ -1,0 +1,68 @@
+## Literature Review: A Comparison of Reinforcement Learning and Deep Trajectory Based Stochastic Control Agents for Stepwise Mean-Variance Hedging
+
+**Paper:** A Comparison of Reinforcement Learning and Deep Trajectory Based Stochastic Control Agents for Stepwise Mean-Variance Hedging by Ali Fathi and Bernhard Hientzsch
+
+**Focus:** Methodology 
+
+**Findings:**
+
+**Problem & Objective:**
+
+* This paper investigates data-driven hedging strategies for a European call option under a stepwise mean-variance objective.
+* The goal is to compare the performance of two approaches: Reinforcement Learning (RL) and Deep Trajectory-based Stochastic Optimal Control (DTSOC) in the presence of transaction costs and discrete trading schedules.
+* The authors aim to understand the strengths, weaknesses, and limitations of both methods, contributing to a framework for managing model risk associated with data-driven hedging agents.
+
+**Methodology:**
+
+**General Setup:**
+
+* The paper considers a dynamic trading environment with discrete trading times and transaction costs.
+* The focus is on a hedged portfolio consisting of a fixed holding of a to-be-hedged instrument (European call option) and holdings in hedging instruments (e.g., underlying stock and cash).
+* The objective is to optimize the mean and variance of the stepwise gains/losses of the hedged portfolio.
+
+**Stepwise Mean-Variance Objective:**
+
+* The paper employs a stepwise mean-variance objective function that penalizes the variance of stepwise gains/losses while maximizing the expected gain.
+* This objective is formulated using the expected value of a cost function that combines the negative profit/loss and its squared value.
+
+**Modeling Hedging and Hedged Instruments:**
+
+* The paper uses the Black-Scholes model to simulate the price evolution of the underlying stock (hedging instrument).
+* The Black-Scholes formula serves as the book-keeping model for the European call option (hedged instrument).
+* Transaction costs are modeled as a function of the stock price and the change in the stock position, including both linear and quadratic components.
+
+**Reinforcement Learning (RL):**
+
+* The paper utilizes Deep Deterministic Policy Gradients (DDPG) as the RL algorithm.
+* DDPG is chosen due to its suitability for continuous action spaces (e.g., the number of stocks to hold).
+* The state space for the RL agent includes time, stock price, option price, option delta, and current stock holding.
+* The agent learns a policy that maps the state space to the optimal action (rebalancing rate of the stock holding).
+
+**Deep Trajectory-based Stochastic Optimal Control (DTSOC):**
+
+* The paper implements a deep-MVH model based on the DTSOC framework.
+* The model utilizes a neural network to directly parameterize the rebalancing rate of the stock holding at each time step.
+* Similar to the RL agent, the state space includes time, stock price, option price, option delta, and current stock holding.
+* The model is trained by minimizing the expected cumulative cost over the entire hedging horizon.
+
+**Experiments and Analysis:**
+
+* The paper conducts various experiments to evaluate the performance of both RL-DDPG and deep-MVH under different scenarios:
+    * **Zero transaction costs:** Both agents successfully approximate the optimal Delta hedging strategy.
+    * **Increasing transaction costs:** Both agents outperform the Delta hedging strategy and exhibit a more stable behavior.
+    * **Longer option maturity:** The performance of deep-MVH deteriorates with longer maturities, possibly due to the increased depth of the computational graph.
+    * **Increasing risk aversion:** Both agents demonstrate a decrease in the dispersion of the total hedging cost distribution.
+    * **Increasing asset volatility:** The distribution of hedging costs becomes wider for both agents, with RL showing a larger dispersion.
+
+**Visualization and Interpretation:**
+
+* The paper utilizes SHAP (SHapley Additive exPlanations) values to interpret the behavior of the RL agent and understand the importance of different state features in various scenarios.
+* The analysis reveals that the RL agent relies heavily on the option Delta in the absence of transaction costs but shifts its focus to the current stock position when transaction costs are present.
+
+**Sensitivity Analysis:**
+
+* The paper conducts a sensitivity analysis to assess the impact of various hyperparameters and architectural choices on the performance of both RL-DDPG and deep-MVH:
+    * **Discount factor:** Changes in the discount factor have a noticeable impact on the performance of RL-DDPG but not on deep-MVH.
+    * **Learning rates:** The choice of learning rates affects the training convergence and performance of both agents.
+    * **Neural network architecture:** Deeper architectures generally lead to better performance but also introduce more noise in the training process. 
+    * **Neural network parameterization:** Directly parameterizing the stock position instead of the rebalancing rate results in lower dispersion in the hedging cost distribution. 

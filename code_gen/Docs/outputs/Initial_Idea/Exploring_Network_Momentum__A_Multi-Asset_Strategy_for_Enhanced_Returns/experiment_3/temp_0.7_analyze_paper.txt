@@ -1,0 +1,75 @@
+##  Literature Review: Network Momentum across Asset Classes
+
+Based on the provided abstract and introduction, here's a breakdown of the paper focusing on the methodology and noting down key findings using the chain of thought approach:
+
+**Central Question:**
+
+* Can momentum spillover effects across different asset classes be harnessed to create a profitable trading strategy?
+
+**Methodology:**
+
+1. **Data Collection:**
+    * Daily prices of 64 highly liquid continuous futures contracts from Pinnacle Data Crop CLC Database.
+    * Asset classes: Commodities, Equities, Fixed Income (FI), and Currencies (FX).
+    * Time period: 1990 to 2022 (with variations depending on asset availability). 
+
+2. **Feature Engineering:**
+    * **Individual Momentum Features:** 
+        * Volatility-scaled returns over various timeframes (1 day, 1 month, 3 months, 6 months, 1 year).
+        * Normalized MACD indicators with different short and long time scales.
+    * **Data Preprocessing:**
+        * Winsorization to mitigate outlier influence.
+
+3. **Network Construction (Graph Learning):**
+    * **Objective:** Infer a dynamic network representing momentum spillover across assets.
+    * **Method:** 
+        * Apply graph learning model on stacked momentum feature matrices over a lookback window (δ days).
+        * Optimization problem minimizes Laplacian quadratic term, encouraging connections between assets with similar momentum features.
+        * Regularization terms ensure connectivity and smooth edge weight distribution.
+    * **Key Parameters:**
+        * Lookback window (δ): Tested with values of 252, 504, 756, 1008, and 1260 days.
+        * Regularization parameters (α and β): Control sparsity of the network.
+    * **Graph Ensemble:** Average 5 graphs with different lookback windows to reduce variance and improve stability.
+    * **Graph Normalization:** Normalize adjacency matrix to account for differences in the number of connections per asset.
+
+4. **Network Momentum Feature Construction:**
+    * Propagate individual momentum features of connected assets using edge weights as a weighted average.
+
+5. **Trading Strategy (Network Momentum):**
+    * **Model:** Linear regression with network momentum features as predictors and future 1-day volatility-scaled return as the target.
+    * **Rationale for Linear Regression:**
+        * Accounts for risk characteristics compared to model-free approaches.
+        * Allows investigation of potential reversal effects through coefficient analysis. 
+    * **Portfolio Construction:** Long/short portfolio based on predicted momentum trends, scaled to a target annualized volatility.
+
+6. **Backtesting and Analysis:**
+    * **Out-of-sample period:** 2000 to 2022, with model retraining every 5 years.
+    * **Performance Metrics:** Sharpe ratio, Sortino ratio, Calmar ratio, maximum drawdown, turnover, etc.
+    * **Benchmark Strategies:** Long Only, MACD (model-free individual momentum), LinReg (linear regression with individual momentum features).
+    * **Diversification Analysis:** Analyze correlation and sign agreement between network momentum and individual momentum strategies.
+    * **Turnover Analysis:** Evaluate impact of transaction costs on strategy performance.
+    * **Robustness Analysis:**
+        * Analyze topological properties of learned graphs (e.g., sparsity, node degree, clustering coefficient).
+        * Evaluate performance of individual asset class portfolios and compare with cross-asset class network momentum.
+        * Investigate the impact of different lookback windows on performance and turnover.
+        * Analyze regression coefficients to understand the role of different momentum features and potential reversals.
+
+**Findings (from Abstract and Introduction):**
+
+* Network momentum strategy achieves a Sharpe ratio of 1.5 and an annual return of 22% after volatility scaling (2000-2022).
+* Strategy demonstrates lower downside deviation and durations compared to benchmarks.
+* Low correlation with individual momentum suggests the network approach captures unique signals.
+* Inter-class connections play a crucial role in shaping network momentum signals and enhancing predictive power.
+* Network momentum may exhibit different reversal effects compared to individual momentum.
+
+**Next Steps:**
+
+* Read the full paper to understand the detailed results and analysis. 
+*  Investigate the specific findings of the robustness analysis, particularly the role of inter-class connections and potential reversals.
+* Explore the limitations of the methodology and potential areas for future research. 
+
+**Additional Notes:**
+
+* The paper proposes a novel approach to utilizing network effects in momentum investing.
+* The methodology is well-defined and transparent, allowing for reproducibility and further research.
+* The findings suggest that network momentum can be a valuable tool for portfolio construction and risk management. 

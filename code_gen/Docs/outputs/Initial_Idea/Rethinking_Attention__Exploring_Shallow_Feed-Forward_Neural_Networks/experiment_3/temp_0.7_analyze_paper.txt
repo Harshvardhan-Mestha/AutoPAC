@@ -1,0 +1,56 @@
+## Literature Review: Rethinking Attention - Methodology Focus
+
+Based on the provided paper, "Rethinking Attention: Exploring Shallow Feed-Forward Neural Networks as an Alternative to Attention Layers in Transformers," let's delve into the methodology and document key findings.
+
+**Core Research Question:**
+
+* Can shallow feed-forward neural networks effectively replace the attention mechanism in Transformer models for sequence-to-sequence tasks like language translation without significant performance loss?
+
+**Methodology:**
+
+1. **Baseline Model:** The original Transformer model with its encoder-decoder architecture and attention mechanism serves as the baseline.
+
+2. **Attention Replacement Approaches:**
+    * **Encoder Self-Attention Replacement:** Four different methods were explored to replace the self-attention mechanism in the encoder:
+        * **ALR (Attention Layer Replacement):** Replaces only the multi-head attention block with a feed-forward network.
+        * **ALRR (Attention Layer with Residual Connection Replacement):** Replaces both the multi-head attention and the residual connection with a feed-forward network.
+        * **ASLR (Attention Separate Heads Layer Replacement):** Replaces each head of the multi-head attention with a separate feed-forward network.
+        * **ELR (Encoder Layer Replacement):** Replaces the entire encoder layer with a feed-forward network.
+    * **Full Transformer Attention Replacement:** Based on the encoder results, the ALR method was applied to replace self-attention and cross-attention in the decoder.
+
+3. **Feed-Forward Network Design:**
+    * A simple, shallow one-hidden-layer feed-forward network was used for all replacement approaches. 
+    * Different sizes of feed-forward networks were tested (XS, S, M, L) to analyze the impact of network size on performance.
+
+4. **Knowledge Distillation:**
+    * Feed-forward networks were trained using knowledge distillation.
+    * The intermediate activations (input-output pairs) of the baseline Transformer model were used as training data for the feed-forward networks.
+
+5. **Data Preprocessing:**
+    * Input sentences were padded to a fixed maximum length (50) and masked to handle varying sentence lengths.
+
+6. **Training Details:**
+    * The Adam optimizer was used with a learning rate of 0.001 and a batch size of 1400.
+    * Each feed-forward network was trained for 20 epochs.
+
+7. **Evaluation:**
+    * The BLEU score was used as the evaluation metric to measure the quality of machine translation.
+    * The IWSLT2017 dataset with four language pairs (French-English, English-French, German-English, English-German) was used for evaluation.
+
+**Findings:**
+
+* **Encoder Self-Attention Replacement:** All four replacement methods achieved competitive BLEU scores compared to the baseline Transformer, indicating that feed-forward networks can effectively replace the self-attention mechanism in the encoder.
+* **Full Transformer Attention Replacement:**  
+    * Replacing decoder self-attention with feed-forward networks yielded good results, demonstrating their ability to learn the behavior of self-attention mechanisms.
+    * Replacing decoder cross-attention with feed-forward networks resulted in significantly lower BLEU scores, suggesting limitations in modeling the complex interactions between encoder and decoder sequences.
+
+**Limitations:**
+
+* The proposed methods require more parameters than the original Transformer model.
+* The fixed-size input of feed-forward networks limits the flexibility of the model to handle varying sequence lengths.
+* Knowledge distillation is necessary for training, as the models cannot be trained from scratch effectively with current optimization techniques.
+
+**Future Work:**
+
+* Explore advanced hyperparameter optimization techniques to potentially improve performance and reduce the size of feed-forward networks.
+* Investigate more complex feed-forward network architectures to better model the cross-attention mechanism. 

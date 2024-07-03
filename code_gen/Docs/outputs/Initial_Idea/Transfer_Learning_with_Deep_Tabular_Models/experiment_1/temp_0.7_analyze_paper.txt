@@ -1,0 +1,59 @@
+## Analyzing "Transfer Learning with DeepTabular Models" - Methodology Focus
+
+Following the systematic approach you've provided, let's delve into the methodology of the paper "Transfer Learning with DeepTabular Models" with a critical and creative lens, focusing on understanding and documenting their approach.
+
+**Core Question and Answer:**
+
+* **Question:** Can deep learning models effectively utilize transfer learning for tabular data, particularly in scenarios with limited downstream data, and how do they compare to established methods like gradient boosted decision trees (GBDT)?
+* **Answer:** Yes, deep tabular models with transfer learning significantly outperform GBDT baselines, even those employing stacking to leverage upstream data. This suggests that representation learning in neural networks facilitates richer knowledge transfer compared to utilizing upstream task predictions.
+
+**Methodology Breakdown:**
+
+1. **Datasets and Tasks:**
+    * **MetaMIMIC Repository:** The paper utilizes the MetaMIMIC repository, containing medical records with 172 features and 12 binary diagnosis tasks.
+    * **Upstream-Downstream Split:** 11 diagnoses are used for upstream pre-training (multi-label classification), and the remaining one serves as the downstream fine-tuning task (binary classification). This is repeated for each diagnosis, creating 12 splits.
+    * **Data Availability Scenarios:** Downstream data is limited to 4, 10, 20, 100, and 200 samples to simulate varying data availability.
+
+2. **Models:**
+    * **Deep Tabular Models:**
+        * FT-Transformer
+        * TabTransformer
+        * MLP
+        * ResNet
+    * **GBDT Models:**
+        * CatBoost
+        * XGBoost 
+
+3. **Transfer Learning Setups:**
+    * **Neural Networks:**
+        * Linear head with frozen feature extractor
+        * MLP head with frozen feature extractor
+        * End-to-end fine-tuning with linear head
+        * End-to-end fine-tuning with MLP head 
+    * **GBDT:** Stacking is employed to leverage upstream data.
+
+4. **Hyperparameter Tuning:**
+    * **Optuna library with Bayesian optimization is used.**
+    * **Deep Baselines and GBDT:** Hyperparameters are tuned on a single upstream task with the same sample size as the downstream task.
+    * **Deep Transfer Learning Models:** Hyperparameters are tuned on the full upstream data.
+
+5. **Evaluation:**
+    * **Performance Metric:** Average rank across the 12 downstream tasks is used to compare models, considering statistical significance. 
+    * **Additional Datasets:** Yeast and Emotions datasets are used to validate findings beyond the medical domain.
+
+6. **Addressing Data Heterogeneity:**
+    * **Pseudo-Feature Method:** This method is proposed to handle scenarios where upstream and downstream feature sets differ. Missing features are predicted using models trained on the available data and then incorporated as pseudo-features.
+
+**Critical Analysis:**
+
+* The choice of average rank as the performance metric is sensible as it prevents high-variance tasks from dominating the comparison.
+* The hyperparameter tuning approach is well-suited for the low-data regime, leveraging the abundant upstream data.
+* The pseudo-feature method offers a practical solution for data heterogeneity, a common challenge in tabular data.
+
+**Creative Considerations:**
+
+* Exploring other self-supervised pre-training techniques could potentially improve performance further.
+* Investigating the impact of varying the number of upstream tasks on transfer learning effectiveness.
+* Adapting the methodology for multi-task learning scenarios where multiple downstream tasks are learned simultaneously.
+
+**Overall, the paper presents a robust and well-designed methodology for evaluating transfer learning in deep tabular models. The findings provide valuable insights for practitioners working with limited data and highlight the potential of deep learning for tabular data applications.**

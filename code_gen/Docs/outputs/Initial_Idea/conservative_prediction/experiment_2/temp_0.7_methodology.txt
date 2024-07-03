@@ -1,0 +1,88 @@
+## Methodology for NumerAI Prediction with Cascading Models
+
+Based on the high-level idea, the NumerAI dataset description, and insights from the reviewed paper "Conservative Predictions on Noisy Financial Data", we can design a methodology utilizing cascading models to potentially improve prediction accuracy and risk-adjusted returns. 
+
+### Model Selection and Limitations
+
+1. **Model Choice:** Given the tabular nature of the NumerAI dataset and the success of DDTs in the reviewed paper, we will initially use **Differentiable Decision Trees (DDTs)** as our base model. DDTs offer a balance between interpretability and performance, which aligns with the need to understand feature importance and model behavior in financial prediction tasks.
+
+2. **Limitations:** DDTs, like other decision tree-based models, can be susceptible to overfitting, especially with noisy data. Additionally, their performance may degrade when dealing with data distributions that differ significantly from the training data.
+
+### Relevance of the Reviewed Paper
+
+The paper "Conservative Predictions on Noisy Financial Data" is highly relevant to the NumerAI prediction problem for several reasons:
+
+* **Noisy Data:** Both the paper and the NumerAI problem deal with noisy financial data, where traditional prediction models may struggle due to the inherent uncertainty.
+* **Cascading Approach:** The paper's proposed cascading model approach directly addresses the issue of noisy data by focusing on high-confidence predictions, which aligns with the need for reliable predictions in the NumerAI context.
+* **Performance Metrics:** The paper's focus on risk-adjusted returns and utility aligns with the goals of the NumerAI competition, where achieving high returns with controlled risk is crucial.
+
+### Combining Ideas and Overcoming Limitations
+
+1. **Cascading DDTs:** We will implement a cascade of DDT models, similar to the approach described in the paper. Each model in the cascade will be trained on data points where the previous models exhibited low confidence (high Gini impurity).
+
+2. **Handling Overfitting:** To mitigate overfitting, we will employ regularization techniques during DDT training, such as:
+    * **Early stopping:** Monitor validation performance and stop training when it starts to degrade.
+    * **L1/L2 regularization:** Add penalty terms to the loss function to encourage smaller model weights.
+    * **Dropout:** Randomly drop out nodes during training to prevent over-reliance on specific features.
+
+3. **Addressing Distribution Shifts:** To handle potential distribution shifts between eras, we can explore:
+    * **Ensemble methods:** Combine predictions from multiple models trained on different subsets of data or with different hyperparameters.
+    * **Domain adaptation techniques:** Adapt the model to the specific characteristics of each era's data.
+
+### Methodology Steps
+
+1. **Data Preprocessing:**
+    * **Handle missing values:** Impute missing values using appropriate techniques, such as mean/median imputation or more advanced methods like KNN imputation.
+    * **Feature scaling:** Scale features to a common range to ensure that no single feature dominates the model's learning process.
+    * **Feature engineering:** Explore additional feature engineering based on domain knowledge and insights from feature importance analysis.
+
+2. **Cascading Model Training:**
+    * **Train the first DDT model:** Train the first DDT on the entire training dataset.
+    * **Identify low-confidence data points:** Calculate the Gini impurity for each prediction and identify data points with high impurity (low confidence).
+    * **Train subsequent models:** Train additional DDT models sequentially, each focusing on the data points with low confidence from the previous model.
+    * **Determine the optimal number of models:** Monitor the performance of the cascade on a validation set and stop adding models when the improvement diminishes.
+
+3. **Prediction:**
+    * **Pass each data point through the cascade:** For each data point in the test set, pass it through the cascade of models.
+    * **Make predictions based on confidence:** Use the prediction from the first model in the cascade that exhibits high confidence (low Gini impurity) for that data point.
+    * **Handle uncertain data points:** If no model in the cascade is confident enough, consider abstaining from prediction or using an alternative strategy, such as predicting the average target value. 
+
+4. **Evaluation:** 
+    * **Evaluate performance:** Assess the model's performance using metrics such as accuracy, utility, downside-risk adjusted return, and traded Sharpe ratio.
+    * **Analyze feature importance:** Analyze the importance of different features in the model's predictions to gain insights into the underlying relationships.
+    * **Refine and iterate:** Based on the evaluation results, refine the model architecture, hyperparameters, and feature engineering to further improve performance. 
+
+### Pseudocode
+
+```
+# Data preprocessing
+data = preprocess(data) # Handle missing values, scale features, and perform feature engineering
+
+# Initialize cascade
+models = []
+uncertain_data = data
+
+# Train cascading models
+for i in range(max_levels):
+    model = train_DDT(uncertain_data) # Train a DDT on the uncertain data
+    models.append(model)
+    predictions = model.predict(uncertain_data)
+    gini_impurities = calculate_gini_impurity(predictions)
+    uncertain_data = uncertain_data[gini_impurities > max_impurity] # Select data with high impurity
+    if len(uncertain_data) == 0:
+        break # Stop if no more uncertain data
+
+# Prediction
+predictions = []
+for data_point in test_data:
+    for model in models:
+        prediction, gini_impurity = model.predict(data_point)
+        if gini_impurity < max_impurity: # Check for high confidence
+            predictions.append(prediction)
+            break
+    else:
+        predictions.append(default_prediction) # Handle uncertain data points
+
+# Evaluation
+evaluate(predictions, true_labels) # Calculate performance metrics
+``` 

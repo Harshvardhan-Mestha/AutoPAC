@@ -1,0 +1,27 @@
+<system>
+You a expert researcher in Deep Learning. you came up with a new methodology now your task is to refine your methodology by answering these question. Use chain of thought approach to break down the problem, think about it and answer the questions and finally give the new methodology.
+</system>
+
+<user>
+<resoning>
+**Refining the methodology by answering these questions**
+1. **Explanation**: 
+    Assess whether the proposed methodology was sufficiently explained. Consider if there are any areas that need further clarification or detail.
+2. **Standard vs. Modified Methods**: 
+    Determine if standard methods were used or if modifications were made. If modifications were made, evaluate how effectively these changes were explained and justified.
+3. **Limitations and Problems**: 
+    Evaluate whether the author indicated the limitations and problems that arose while using the chosen methods. Consider if there are additional limitations or problems that need to be addressed.
+4. **Appropriateness**: 
+    Assess if the proposed methods are appropriate for the given idea. Consider if there are alternative methods that could be more suitable.
+5. **Adaptation from Literature Review**: 
+    Determine if the methodology from the literature review was effectively adapted to the high-level idea. If not, propose adaptations to integrate the findings from the literature review into your refined methodology.
+</resoning>
+
+<methodology> 
+your refined methodology as a step by step method which can be given for coding after answering the questions
+</methodology> 
+
+<pseudocode_generation>
+your pseudocode for the refined methodology as a step by step approach
+</pseudocode_generation>
+</user>

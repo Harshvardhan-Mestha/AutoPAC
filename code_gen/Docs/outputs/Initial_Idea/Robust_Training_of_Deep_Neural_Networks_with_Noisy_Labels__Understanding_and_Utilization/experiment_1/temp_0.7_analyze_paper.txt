@@ -1,0 +1,54 @@
+## Literature Review: Understanding and Utilizing Deep Neural Networks Trained with Noisy Labels 
+
+**Paper**: Understanding and Utilizing Deep Neural Networks Trained with Noisy Labels by Pengfei Chen, Benben Liao, Guangyong Chen, Shengyu Zhang
+
+**Focus**: Methodology for understanding and mitigating the impact of noisy labels on Deep Neural Network (DNN) training.
+
+**Key Findings**:
+
+* **DNNs and Noisy Labels**: DNNs can memorize noisy labels, leading to overfitting and poor generalization. The paper establishes a quantitative relationship between test accuracy and noise ratio, showing a quadratic dependence in the case of symmetric noise. This explains why increasing noise degrades performance.
+* **Generalization in Distribution**: While DNNs may not generalize perfectly on individual samples with noisy labels, they exhibit "generalization in distribution." This means the distribution of predicted labels aligns with the noise distribution in the data.
+* **Identifying Clean Samples**: The paper proposes the Noisy Cross-Validation (NCV) method to identify clean samples from a noisy dataset. This method leverages cross-validation and the DNN's ability to fit the noise distribution to select samples with a higher probability of having correct labels. 
+* **Iterative Noisy Cross-Validation (INCV)**: To increase the number of clean samples identified, the paper introduces INCV, an iterative version of NCV. This method refines the selection process by removing samples with high loss and iteratively applying NCV on the remaining data. 
+* **Improving Co-teaching**: The paper enhances the Co-teaching training strategy by incorporating INCV. Two networks are trained, initially focusing on the clean subset identified by INCV and then gradually incorporating the remaining data. This approach improves both training stability and test accuracy.
+
+**Methodology in Detail**:
+
+1. **Noise Characterization**: The paper introduces the concept of a noise transition matrix (T) to represent the probabilities of mislabeling each class.  It analyzes two types of noise:
+    * **Symmetric Noise**: Each class has the same probability of being mislabeled as any other class.
+    * **Asymmetric Noise**: The mislabeling probability varies across classes. 
+2. **Noisy Cross-Validation (NCV)**:
+    * The noisy dataset (D) is randomly split into two halves (D1 and D2).
+    * A DNN is trained on D1.
+    * Samples in D2 where the predicted label matches the observed label are selected as potentially clean samples (S).
+    * Steps 3 and 4 are repeated with D2 as the training set and D1 as the validation set, adding more samples to S. 
+3. **Iterative Noisy Cross-Validation (INCV)**:
+    * INCV iteratively applies NCV while also removing samples with high loss at each iteration. This refines the selection process and increases the number of clean samples identified.
+4. **Improved Co-teaching**:
+    * Two DNNs are trained simultaneously.
+    * Initially, both networks are trained only on the clean subset (S) identified by INCV.
+    * After a certain number of epochs, the remaining data (candidate set C) is gradually incorporated into the training process.
+    * Each network selects a subset of samples with small loss from each mini-batch and shares them with its peer network for training.
+
+**Evaluation**:
+
+* Experiments on CIFAR-10 with synthetic noise and WebVision with real-world noisy labels demonstrate the effectiveness of the proposed methods.
+* The INCV method successfully identifies a large portion of clean samples, significantly reducing the noise ratio in the selected subset.
+* The improved Co-teaching strategy achieves state-of-the-art test accuracy compared to other methods for dealing with noisy labels. 
+
+**Strengths**:
+
+* Provides a theoretical framework for understanding the impact of noisy labels on DNN training.
+* Offers practical methods (NCV and INCV) for identifying clean samples from noisy datasets.
+* Introduces an improved Co-teaching strategy that effectively leverages the identified clean samples for robust training.
+
+**Weaknesses**:
+
+* The effectiveness of INCV and the improved Co-teaching strategy may depend on the choice of hyperparameters, such as the number of iterations and the warm-up epochs.
+* The computational cost of INCV can be significant, especially for large datasets.
+
+**Further Research**:
+
+* Exploring alternative methods for identifying clean samples, potentially with lower computational complexity.
+* Investigating the applicability of the proposed methods to other types of noise and learning tasks.
+* Analyzing the theoretical properties of the improved Co-teaching strategy in more detail. 

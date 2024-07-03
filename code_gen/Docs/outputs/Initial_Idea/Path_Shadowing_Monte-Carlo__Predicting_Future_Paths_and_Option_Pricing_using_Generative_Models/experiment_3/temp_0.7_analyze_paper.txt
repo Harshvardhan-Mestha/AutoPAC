@@ -1,0 +1,54 @@
+## Literature Review: Path Shadowing Monte-Carlo for Volatility and Option Price Prediction
+
+Based on the provided paper, "Path Shadowing Monte-Carlo" by Morel et al., here's a breakdown of the methodology and key findings, with a focus on the methodological aspects:
+
+**Objective:**
+
+The paper aims to predict future price paths and quantities like volatility and option prices using a novel approach called Path Shadowing Monte-Carlo (PS-MC). This method works with any generative model of financial prices and offers an alternative to traditional low-parameter models.
+
+**Methodology:**
+
+1. **Generative Model based on Scattering Spectra (SS):**
+    * Instead of relying on complex, low-parameter models, the authors propose a statistical model based on "Scattering Spectra" (SS). 
+    * SS are multi-scale analogues of skewness and kurtosis, capturing key statistical properties of financial prices like fat tails, volatility clustering, and leverage effect.
+    * The model uses a maximum entropy approach with SS as constraints, promoting diverse yet realistic price path generation. 
+
+2. **Path Shadowing Monte-Carlo (PS-MC):**
+    * PS-MC aims to predict future quantities (e.g., volatility) conditioned on past price history. 
+    * It avoids the need to explicitly condition the generative model on past data, which can be challenging.
+    * Instead, it searches for paths within the generated dataset whose past history closely "shadows" the actual observed history.
+    * Predictions are then obtained by averaging the quantity of interest over the future of these shadowing paths, with weights based on their similarity to the actual past.
+
+3. **Path Embedding:**
+    * To handle the high dimensionality of price paths, a path embedding `h(x_past)` is used to represent past history in a lower-dimensional space.
+    * The paper proposes a specific embedding based on multi-scale increments with power-law decaying weights, capturing long-range dependencies while remaining computationally efficient.
+
+4. **Volatility Prediction:**
+    * PS-MC is applied to predict future realized volatility over various time horizons.
+    * The method demonstrates superior performance compared to a benchmark and the Path-Dependent Volatility (PDV) model, especially for longer time horizons.
+
+5. **Option Pricing:**
+    * The paper extends PS-MC to option pricing using Path Shadowing Hedged Monte-Carlo (PS-HMC).
+    * PS-HMC generates option smiles conditioned on past price history, reflecting anticipations of future price movements.
+    * A trading game comparing PS-HMC with the PDV model and the actual option market shows that the SS model with PS-HMC anticipates future price movements more accurately and leads to more profitable trading strategies.
+
+**Key Findings:**
+
+* The SS model effectively captures crucial statistical properties of financial prices, leading to realistic and diverse generated price paths.
+* PS-MC provides a powerful and versatile approach for predicting future quantities and option prices conditioned on past history.
+* The SS model with PS-HMC demonstrates superior performance in predicting future volatility and option prices compared to traditional models like PDV. 
+
+**Strengths of the Methodology:**
+
+* **Flexibility:** PS-MC can be used with any generative model, making it adaptable to different market contexts and asset classes.
+* **Efficiency:** The path embedding technique reduces dimensionality and allows for efficient computation.
+* **Accuracy:** The SS model captures essential features of financial data, leading to accurate predictions.
+* **Interpretability:** The SS model provides insights into the underlying statistical properties driving price movements. 
+
+**Limitations and Future Work:**
+
+* The paper acknowledges the computational cost of scanning the generated dataset for shadowing paths. 
+* Future research could explore more efficient search algorithms or identify "typical" price paths for targeted prediction.
+* Extending the methodology to multivariate time series and investigating its applicability to other asset classes would further validate its effectiveness and generalizability.
+
+**Overall, the paper presents a promising methodology for financial prediction with potential applications in risk management, option pricing, and trading strategies.** 

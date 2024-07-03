@@ -1,0 +1,77 @@
+## Methodology for Numerai Prediction with Dynamos Inspiration
+
+While the Dynamos paper offers valuable insights into continual learning and dynamic sparsity, its direct application to the Numerai dataset presents challenges due to the inherent differences between image and tabular data. However, we can draw inspiration from its core principles to design a methodology for Numerai predictions.
+
+### Challenges and Considerations:
+
+1. **Tabular vs. Image Data:** Dynamos is designed for convolutional neural networks (CNNs) which excel at image processing.  Numerai's tabular data requires a different approach, likely involving recurrent neural networks (RNNs) or transformers to capture temporal dependencies. 
+2. **Feature Importance and Selection:**  The paper emphasizes dynamic sparsity, where irrelevant features are dropped. In Numerai, feature importance can vary over time. Thus, a dynamic feature selection mechanism is needed instead of static dropping. 
+3. **Target Characteristics:**  Numerai's target is a measure of future returns, essentially predicting continuous values. The paper focuses on classification tasks. We need to adapt the loss functions and reward mechanisms for regression. 
+
+### Proposed Methodology:
+
+**1. Model Selection:**
+
+* **Transformers with Temporal Fusion Transformers (TFT) layers:**  TFT layers are well-suited for tabular data with time dependencies, allowing the capture of both static and dynamic relationships between features. 
+
+**2. Dynamic Feature Selection:**
+
+* **Attention Mechanism:**  Employ a multi-head attention mechanism within the transformer architecture. Attention weights will indicate the importance of each feature for a specific prediction. 
+* **Threshold-based Selection:**  Dynamically select features based on their attention weights exceeding a certain threshold. This threshold can be adjusted over time or based on specific eras.
+
+**3. Model Training and Sparsity:**
+
+* **Loss Function:**  Utilize a combination of mean squared error (MSE) for regression and a custom sparsity-inducing loss. 
+* **Sparsity Loss:**  This loss could penalize the model based on the number of features with non-zero attention weights, encouraging the model to focus on the most relevant features. 
+
+**4.  Handling Eras and Temporal Dependencies:**
+
+* **TFT Layers:**  These layers are designed to handle temporal data, allowing the model to learn from past eras and make predictions for future eras. 
+* **Sliding Window Approach:**  Train the model on a sliding window of past eras to capture temporal trends and make predictions for the next era. 
+
+**5.  Data Handling and Completion:**
+
+* **NaN Values:**  Explore techniques like imputation (e.g., median/mean filling) or model-based imputation to handle missing values.
+* **Feature Scaling:**  Scale features to prevent dominance of features with larger magnitudes.
+
+### Pseudocode:
+
+```
+# Initialization
+model = Transformer with TFT layers
+optimizer = Adam optimizer
+loss_fn = MSE + Sparsity Loss
+
+# Training Loop
+for each epoch:
+    for each era in sliding window:
+        # Forward pass
+        predictions, attention_weights = model(features)
+        
+        # Dynamic feature selection
+        selected_features = features with attention_weights > threshold
+        
+        # Calculate loss
+        loss = loss_fn(predictions, targets)
+        
+        # Backward pass and optimization
+        loss.backward()
+        optimizer.step()
+        
+# Prediction for the next era
+predictions = model(selected_features of next era)
+```
+
+### Additional Considerations:
+
+* **Hyperparameter Optimization:**  Tuning hyperparameters like the attention threshold, sparsity loss weight, and learning rate will be crucial for optimal performance.
+* **Regularization:**  Techniques like dropout and early stopping can be employed to prevent overfitting.
+* **Ensemble Methods:**  Combining predictions from multiple models with different architectures or hyperparameters can improve robustness andgeneralizability.
+
+### Relevance to Dynamos:
+
+While the specific techniques differ due to data type, the core principles of Dynamos – dynamic sparsity, modularity, and continual learning – guide this methodology. The attention mechanism acts as a dynamic feature selector, promoting sparsity by focusing on relevant features. The use of TFT layers and a sliding window approach enables the model to learn continuously and adapt to changing market conditions. 
+
+### Conclusion:
+
+This methodology offers a starting point for applying Dynamos-inspired principles to the Numerai dataset. Experimentation and further refinement will be essential to achieve optimal performance and adapt to the ever-evolving market dynamics. 

@@ -1,0 +1,94 @@
+## Methodology for NumerAI Prediction using MAPTree and Model Limitations
+
+### Relevance of MAPTree
+
+While MAPTree excels at finding optimal decision trees within the BCART framework, its direct application to the NumerAI dataset presents challenges:
+
+* **Data Type and Size:** NumerAI data is continuous and high-dimensional, exceeding the capabilities of typical decision tree algorithms like CART, on which BCART is based. 
+* **Feature Interactions:** NumerAI emphasizes the importance of complex feature interactions, which are not effectively captured by axis-aligned splits in decision trees.
+* **Temporal Aspect:** The data's temporal nature and overlapping targets require specialized handling, which is not inherent to MAPTree. 
+
+Therefore, directly applying MAPTree is not the most effective approach. 
+
+### Proposed Methodology
+
+Considering the limitations, we will combine the strengths of MAPTree with a more suitable model for the NumerAI dataset: **Gradient Boosting Decision Trees (GBDTs)**. GBDTs handle continuous features, capture complex interactions, and can be adapted for time series data.
+
+**Step-by-Step Methodology:**
+
+1. **Data Preprocessing:**
+    * **Feature Engineering:** Apply domain-specific knowledge to create additional features that capture relevant information from the existing features.
+    * **Missing Value Handling:** Impute missing values using appropriate techniques like mean/median imputation or more advanced methods like KNN imputation.
+    * **Feature Scaling:** Scale features using standardization or normalization to ensure equal contribution during model training.
+
+2. **Model Selection:**
+    * Choose a GBDT implementation like XGBoost, LightGBM, or CatBoost, considering their performance and efficiency characteristics.
+
+3. **Training Data Splitting:**
+    * Divide the training data into multiple folds for cross-validation, taking into account the temporal nature of the data and overlapping targets. This can be achieved using techniques like forward chaining or blocked cross-validation.
+
+4. **Hyperparameter Optimization:**
+    * Use Bayesian optimization or other efficient hyperparameter search methods to find the optimal settings for the chosen GBDT model. Focus on hyperparameters related to tree structure, learning rate, and regularization to avoid overfitting.
+
+5. **Model Training:**
+    * Train the GBDT model on each fold of the training data using the optimized hyperparameters.
+    * Monitor training progress and evaluate performance on a hold-out validation set to ensure the model generalizes well.
+
+6. **Feature Importance Analysis:**
+    * Utilize the inherent feature importance scores provided by GBDTs to understand which features contribute most to the model's predictions.
+    * Analyze the importance scores in conjunction with domain knowledge to gain insights into the underlying relationships between features and targets.
+
+7. **Ensemble Creation (Optional):**
+    * Train multiple GBDT models with different initializations or hyperparameter settings.
+    * Combine the predictions of these models using averaging or stacking to potentially improve overall performance and robustness.
+
+8. **Prediction and Submission:**
+    * Use the trained GBDT model (or ensemble) to generate predictions on the NumerAI tournament data.
+    * Submit the predictions to the NumerAI platform and evaluate the performance based on the chosen metrics.
+
+### Pseudocode:
+
+```
+# 1. Data Preprocessing
+def preprocess_data(data):
+    # Feature engineering (specific to NumerAI data)
+    # ...
+    # Missing value imputation
+    # ...
+    # Feature scaling
+    # ...
+    return processed_data
+
+# 2. Model Selection
+model_type = "XGBoost"  # or LightGBM, CatBoost
+
+# 3. Training Data Splitting
+folds = create_time_series_cross_validation_folds(data)
+
+# 4. Hyperparameter Optimization
+optimized_params = bayesian_optimize(model_type, folds)
+
+# 5. Model Training
+trained_models = []
+for fold in folds:
+    model = train_gbdt_model(model_type, optimized_params, fold)
+    trained_models.append(model)
+
+# 6. Feature Importance Analysis
+analyze_feature_importance(trained_models)
+
+# 7. Ensemble Creation (Optional)
+ensemble_model = create_ensemble(trained_models)
+
+# 8. Prediction and Submission
+predictions = ensemble_model.predict(tournament_data)
+submit_predictions(predictions)
+```
+
+**Additional Considerations:**
+
+* Experiment with different feature engineering techniques and missing value imputation methods to find the most effective approach for the NumerAI data.
+* Explore advanced GBDT techniques like early stopping and gradient-based one-side sampling to further improve efficiency and performance.
+* Monitor model performance over time and retrain or update the model as needed to adapt to changing market conditions.
+
+This methodology leverages the insights from the MAPTree paper while addressing its limitations and incorporating best practices for handling the specific challenges of the NumerAI dataset. By combining the power of GBDTs with careful data preprocessing and hyperparameter optimization, this approach has the potential to achieve strong and consistent performance in the NumerAI tournament. 

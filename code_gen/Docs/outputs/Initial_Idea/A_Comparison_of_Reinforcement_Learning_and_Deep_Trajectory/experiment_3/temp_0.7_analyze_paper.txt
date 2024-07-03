@@ -1,0 +1,67 @@
+## Literature Review: A Comparison of Reinforcement Learning and Deep Trajectory Based Stochastic Control Agents for Stepwise Mean-Variance Hedging
+
+**Paper**: A Comparison of Reinforcement Learning and Deep Trajectory Based Stochastic Control Agents for Stepwise Mean-Variance Hedging by Ali Fathi & Bernhard Hientzsch
+
+**Focus**: Methodology 
+
+**Summary**:
+
+This paper compares two data-driven approaches for hedging: Reinforcement Learning (RL) and Deep Trajectory-based Stochastic Optimal Control (DTSOC). Both methods are applied to a stepwise mean-variance hedging problem for a European call option under transaction costs and discrete trading. The authors use a simulated Black-Scholes environment to evaluate and compare the performance, strengths, and limitations of each approach.
+
+**Methodology**:
+
+* **Problem Formulation**: 
+    * The paper focuses on **stepwise mean-variance hedging**, where the objective is to minimize the variance of the hedged portfolio's value at each time step, penalized by a multiple of the expected loss.
+    *  The hedging problem is formulated as a **Markov Decision Process (MDP)**, enabling the application of RL techniques.
+    * The paper also explores the connection between the stepwise objective and the global mean-variance objective. 
+
+* **Trading Strategy**:
+    * The paper defines a trading strategy for a hedged portfolio consisting of a fixed holding of the hedged instrument (a European call option) and a dynamic holding of the hedging instrument (the underlying stock).
+    * The strategy accounts for transaction costs and assumes self-financing.
+    * The paper discusses extensions to incorporate stochastic interest rates and more complex funding policies.
+
+* **Modeling the Hedging and Hedged Instruments**:
+    * The paper utilizes the **Black-Scholes model** for simulating the price evolution of the underlying stock.
+    * The **Black-Scholes formula** serves as the book-keeping model for the European call option.
+    * The paper emphasizes the importance of consistency between the models for the hedging and hedged instruments to avoid arbitrage opportunities.
+    * The authors acknowledge the limitations of the Black-Scholes model and suggest future work with more sophisticated models and generative data-driven approaches.
+
+* **Reinforcement Learning (RL) Approach**:
+    * **Deep Q-Learning (DQN)** with experience replay and target network updates is employed for the RL agent. 
+    * The state space includes time, stock price, option price, option delta, and current stock holding.
+    * The action space consists of the rebalancing rate of the stock holding.
+    * The reward function is based on the stepwise mean-variance objective.
+
+* **Deep Trajectory-based Stochastic Optimal Control (DTSOC) Approach**:
+    * **DTSOC** formulates the control problem as an optimization over a computational graph, with the control policy represented by deep neural networks.
+    * The paper explores the relationship between DTSOC and the FBSDE formulation of stochastic control problems.
+    * Similar to the RL approach, the state space and objective function are defined, but the control policy directly parameterizes the stock holding at each time step.
+
+* **Experiments and Analysis**:
+    * The paper investigates the performance of the trained RL and DTSOC agents under various scenarios, including varying transaction costs, option maturities, risk aversion levels, and asset volatilities.
+    * The results demonstrate that both approaches can effectively learn hedging strategies that outperform the delta-hedging strategy in the presence of transaction costs.
+    * The paper utilizes **SHAP values** to interpret the models' behavior and understand the importance of different features in the decision-making process. 
+    * Sensitivity analysis is performed to assess the impact of hyperparameters and network architecture choices on the training and performance of the agents.
+
+**Strengths of the Paper**:
+
+* Provides a clear and comprehensive comparison of RL and DTSOC for stepwise mean-variance hedging.
+* Offers valuable insights into the strengths and limitations of each approach.
+*  Emphasizes the importance of model consistency and suggests avenues for future research with more sophisticated models and generative approaches.
+*  Utilizes explainability techniques like SHAP values to enhance understanding of the agents' behavior.
+* Conducts thorough sensitivity analysis to assess the impact of various modeling choices.
+
+**Limitations of the Paper**:
+
+* The analysis is limited to a Black-Scholes environment and a single European call option.
+* The DTSOC approach exhibits performance issues for longer option maturities.
+* The paper does not explore the application of FBSDE-based methods like deep BSDEs for stepwise mean-variance hedging. 
+
+
+**Future Directions**:
+
+* Explore the application of the proposed methods to other types of derivatives and portfolios.
+* Investigate the use of more sophisticated models for the hedging and hedged instruments, including generative data-driven models.
+*  Develop and test DTSOC approaches that perform well for longer maturities.
+*  Apply FBSDE-based methods to stepwise mean-variance hedging problems.
+*  Further investigate the explainability and robustness of the trained agents. 

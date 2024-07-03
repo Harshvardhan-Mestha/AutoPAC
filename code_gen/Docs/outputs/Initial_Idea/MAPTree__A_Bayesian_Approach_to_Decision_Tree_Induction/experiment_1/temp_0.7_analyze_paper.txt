@@ -1,0 +1,40 @@
+## MAPTree: Methodology Findings
+
+Based on the provided paper "MAPTree: Beating “Optimal” Decision Trees with Bayesian Decision Trees," here's a breakdown of the methodology focusing on key aspects and potential questions for further research:
+
+**Core Idea:**
+
+* MAPTree introduces a novel approach to decision tree induction by leveraging Bayesian principles and AND/OR graph search. 
+* Instead of greedy splitting or global optimization used in traditional decision trees, MAPTree aims to find the Maximum A Posteriori (MAP) tree from a posterior distribution over possible tree structures.
+
+**Methodology Breakdown:**
+
+1. **Bayesian Decision Trees (BDTs):**
+    * The paper utilizes the framework of Bayesian Classification and Regression Trees (BCART).
+    * Each tree structure is associated with a likelihood based on how well it fits the data and a prior probability based on its complexity.
+    * This leads to a posterior distribution over possible trees, with the MAP tree being the most probable one.
+
+2. **AND/OR Graph Representation:**
+    * The space of possible decision trees is represented as an AND/OR graph.
+    * Each OR node represents a subproblem of finding the MAP subtree for a specific subset of data and depth.
+    * AND nodes represent splitting decisions on specific features.
+    * Terminal nodes represent leaf nodes in the decision tree.
+
+3. **MAPTree Search Algorithm:**
+    * The algorithm employs a best-first search strategy on the AND/OR graph guided by the "Perfect Split Heuristic." 
+    * This heuristic estimates the potential gain of splitting a node based on the assumption of a perfect split.
+    * The search efficiently explores the graph, expanding nodes with the highest potential for improvement until the MAP tree is found.
+
+4. **Key Advantages:**
+    * **Efficiency:** Compared to sampling-based methods like MCMC and SMC, MAPTree demonstrates faster convergence to the MAP tree.
+    * **Optimality Certificate:** Unlike previous methods, MAPTree provides a guarantee of finding the true MAP tree.
+    * **Generalization and Interpretability:** The paper shows that MAPTree achieves comparable or better accuracy with smaller trees compared to other decision tree algorithms, maintaining the interpretability advantage of decision trees.
+
+**Potential Questions and Future Research:**
+
+* **Scalability:** While the paper addresses some optimization techniques, further investigation is needed to handle massive datasets efficiently. 
+* **Handling Missing Values:** The paper assumes a complete dataset. Exploring methods to incorporate missing value handling would broaden the applicability of MAPTree.
+* **Alternative Heuristics:** Investigating different heuristic functions could potentially lead to further performance improvements or explore different trade-offs between accuracy and complexity. 
+* **Incorporating Domain Knowledge:** Exploring ways to incorporate prior knowledge or constraints into the AND/OR graph construction could be beneficial in specific domains.
+
+**Overall, MAPTree presents a promising approach to decision tree learning with strong theoretical foundations and empirical performance. Further research into the mentioned questions could enhance its capabilities and broaden its impact on the field of machine learning.** 

@@ -1,0 +1,56 @@
+## Literature Review: Methodology Focus - "When Do Neural Nets Outperform Boosted Trees on Tabular Data?"
+
+**Following the provided systematic approach and focusing on the methodology, here's a breakdown of the paper's key points and findings:**
+
+**Research Question:**
+
+*   The core question is **not simply which performs better (NNs or GBDTs) but under what conditions each excels and the significance of algorithm choice versus hyperparameter tuning.**
+
+**Methodology:**
+
+1.  **Large-Scale Comparison:**
+    *   **19 algorithms** (including NNs, GBDTs, and baselines) were evaluated on **176 diverse datasets** from OpenML and other sources. 
+    *   **Hyperparameter tuning:** Each algorithm was tested with up to 30 hyperparameter settings using Optuna for a maximum of 2 hours per setting on a 32GiB V100 GPU.
+    *   **Evaluation:** Performance was measured primarily using accuracy and log loss on 10-fold cross-validation. F1-score and ROC AUC were also considered.
+    *   **Meta-features:**  965 meta-features were extracted using PyMFE to analyze dataset characteristics and their relation to algorithm performance.
+
+2.  **Analysis:**
+    *   **Algorithm Performance:** 
+        *   No single algorithm dominated across all datasets. 
+        *   CatBoost and TabPFN were the top performers overall. 
+        *   TabPFN's efficiency was notable, especially on smaller datasets (<=1250 instances).
+        *   GBDTs generally outperformed baselines with less computational cost than NNs.
+    *   **Statistical Significance:**
+        *   Friedman and Wilcoxon signed-rank tests with Holm-Bonferroni correction were used to determine statistically significant performance differences between algorithms.
+        *   TabPFN showed statistically significant better performance than all other algorithms on average across 98 datasets.
+    *   **Meta-feature Analysis:** 
+        *   **Dataset Size:** GBDTs tended to outperform NNs on larger datasets and datasets with a high ratio of instances to features.
+        *   **Dataset Irregularity:** GBDTs performed better on datasets with skewed or heavy-tailed feature distributions and other irregularities.
+        *   **Predictive Power:** Meta-features were shown to be predictive of algorithm performance using a leave-one-out meta-learning approach with decision tree models. 
+
+3.  **TabZilla Benchmark Suite:**
+    *   A collection of 36 "hard" datasets where baselines and most algorithms struggle and GBDTs do not significantly outperform other methods.
+    *   Goal: To accelerate tabular data research by focusing on challenging cases.
+
+**Strengths of the Methodology:**
+
+*   **Comprehensive Evaluation:** The large number of algorithms and datasets provides a robust and generalizable analysis.
+*   **Hyperparameter Tuning:**  Addresses the concern of comparing algorithms with suboptimal hyperparameters.
+*   **Meta-feature Analysis:** Provides valuable insights into the factors influencing algorithm performance.
+*   **TabZilla Suite:**  Offers a valuable resource for researchers to focus on difficult problems and advance the field.
+
+**Potential Limitations:**
+
+*   **Computational Cost:** The extensive experiments require significant computational resources, which may limit accessibility for some researchers.
+*   **Hyperparameter Tuning Scope:** While 30 hyperparameter settings were tested, exploring a wider range or using more sophisticated HPO techniques could potentially yield different results.
+*   **Meta-feature Selection:**  The large number of meta-features may introduce redundancy or noise. Feature selection techniques could be explored to refine the analysis.
+
+**Next Steps/Future Work:**
+
+*   Investigate the impact of different data pre-processing techniques.
+*   Explore additional hyperparameter optimization methods.
+*   Incorporate regularization techniques into the analysis.
+*   Extend the study to regression and time-series forecasting tasks.
+*   Investigate uncertainty quantification in tabular data models.
+
+**Overall, this paper provides a thorough and insightful analysis of algorithm performance on tabular data. The methodology is well-designed and addresses important limitations of previous studies. The findings offer valuable guidance for practitioners and researchers in the field of tabular data learning.** 

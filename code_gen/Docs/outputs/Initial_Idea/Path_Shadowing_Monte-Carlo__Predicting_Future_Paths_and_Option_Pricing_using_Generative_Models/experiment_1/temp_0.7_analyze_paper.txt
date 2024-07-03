@@ -1,0 +1,53 @@
+## Literature Review: Path Shadowing Monte-Carlo for Volatility and Option Price Prediction 
+
+**Paper:** Path Shadowing Monte-Carlo by Rudy Morel, Stéphane Mallat & Jean-Philippe Bouchaud
+
+**Focus:** Methodology 
+
+###  **Summary**
+
+This paper introduces Path Shadowing Monte-Carlo (PS-MC), a method for predicting future price paths and options prices using generative models. It addresses the challenge of conditioning generative models on past price history by searching for similar paths in a large generated dataset. The paper utilizes a maximum entropy model based on Scattering Spectra (SS) to generate paths that capture key statistical properties of financial prices.
+
+### **Methodology**
+
+1. **Scattering Spectra (SS) Model:**
+    * **Motivation:** Traditional low-parameter generative models often fail to capture the complex statistical properties of financial prices. SS provides a richer set of statistics based on multi-scale analysis using wavelet transforms.
+    * **Construction:**
+        * **Wavelet Increments:** Decompose price variations into different scales using wavelet filters.
+        * **Time-Scale Dependencies:** Capture dependencies across time and scales using low-order moments of wavelet increments.
+        * **Multi-scale Skewness and Kurtosis:** Normalize moments to obtain multi-scale analogues of skewness and kurtosis, capturing non-Gaussian features like fat tails and volatility clustering.
+    * **Model Generation:** A maximum entropy model is constructed based on the SS statistics, promoting diversity while maintaining fidelity to observed data.
+
+2. **Path Shadowing Monte-Carlo (PS-MC):**
+    * **Objective:** Estimate the conditional expectation of a future quantity given past price history.
+    * **Challenge:** Finding paths with exact past history is improbable.
+    * **Solution:** Relax strict conditioning by searching for "shadowing paths" whose past history is close to the observed history in a lower-dimensional embedding space.
+    * **Path Embedding:** Utilize a multi-scale embedding that incorporates the influence of distant past with decaying weights.
+    * **Algorithm:**
+        1. Generate a large dataset of paths using the SS model.
+        2. For a given past history, identify the closest shadowing paths in the generated dataset based on the embedding distance.
+        3. Estimate the expected future quantity by averaging over the future of the shadowing paths with weights based on their distance to the observed history.
+
+3. **Applications:**
+    * **Volatility Prediction:** PS-MC effectively predicts future realized volatility at various time scales, outperforming benchmark methods and the Path-Dependent Volatility (PDV) model for longer time horizons.
+    * **Option Pricing:** PS-MC is combined with Hedged Monte-Carlo to obtain conditional option smiles. A trading game demonstrates that the SS model with PS-MC generates smiles that outperform the PDV model and the market itself, leading to profitable trading strategies.
+
+### **Strengths and Weaknesses**
+
+* **Strengths:**
+    * The SS model captures a wider range of statistical properties compared to traditional models, leading to more realistic and diverse generated paths.
+    * PS-MC offers a flexible framework for conditioning on past history and can be applied to various generative models and prediction tasks.
+    * The method demonstrates strong empirical performance in volatility prediction and option pricing.
+
+* **Weaknesses:**
+    * The scanning of a large generated dataset for shadowing paths can be computationally expensive. 
+    * The method assumes stationarity of the underlying process, which may not always hold in real-world financial markets.
+    * The choice of path embedding and distance metric can influence the results and requires careful consideration. 
+
+### **Future Research Directions**
+
+* Explore more efficient methods for identifying shadowing paths, potentially using techniques like clustering or dimensionality reduction.
+* Investigate extensions to multivariate time series for capturing the interdependence of different asset prices.
+* Relax the stationarity assumption and explore ways to incorporate non-stationary features into the model. 
+
+

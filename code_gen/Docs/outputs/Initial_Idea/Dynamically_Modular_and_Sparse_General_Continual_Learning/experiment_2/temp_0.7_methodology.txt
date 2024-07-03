@@ -1,0 +1,103 @@
+## Methodology for Numerai Prediction with Dynamos-Inspired Approach
+
+Based on the high-level idea, the Numerai dataset description, and the analysis of the Dynamos paper, we can develop a methodology that leverages dynamic sparsity and modularity for improved prediction performance. 
+
+**Relevance of Dynamos**:
+
+The Dynamos paper is relevant to the Numerai problem due to the following factors:
+
+* **Non-stationary Data**: Financial markets are dynamic and non-stationary, meaning the underlying patterns and relationships within the data can change over time. Dynamos' ability to adapt to changing data distributions through dynamic sparsity and modularity is valuable in this context.
+* **Feature Interaction**: The Numerai dataset contains a large number of features, and their interactions and importance can vary across different market conditions. Dynamos' dynamic selection of features can help identify the most relevant features for each era, potentially leading to better prediction performance.
+* **Overcoming Limitations**: Traditional models may struggle with the non-stationarity and complex feature interactions present in financial data. Dynamos' approach offers a potential solution to these challenges.
+
+**Proposed Methodology**:
+
+1. **Data Preprocessing**:
+    * **Handle Missing Values**: Address missing values in features and auxiliary targets using appropriate techniques such as imputation or removal.
+    * **Feature Engineering**: Explore additional feature engineering based on domain knowledge or insights from the data.
+    * **Era-Based Grouping**: Group data by eras to treat each era as a single data point, considering the temporal dependencies within the dataset.
+
+2. **Model Selection**:
+    * **Base Model**: Choose a suitable base model for tabular data, such as XGBoost, LightGBM, or a deep neural network like a Multilayer Perceptron (MLP). Consider the trade-offs between model complexity, interpretability, and computational efficiency.
+
+3. **Dynamic Sparsity and Modularity**:
+    * **Agent Integration**: Implement agents for feature selection, similar to the channel selection in Dynamos. These agents will learn to select relevant features for each era, promoting sparsity and modularity in the model. 
+    * **Attention Mechanism**: Employ a self-attention mechanism within the agents to capture the relationships between features and generate attention scores reflecting their importance.
+    * **Policy Gradient Training**: Train the agents using policy gradients, rewarding them for selecting features that lead to accurate predictions and penalizing them for poor selections.
+
+4. **Multi-Scale Associations (Optional)**:
+    * **Memory Buffer**: If computational resources allow, implement a memory buffer to store past eras and their corresponding predictions. This can help the model learn from historical data and improve its ability to adapt to changing market conditions.
+    * **Consistency Loss**: Apply a consistency loss between predictions on past eras from the memory buffer and the current model's predictions on those same eras. This encourages the model to maintain consistency in its predictions over time.
+
+5. **Training and Evaluation**:
+    * **Training Process**: Train the model using a combination of the base model's loss function (e.g., mean squared error for regression) and the agent's reward/penalty signal from the policy gradient training. 
+    * **Validation and Hyperparameter Tuning**: Use a separate validation set for hyperparameter tuning and model selection. Pay close attention to performance metrics such as correlation and Sharpe ratio, which are relevant to the Numerai competition.
+    * **Era-Based Evaluation**: Evaluate the model's performance on a per-era basis to assess its ability to adapt to changing market conditions.
+
+**Addressing Data Handling**:
+
+* **Training on the Entire Dataset**: Since the dataset is assumed to be complete, the model can be trained on the entire dataset using the proposed methodology. The dynamic sparsity and modularity will help the model adapt to different eras within the dataset. 
+* **Computational Considerations**: If the dataset is very large, consider techniques like mini-batch training or distributed training to handle the computational demands efficiently.
+
+**Pseudocode:**
+
+```
+# Preprocessing
+def preprocess_data(data):
+    # Handle missing values
+    # ...
+    # Feature engineering
+    # ...
+    # Group by era
+    # ...
+    return processed_data
+
+# Agent with Attention
+class FeatureSelectorAgent(nn.Module):
+    def __init__(self, num_features):
+        # ...
+    def forward(self, x):
+        # Self-attention mechanism
+        # ...
+        # Generate action probabilities
+        # ...
+        return action_probs
+
+# Model with Dynamic Sparsity
+class DynamicModel(nn.Module):
+    def __init__(self, base_model, agent):
+        # ...
+    def forward(self, x):
+        # Agent selects features
+        selected_features = agent(x)
+        # Pass selected features to base model 
+        # ...
+        return predictions
+
+# Training Loop
+def train(model, data, optimizer, criterion, agent_optimizer, agent_criterion):
+    # ...
+    for era in data:
+        # Forward pass
+        # ...
+        # Calculate loss 
+        # ... 
+        # Update base model
+        # ...
+        # Calculate agent rewards
+        # ...
+        # Update agent 
+        # ... 
+    # ...
+
+# Main
+data = load_numerai_data()
+processed_data = preprocess_data(data)
+base_model = # ... choose appropriate model
+agent = FeatureSelectorAgent(num_features)
+model = DynamicModel(base_model, agent)
+# ... optimizers, criteria, training loop ...
+train(model, processed_data, ...)
+evaluate(model, ...)
+```
+**This methodology provides a detailed roadmap for applying a Dynamos-inspired approach to the Numerai prediction problem. The dynamic sparsity and modularity introduced by the agents can potentially lead to improved performance and better adaptation to the changing dynamics of financial markets.** 

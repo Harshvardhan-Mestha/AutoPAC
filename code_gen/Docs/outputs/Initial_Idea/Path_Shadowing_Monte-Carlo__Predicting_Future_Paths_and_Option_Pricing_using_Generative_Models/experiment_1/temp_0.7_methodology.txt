@@ -1,0 +1,71 @@
+## Methodology for NumerAI Prediction using Path Shadowing and Scattering Spectra
+
+While the Path Shadowing Monte-Carlo (PS-MC) method shows promise in financial prediction, directly applying it to the NumerAI dataset presents challenges due to inherent differences between the problems and data structures. However, we can leverage the core ideas and adapt them to develop a novel methodology. 
+
+### Challenges and Adaptations
+
+1. **Non-sequential Data:** NumerAI data isn't sequential like price time series, making the concept of "past" and "future" paths less clear. 
+    * **Adaptation:** We'll treat each era as a separate entity and search for similar eras within a generated dataset. 
+2. **Target Interpretation:** NumerAI targets represent residualized stock returns, not raw prices or volatilities.
+    * **Adaptation:** We'll focus on predicting the target directly, using the SS model to capture complex relationships between features and target values. 
+3. **Feature Set Size:** The large number of features in NumerAI necessitates dimensionality reduction.
+    * **Adaptation:** We'll explore feature selection techniques and potentially modify the SS model to handle high-dimensional data efficiently.
+
+### Proposed Methodology
+
+1. **Feature Engineering and Selection:**
+    * Analyze feature importance and correlations. 
+    * Employ feature selection techniques like LASSO or Random Forests to identify a subset of most relevant features. This reduces dimensionality and computational cost.
+    * Consider potential interactions between features and create additional features if necessary.
+
+2. **Scattering Spectra Model Adaptation:**
+    * Explore modifications of the SS model to handle high-dimensional feature spaces efficiently. This might involve using alternative wavelet transforms or adapting the moment calculations.
+    * Train the SS model on the selected features and NumerAI targets, capturing complex dependencies and interactions within the data.
+
+3. **Era Similarity Search:**
+    * Design a similarity metric to compare eras based on their feature values. This could involve a weighted combination of feature distances or a distance metric in a lower-dimensional embedding space. 
+    * Generate a large dataset of synthetic eras using the trained SS model.
+    * For each era in the validation/test set, identify the most similar eras within the generated dataset. 
+
+4. **Target Prediction:**
+    * Use a weighted average of the target values from the similar generated eras to predict the target for the given era. 
+    * Explore alternative prediction methods like regression or classification models based on the features and target values of the similar eras. 
+
+5. **Model Evaluation and Refinement:**
+    * Evaluate the model's performance on the validation set using NumerAI's evaluation metrics.
+    * Refine the feature selection, SS model parameters, similarity metric, and prediction method based on the validation results. 
+
+### Pseudocode
+
+```
+# 1. Feature Engineering and Selection
+features = load_numerai_data()
+important_features = select_features(features)  # Implement feature selection method
+
+# 2. Scattering Spectra Model Adaptation
+ss_model = adapt_ss_model(important_features) # Modify SS model for high dimensions
+ss_model.train(important_features, targets)
+
+# 3. Era Similarity Search
+generated_eras = ss_model.generate_synthetic_data()
+similarity_metric = design_similarity_metric()
+
+for era in validation_set:
+    similar_eras = find_similar_eras(era, generated_eras, similarity_metric)
+    
+    # 4. Target Prediction
+    predicted_target = predict_target(similar_eras)  # Implement prediction method
+    
+    # 5. Model Evaluation and Refinement
+    evaluate_model(predicted_target, true_target)
+
+# Refine model parameters based on evaluation results
+```
+
+### Additional Considerations
+
+* **Data Scaling and Normalization:** Explore appropriate scaling and normalization techniques for the features to ensure proper model training and comparison. 
+* **Computational Efficiency:**  Investigate ways to optimize the era similarity search, potentially using approximate nearest neighbor algorithms or dimensionality reduction techniques.
+* **Ensemble Methods:** Consider combining predictions from multiple models with different feature sets or methodologies to improve robustness and accuracy. 
+
+This methodology provides a starting point for leveraging the concepts of path shadowing and scattering spectra for NumerAI prediction. The adaptations and specific implementations will require further research and experimentation to achieve optimal performance. 

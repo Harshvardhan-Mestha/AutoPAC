@@ -1,0 +1,46 @@
+## Literature Review: Deep Neural Networks Tend To Extrapolate Predictably
+
+**Paper:** Deep Neural Networks Tend To Extrapolate Predictably by Katie Kang, Amrith Setlur, Claire Tomlin, Sergey Levine
+
+**Focus:** Methodology and Findings
+
+**Main Hypothesis:** Neural network predictions on high-dimensional out-of-distribution (OOD) inputs tend to revert towards the optimal constant solution (OCS). The OCS minimizes the average loss over the training data without observing the input. 
+
+### Methodology
+
+*   **Datasets:** The paper investigates 8 datasets across vision and NLP domains with different types of distributional shifts (e.g., CIFAR10-C, ImageNet-R, S, WILDS Amazon).
+*   **Tasks and Loss Functions:** Three tasks are explored:
+    *   **Classification:** with cross-entropy loss.
+    *   **Selective Classification:** with mean squared error (MSE) loss.
+    *   **Regression:** with Gaussian negative log-likelihood (NLL) loss.
+*   **Model Architectures:** Convolutional Neural Networks (CNNs) and transformers are used depending on the data modality (images or text).
+*   **Evaluation Protocol:**
+    *   **Quantifying Distributional Shift:** A low-capacity model is trained to discriminate between training and evaluation data. The average predicted likelihood of the evaluation data belonging to the evaluation distribution is used as the OOD score.
+    *   **Measuring Proximity to OCS:** KL divergence is used for cross-entropy and Gaussian NLL models, while MSE is used for MSE models to compare model predictions to the OCS.
+
+### Findings
+
+*   **Reversion to OCS:** As the OOD score increases (indicating greater distributional shift), neural network predictions tend to move closer to the OCS. This trend holds across various datasets, loss functions, and architectures.
+*   **Mechanism:** 
+    *   OOD inputs tend to have smaller-magnitude representations in later layers of the network compared to in-distribution inputs.
+    *   The accumulation of model constants (e.g., bias terms) often closely approximates the OCS.
+    *   Therefore, OOD inputs, with their diminished representations, are dominated by the model constants, leading to predictions near the OCS.
+*   **Risk-Sensitive Decision-Making:** The paper explores selective classification as a decision-making problem. By designing the loss function such that the OCS aligns with cautious behavior (e.g., abstaining when uncertain), the model automatically becomes more risk-averse as inputs become more OOD.
+
+###  Strengths
+
+*   **Comprehensive Evaluation:** The paper explores a diverse range of datasets, tasks, and architectures, providing strong evidence for the "reversion to the OCS" hypothesis.
+*   **Mechanistic Insights:** The paper offers an explanation for the observed phenomenon, relating it to the properties of OOD representations and the role of model constants.
+*   **Practical Application:** The findings are translated into a strategy for risk-sensitive decision-making, demonstrating the potential impact of understanding OOD behavior.
+
+### Limitations
+
+*   **Exceptions to the Rule:** The paper acknowledges instances where "reversion to the OCS" does not hold, such as with adversarial examples. Further investigation is needed to fully characterize the conditions under which the phenomenon occurs. 
+*   **Limited Scope of Application:** The risk-sensitive decision-making strategy is demonstrated only for selective classification. Exploring its effectiveness in more complex multi-step decision-making problems would be valuable.
+*   **Theoretical Analysis:** The theoretical analysis focuses on homogeneous networks with ReLU activations. While providing valuable insights, extending the analysis to more general network architectures would strengthen the theoretical foundation. 
+
+###  Next Steps
+
+*   **Characterize Conditions for Reversion:** Further research is needed to understand the specific properties of OOD distributions that determine the extent to which "reversion to the OCS" occurs. 
+*   **Explore Other Decision-Making Problems:** Investigating the OOD behavior and the influence of the OCS in more complex decision-making problems like reinforcement learning would be insightful. 
+*   **Generalize Theoretical Analysis:** Extending the theoretical analysis to encompass a broader range of network architectures would provide a more comprehensive understanding of the phenomenon. 

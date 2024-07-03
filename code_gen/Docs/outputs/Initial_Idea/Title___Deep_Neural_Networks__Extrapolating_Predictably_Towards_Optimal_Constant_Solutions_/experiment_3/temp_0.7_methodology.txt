@@ -1,0 +1,123 @@
+## Methodology for Numerai with Insights from "Deep Neural Networks Tend To Extrapolate Predictably"
+
+The goal is to develop a methodology for tackling the Numerai dataset while incorporating insights from the paper "Deep Neural Networks Tend To Extrapolate Predictably." This involves selecting a suitable model, addressing its limitations, and potentially leveraging the OCS phenomenon for improved performance.
+
+### Step 1: Model Selection and Rationale
+
+**Model Choice:** **XGBoost**
+
+**Rationale:**
+
+* **Tabular Data:** XGBoost excels at handling tabular data like the Numerai dataset, which consists of features describing stock attributes.
+* **Performance:** It consistently demonstrates strong performance in machine learning competitions and real-world applications involving structured data.
+* **Interpretability:**  XGBoost offers some level of interpretability through feature importance analysis, which can be valuable for understanding the model's behavior and identifying potential biases.
+
+**Limitations of XGBoost:**
+
+* **Extrapolation:** As a tree-based model, XGBoost may struggle with extrapolation beyond the range of values seen in the training data. This is relevant to the Numerai problem as financial markets can exhibit unforeseen behavior.
+* **Feature Interactions:** While XGBoost can capture some feature interactions, it may not be as effective as deep learning models in modeling complex, non-linear relationships between features.
+
+### Step 2: Addressing Model Limitations and Incorporating Paper Insights
+
+**Relevance of the Paper:** 
+
+The paper's findings are highly relevant as they highlight the tendency of neural networks to revert to the OCS when faced with OOD inputs. This behavior can be leveraged to design models that are more cautious and robust in situations where extrapolation is likely.
+
+**Combining Ideas:**
+
+1. **OCS-inspired Regularization:** 
+    * **OCS Calculation:** Determine the OCS for the XGBoost model by averaging the target values across the training data. This represents the "cautious" prediction in the absence of informative features.
+    * **Regularization Term:** Introduce a regularization term to the XGBoost objective function that penalizes deviations of predictions from the OCS. This encourages the model to stay closer to the OCS when encountering OOD inputs, promoting cautious extrapolation.
+
+2. **Ensemble Methods:**
+    * **Diverse Models:** Train an ensemble of XGBoost models with different hyperparameters or feature subsets. This diversity can help mitigate the limitations of individual models and improve overallgeneralizability.
+    * **Ensemble with OCS-regularized Model:** Include an OCS-regularized XGBoost model within the ensemble. This allows the ensemble to benefit from both the predictive power of standard XGBoost and the cautious extrapolation behavior of the OCS-regularized model.
+
+### Step 3: Training Methodology
+
+1. **Data Preprocessing:**
+    * **Missing Values:** Handle missing values (NaNs) in features and auxiliary targets through techniques like imputation (e.g., mean/median filling) or by creating indicator features for missingness.
+    * **Feature Scaling:** Scale features using standardization or normalization to ensure they contribute equally to the model. 
+
+2. **Feature Engineering:**
+    * **Explore feature interactions:** Create new features based on interactions between existing features to capture potential non-linear relationships.
+    * **Domain Expertise:**  Incorporate domain knowledge about financial markets to engineer features that are likely to be informative for predicting stock returns.
+
+3. **Model Training:**
+    * **Cross-Validation:** Implement time-series cross-validation, taking into account the overlapping nature of target values across eras, to evaluate model performance and tune hyperparameters. 
+    * **OCS-Regularization:** If using OCS-inspired regularization, experiment with different weights for the regularization term to balance predictive accuracy and cautious extrapolation.
+
+4. **Ensemble Creation:**
+    * **Training Diverse Models:** Train multiple XGBoost models with varying hyperparameters or feature sets.
+    * **Combining Predictions:** Combine predictions from individual models using techniques like averaging or weighted averaging based on their performance.
+
+5. **Evaluation:** Evaluate the final model or ensemble on a hold-out validation set and monitor its performance on the live Numerai tournament to assessgeneralizability and robustness to OOD data.
+
+### Step 4: Pseudocode
+
+```
+# Data Preprocessing
+def preprocess_data(data):
+    # Handle missing values (e.g., imputation)
+    # Scale features (e.g., standardization)
+    return processed_data
+
+# Feature Engineering
+def engineer_features(data):
+    # Create interaction features
+    # Apply domain-specific transformations
+    return engineered_data
+
+# OCS Calculation
+def calculate_ocs(targets):
+    ocs = np.mean(targets) 
+    return ocs
+
+# XGBoost Training with OCS Regularization
+def train_xgboost_ocs(features, targets, ocs, reg_weight):
+    model = xgb.XGBRegressor(objective="reg:squarederror", ...)
+    model.fit(features, targets, reg_lambda=reg_weight, 
+              reg_alpha=reg_weight * ocs) 
+    return model
+
+# Ensemble Training and Prediction
+def train_and_predict_ensemble(data):
+    # Split data into train/validation sets
+    # Preprocess and engineer features
+    features, targets = preprocess_data(data), ...
+    ocs = calculate_ocs(targets)
+
+    # Train diverse XGBoost models
+    models = []
+    for params in different_hyperparameters:
+        model = xgb.XGBRegressor(objective="reg:squarederror", ...)
+        model.fit(features, targets, ...)
+        models.append(model)
+    
+    # Include OCS-regularized model
+    models.append(train_xgboost_ocs(features, targets, ocs, reg_weight))
+
+    # Combine predictions
+    predictions = combine_predictions(models, ...)
+    return predictions
+```
+
+**Explanation:**
+
+1. **Preprocessing and Feature Engineering:** Functions are defined to handle missing values, scale features, and create new features.
+
+2. **OCS Calculation:** A function calculates the average target value as the OCS.
+
+3. **XGBoost Training:**  A function trains an XGBoost model with an added regularization term that penalizes deviations from the OCS.
+
+4. **Ensemble Training and Prediction:** This function trains an ensemble of XGBoost models with diverse hyperparameters and includes an OCS-regularized model. Predictions are combined using a chosen strategy.
+
+**Additional Considerations:**
+
+* Experiment with different imputation and feature scaling techniques.
+* Explore various feature engineering strategies based on financial domain knowledge.
+* Optimize hyperparameters for each XGBoost model and the ensemble.
+* Consider other ensemble methods and combination strategies. 
+* Continuously monitor and adapt the methodology based on performance and market dynamics.
+
+This methodology provides a framework for tackling the Numerai dataset by combining the strengths of XGBoost with insights from the paper "Deep Neural Networks Tend To Extrapolate Predictably." By addressing model limitations and leveraging the OCS phenomenon, we aim to develop a robust andgeneralizable solution for predicting stock returns in the face of OOD data. 

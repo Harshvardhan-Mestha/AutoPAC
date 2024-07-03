@@ -1,0 +1,43 @@
+## Literature Review: Scaling TabPFN: Sketching and Feature Selection for Tabular Prior-Data Fitted Networks
+
+**Focus:** Methodology and key findings related to summarizing labeled training samples for TabPFN.
+
+**Methodology:**
+
+1. **Dataset Selection:** 19 datasets from McElfresh et al. (2023) exceeding TabPFN's recommended feature or sample limitations were chosen.
+2. **Model Comparison:** TabPFN was compared with CatBoost, a top-performing model, using 10 train/validation folds for each dataset.
+3. **Evaluation Metrics:** Average accuracy over the folds was used as the primary performance metric. Statistical significance was assessed using the Wilcoxon signed-rank test with Holm-Bonferroni correction.
+4. **Context Summarization Techniques:**
+    * **Sketching:**
+        * **Random Sampling:** A random subset of samples was selected.
+        * **K-means Clustering:** Samples were chosen as K-means cluster centers.
+        * **CoreSet:** An n_max sized CoreSet was selected. 
+    * **Feature Selection:**
+        * **Random Reduction:** A random subset of features was chosen.
+        * **Mutual Information:** Features with high mutual information to the target dataset were selected.
+        * **PCA:** The d_max first principal components were used.
+5. **Scaling Analysis:** The impact of varying the number of samples and features on model performance was investigated.
+
+**Key Findings:**
+
+* **Sample Size:** While TabPFN performs well with smaller sample sizes (up to 1000), increasing the context length beyond the recommended limit can lead to significant performance gains, though not as pronounced as with CatBoost.
+* **Sketching:** In most cases, random sampling of data points was as effective as more complex sketching methods like K-means or CoreSet. 
+* **Feature Selection:** Feature selection had a more substantial impact on TabPFN compared to CatBoost. Mutual information and PCA-based feature selection often outperformed random reduction, especially for datasets with a large number of features.
+* **Sensitivity to Features:** TabPFN appears more sensitive to the presence of irrelevant features than CatBoost. Reducing the feature space sometimes led to improved performance.
+
+**Additional Notes:**
+
+* The study highlights the potential of TabPFN as a competitive model for tabular data classification, especially when context length and feature selection are carefully considered.
+* Future research directions include exploring efficient attention mechanisms for transformers to address computational limitations and investigating the connection between context optimization in TabPFN and in-context learning in language models.
+
+**Critique:** 
+
+* The study primarily focuses on basic sketching and feature selection methods. More advanced techniques could be explored.
+* The impact of different hyperparameter settings for both TabPFN and CatBoost could be further investigated.
+* The study acknowledges the limitations of the random hyperparameter search and suggests a more rigorous search could potentially improve results.
+
+**Creative Extensions:**
+
+* Investigating the effectiveness of active learning strategies for selecting the most informative samples for TabPFN.
+* Exploring the application of data valuation techniques to understand the contribution of individual features and samples to model performance.
+* Adapting and applying feature selection methods specifically tailored for in-context learning scenarios. 

@@ -1,0 +1,53 @@
+## Literature Review: Analyzing "LANGUAGE AGENT TREE SEARCH UNIFIES REASONING, ACTING AND PLANNING IN LANGUAGE MODELS" 
+
+**Focus: Methodology**
+
+This paper introduces **LATS (Language Agent Tree Search)**, a framework aiming to improve decision-making and reasoning capabilities of Large Language Models (LLMs) by combining planning, acting, and reasoning strategies. Let's delve into the methodology employed:
+
+**Core Idea:**
+
+LATS adapts the **Monte Carlo Tree Search (MCTS)** algorithm, commonly used in reinforcement learning, to the domain of LLMs.  It treats the LLM as an **agent, value function, and optimizer** simultaneously.
+
+**Key Components:**
+
+1. **LM Agent:** The LLM acts as an agent, receiving observations from the environment and taking actions within a defined action space. This space includes both concrete actions (e.g., API calls, website commands) and reasoning steps (thoughts).
+
+2. **Tree Search:** LATS builds a search tree where each node represents a state (comprising input, action history, and observation history) and each edge represents an action. MCTS is used to explore this tree efficiently.
+
+3. **Evaluation (Value Function):** The LLM also acts as a value function, evaluating the "goodness" of each state by generating a score indicating the potential of reaching a successful outcome from that state.
+
+4. **Simulation:** From a selected node, LATS simulates potential trajectories by sampling actions and evaluating resulting states until a terminal state (success or failure) is reached.
+
+5. **Backpropagation:** Based on the simulation outcome (reward), the values of the visited states are updated to guide future search towards promising areas of the tree.
+
+6. **Reflection (Feedback Generator):** In case of failure, the LLM generates a "self-reflection" analyzing the errors made and suggesting improvements. This feedback is then incorporated as additional context in subsequent iterations, allowing the agent to learn from its mistakes.
+
+**Key Operations:**
+
+1. **Selection:** Using the UCT formula, LATS selects the most promising node for further exploration, balancing exploration and exploitation.
+
+2. **Expansion:** From the selected node, LATS samples multiple actions, interacts with the environment to obtain observations, and creates new child nodes representing the resulting states.
+
+3. **Evaluation:** The LLM evaluates the newly created child nodes, assigning them scores based on their potential for success.
+
+4. **Simulation:** LATS simulates trajectories from the selected node until reaching a terminal state.
+
+5. **Backpropagation:** Based on the simulation outcome, the values of the visited states in the trajectory are updated. 
+
+6. **Reflection:** If the simulation fails, the LLM generates a self-reflection analyzing the errors and suggesting improvements. 
+
+**Advantages:**
+
+* **Generality:** Applicable to both reasoning and decision-making tasks.
+* **Deliberate:** Employs principled search with MCTS and LLM-based value function.
+* **Adaptability:** Leverages external feedback from the environment and self-reflection for continuous learning and improvement.
+* **Flexibility:** Adaptable to different environments and resource constraints.
+* **Modularity:**  Components like the LM agent, value function, and reflection generator can be independently modified and improved.
+
+**Limitations:**
+
+* **Computational Cost:**  LATS requires more computational resources than simpler prompting methods due to the search process.
+* **Benchmark Simplicity:**  The environments used in the paper are relatively simple compared to real-world scenarios.
+* **Rollback Assumption:** Some environments may not easily support reverting to previous states, which is crucial for the search process.
+
+**Overall, LATS presents a novel and promising approach for enhancing LLM capabilities in decision-making and reasoning tasks by effectively combining planning, acting, and learning from experience.** 

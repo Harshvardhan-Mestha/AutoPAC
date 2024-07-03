@@ -1,0 +1,82 @@
+## Methodology for NumerAI Prediction with Transfer Learning
+
+Based on the insights from the literature review and the characteristics of the NumerAI dataset, we propose a methodology that leverages transfer learning with deep tabular models to predict stock-specific returns ("alpha").
+
+**Model Selection:**
+
+* **FT-Transformer:** Given its strong performance in the literature review, especially with larger datasets and its ability to handle mixed data types, the FT-Transformer will be the primary model for this task.
+
+**Addressing Limitations:**
+
+* **Computational Cost:** To mitigate the computational cost associated with FT-Transformer, we will explore efficient implementations and consider using cloud-based GPU resources for training.
+* **Data Heterogeneity:** While NumerAI features are engineered to be predictive, they may exhibit heterogeneity across eras. The pseudo-feature method will be employed to handle potential missing values and inconsistencies.
+
+**Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * **Quantile Transformation:** Apply quantile transformation to numerical features to ensure a standard distribution for the FT-Transformer.
+    * **Missing Value Imputation:**
+        * For features missing in the upstream data but present in the downstream data:
+            * Train a model on the upstream data to predict the missing feature values.
+            * Use the trained model to impute the missing values in the upstream data, creating an augmented dataset.
+        * For features missing in both upstream and downstream data: Impute with the mean for numerical features and a new category for categorical features.
+
+2. **Transfer Learning Setup:**
+    * **Upstream Training:**
+        * Train the FT-Transformer on a subset of eras (e.g., the first 70%) as a multi-target regression model, predicting the target values for each era.
+        * Tune hyperparameters using Optuna with Bayesian optimization on the upstream data.
+    * **Downstream Fine-tuning:**
+        * Fine-tune the pre-trained FT-Transformer on the remaining eras (e.g., the last 30%) with a smaller learning rate.
+        * Use an MLP head on top of the pre-trained feature extractor for the final prediction.
+        * Consider both frozen and fine-tuned feature extractor setups and choose the best performing option based on validation performance. 
+
+3. **Evaluation:**
+    * Evaluate the model's performance using metrics relevant to NumerAI, such as correlation and mean squared error on the target values.
+    * Compare the performance of the transfer learning approach with baselines, including training the FT-Transformer from scratch and using GBDT models with and without stacking.
+
+**Pseudocode:**
+
+```
+# 1. Data Preprocessing
+
+# Load NumerAI data
+data = load_numerai_data()
+
+# Split data into upstream and downstream eras
+upstream_data, downstream_data = split_data_by_era(data, train_ratio=0.7)
+
+# Quantile transform numerical features
+upstream_data, downstream_data = quantile_transform(upstream_data, downstream_data)
+
+# Impute missing values using pseudo-feature method
+upstream_data = impute_missing_features(upstream_data, downstream_data)
+
+# 2. Transfer Learning Setup
+
+# Initialize FT-Transformer model
+model = FTTransformer()
+
+# Train on upstream data
+model.fit(upstream_data, epochs=500, patience=30, hyperparameter_tuning=True)
+
+# Fine-tune on downstream data
+model.finetune(downstream_data, epochs=200, learning_rate=5e-5, head="MLP")
+
+# 3. Evaluation
+
+# Evaluate performance on downstream data
+correlation, mse = model.evaluate(downstream_data)
+
+# Compare with baselines
+# ... (train FT-Transformer from scratch, train GBDT models)
+
+# Select best model based on evaluation results
+# ...
+```
+
+**Additional Considerations:**
+
+* **Feature Engineering:** Explore additional feature engineering techniques specific to financial data, such as incorporating time-series features or sentiment analysis.
+* **Ensemble Methods:** Consider combining the predictions of multiple models (e.g., FT-Transformer with different pre-training setups or GBDT models) to improve robustness andgeneralizability. 
+
+**This methodology provides a comprehensive framework for applying transfer learning with deep tabular models to the NumerAI dataset. By carefully addressing limitations and leveraging the strengths of the FT-Transformer, we aim to achieve high prediction accuracy and consistent performance in the challenging task of predicting stock-specific returns.** 

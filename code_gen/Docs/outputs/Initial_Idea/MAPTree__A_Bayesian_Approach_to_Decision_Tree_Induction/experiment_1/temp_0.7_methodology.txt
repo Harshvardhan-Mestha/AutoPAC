@@ -1,0 +1,87 @@
+## Methodology: Combining MAPTree and Numerai Dataset
+
+Based on the provided high-level idea, Numerai dataset description, and the analysis of MAPTree from the research paper, here's a proposed methodology:
+
+**Relevance of MAPTree:**
+
+* MAPTree's ability to find accurate, interpretable models with smaller tree sizes aligns well with the characteristics of the Numerai dataset.
+* The dataset's complexity and potential for overfitting make MAPTree's Bayesian approach and focus on finding the MAP tree particularly relevant.
+
+**Addressing Data Handling Challenges:**
+
+* **Missing Values:**  The Numerai dataset contains missing values, which MAPTree doesn't handle directly. We will explore two approaches:
+    1. **Imputation:** Applying a suitable imputation technique like KNN Imputer or SoftImpute to fill in missing values before training. 
+    2. **Modified Splitting Criterion:** Adapting the splitting criterion within MAPTree to account for missing values during the tree construction process. This could involve ignoring missing values or using a weighted splitting criterion based on the available data.
+
+* **Era-wise Data:** Since each era represents a data point, we will treat each era as an independent sample during training and evaluation. This ensures that information from future eras doesn't leak into the model during training.
+
+**Model Selection:**
+
+* **XGBoost as Base Model:** While the paper focuses on binary classification, the Numerai target has five classes. We will adapt MAPTree to use XGBoost as the base model due to its:
+    * **Multi-class Classification Support:** XGBoost natively handles multi-class problems.
+    * **Scalability and Performance:** XGBoost is known for its scalability and efficiency, which are crucial for handling the large Numerai dataset. 
+    * **Regularization:** XGBoost's built-in regularization helps prevent overfitting, complementing MAPTree's Bayesian approach.
+
+**Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * **Handle Missing Values:** Choose and apply either imputation or a modified splitting criterion within MAPTree to address missing values.
+    * **Feature Engineering:** Explore potential feature engineering techniques based on domain knowledge and the characteristics of the Numerai features. This might involve creating interaction terms or applying transformations to certain features. 
+2. **MAPTree Adaptation:**
+    * **Modify the Likelihood Function:** Adapt the likelihood function within MAPTree to accommodate the multi-class classification problem and the XGBoost model. This could involve using the multinomial log-loss or a similar metric suitable for multi-class problems.
+    * **Integrate XGBoost:** Replace the base decision tree model within MAPTree with XGBoost, ensuring proper integration with the AND/OR graph search and heuristic calculations.
+3. **Training and Evaluation:**
+    * Train the adapted MAPTree model on the preprocessed Numerai training data.
+    * Evaluate the model's performance on the validation data using era-wise cross-validation to account for the overlapping target values.
+    * Analyze the results, focusing on accuracy, log-loss, and tree complexity.
+    * Fine-tune the model and preprocessing steps as needed based on the evaluation results.
+
+**Pseudocode:**
+
+```
+# Data Preprocessing
+def preprocess_data(data):
+    # Handle missing values (choose one approach)
+    # 1. Imputation
+    imputer = KNNImputer()  # or SoftImpute()
+    data = imputer.fit_transform(data)
+    # 2. Modified splitting criterion (implemented within MAPTree)
+
+    # Feature engineering (optional, based on domain knowledge)
+    # ...
+
+    return data
+
+# MAPTree with XGBoost Adaptation
+def train_maptree_xgboost(data):
+    # Adapt likelihood function for multi-class classification and XGBoost
+    # ...
+
+    # Integrate XGBoost as the base model within MAPTree
+    # ...
+
+    # Train the adapted MAPTree model
+    model = MAPTree_XGBoost()
+    model.fit(data)
+
+    return model
+
+# Evaluation with Era-wise Cross-Validation
+def evaluate_model(model, data):
+    # Implement era-wise cross-validation
+    # ...
+
+    # Calculate performance metrics (accuracy, log-loss, tree size)
+    # ...
+
+    return results
+
+# Main Workflow
+data = load_numerai_data()
+preprocessed_data = preprocess_data(data)
+model = train_maptree_xgboost(preprocessed_data)
+results = evaluate_model(model, preprocessed_data)
+analyze_results(results)
+```
+
+**This methodology provides a detailed roadmap for combining the strengths of MAPTree with the Numerai dataset. The proposed adaptations and considerations for data handling challenges aim to create an effective and robust model for predicting stock market returns.** 

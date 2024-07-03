@@ -1,0 +1,5 @@
+"""
+Use Gini impurity by creating a function.
+ Gini impurity which is a measure of how often a randomly chosen element from a set would be incorrectly labeled if it were randomly labeled according to the distribution of labels in the subset. It is commonly used in decision tree algorithms, particularly for classification problems.
+ A lower Gini impurity indicates that a particular set is purer, meaning that the elements in the set are more likely to belong to the same class. In the context of decision trees, when splitting a node, the goal is to minimize the Gini impurity of the resulting subsets, as it helps to create more homogeneous child nodes, thus leading to more accurate predictions.
+"""

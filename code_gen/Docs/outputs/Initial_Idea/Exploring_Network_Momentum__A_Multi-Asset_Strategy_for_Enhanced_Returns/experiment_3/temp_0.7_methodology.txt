@@ -1,0 +1,76 @@
+## Methodology for Numerai Tournament with Network Momentum Insights
+
+While the paper "Network Momentum across Asset Classes" offers valuable insights into momentum spillover effects and network-based trading strategies, its direct application to the Numerai tournament presents challenges due to key differences in the problem setting and data characteristics. However, we can still leverage some of the core concepts and adapt them to develop a methodology for the Numerai dataset.
+
+**Challenges in Direct Application:**
+
+* **Different Asset Universe:** The paper focuses on continuous futures contracts across four asset classes, while Numerai deals with a broader range of global stocks with diverse characteristics.
+* **Feature Set Discrepancy:** The paper utilizes specifically designed momentum features, whereas Numerai provides a vast and diverse feature set encompassing various factors beyond momentum. 
+* **Target Definition:** The paper aims to predict future volatility-scaled returns, while Numerai targets stock-specific returns ("alpha") after neutralizing market, country, sector, and factor influences. 
+* **Data Structure:**  Numerai data is structured by eras (weekly snapshots) with overlapping target values, requiring careful consideration during model training and validation.
+
+**Proposed Methodology:**
+
+Despite these challenges, we can adapt the network momentum concept and combine it with other techniques to tackle the Numerai problem.
+
+**1. Feature Engineering and Selection:**
+
+* **Momentum Feature Construction:**
+    * Calculate various momentum indicators (e.g., RSI, MACD, Stochastic Oscillator) over different timeframes for each stock.
+    * Explore additional features like price trends, moving average crossovers, and volatility measures.
+* **Feature Selection:**
+    * Utilize feature importance techniques (e.g., from tree-based models) to identify the most relevant features for predicting the target.
+    * Consider dimensionality reduction methods (e.g., PCA) to reduce feature space and mitigate potential noise. 
+
+**2. Network Construction:**
+
+* **Graph Learning Adaptation:** 
+    * Instead of directly applying the graph learning model from the paper, explore alternative network construction methods suitable for the Numerai dataset.
+    * **Correlation-based Networks:** Construct networks based on correlations between stock returns or momentum features. Experiment with different correlation measures (e.g., Pearson, Spearman, Kendall) and thresholds to identify meaningful connections.
+    * **Clustering-based Networks:** Apply clustering algorithms (e.g., K-Means, Hierarchical clustering) on the feature space to group stocks with similar characteristics.  Connections can be established within clusters or between clusters based on proximity or other criteria.
+* **Dynamic Networks:** Investigate methods for creating dynamic networks that evolve over time, capturing changing relationships between stocks. This could involve using rolling window correlations, time-series clustering, or other adaptive techniques.
+
+**3. Network-Enhanced Feature Engineering:**
+
+* **Network Feature Propagation:** 
+    * Similar to the paper, propagate individual momentum features across the network using edge weights. This can capture momentum spillover effects and provide additional information beyond individual stock momentum.
+    * Explore other network-based features like node centrality measures (e.g., degree, betweenness, closeness) to capture the influence and interconnectedness of stocks within the network.
+
+**4. Model Selection and Training:**
+
+* **Ensemble Methods:**
+    * Consider ensemble models (e.g., Random Forests, Gradient Boosting) that combine the strengths of multiple models and can handle diverse feature sets effectively.
+    * Explore stacking or blending techniques to combine predictions from different models, potentially including a model specifically trained on network-based features. 
+* **Time-Series Considerations:**
+    * Implement techniques like walk-forward validation or time-series cross-validation to address the overlapping target values and prevent data leakage.
+    * Explore recurrent neural networks (RNNs) or other time-series models to capture temporal dependencies within the data.
+
+**5. Evaluation and Refinement:**
+
+* **Performance Evaluation:** Evaluate model performance using Numerai's metrics and the leaderboard. Pay close attention to correlation and consistency across eras.
+* **Hyperparameter Optimization:** Fine-tune model hyperparameters and network construction parameters using validation data.
+* **Feature Importance Analysis:** Analyze feature importance to understand the drivers of model predictions and potentially refine feature engineering and selection. 
+* **Network Analysis:** Evaluate the network structure and its impact on model performance.  Investigate whether the network captures meaningful relationships and momentum spillover effects.
+
+**Pseudocode (High-Level):**
+
+```
+# Feature Engineering and Selection
+momentum_features = calculate_momentum_indicators(data)
+selected_features = feature_selection(momentum_features, other_features)
+
+# Network Construction
+network = construct_network(selected_features) 
+
+# Network-Enhanced Feature Engineering
+network_features = propagate_features(network, selected_features)
+
+# Model Training and Evaluation
+model = train_model(selected_features, network_features, target)
+evaluate_model(model, validation_data)
+
+# Iteration and Refinement 
+while not satisfied with performance:
+    # Adjust feature engineering, network construction, or model training
+    # Re-evaluate and analyze results
+``` 

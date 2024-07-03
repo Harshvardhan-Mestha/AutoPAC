@@ -1,0 +1,51 @@
+## Literature Review: Conservative Predictions on Noisy Financial Data
+
+**Focus:** Methodology and Algorithm
+
+This paper proposes a method for making "conservative predictions" on noisy financial data, aiming to improve risk-adjusted returns by focusing on high-confidence predictions. Let's break down the key methodological aspects:
+
+**1. Cascading Models:**
+
+* **Motivation:** Financial markets are inherently noisy, making accurate predictions challenging. This method aims to address this by building a sequence of models, each focusing on data points where the previous models were uncertain.
+* **Process:**
+    1. **Training:** A cascade of models (e.g., MLPs or DDTs) are trained sequentially. Each model is trained on the data points where the previous model(s) exhibited low confidence (measured by Gini impurity).
+    2. **Prediction:** During testing, each data point is passed through the cascade. The first model in the sequence that exhibits high confidence on a data point makes the prediction. If no model is confident, no prediction is made.
+    3. **Confidence Measure:** Gini impurity is used to gauge the confidence of a model's prediction. A lower Gini impurity indicates higher confidence. 
+* **Benefits:**
+    * **Reduced Risk:** By focusing on high-confidence predictions, the model avoids making risky predictions on uncertain data points.
+    * **Improved Accuracy:** The cascade structure allows for specializing models on different subsets of the data, potentially leading to better accuracy on the predictions that are made.
+
+**2. Differentiable Decision Trees (DDTs):**
+
+* **Motivation:** DDTs offer a balance between the interpretability of decision trees and the optimization capabilities of neural networks. 
+* **Structure:** DDTs are similar to traditional decision trees but with "soft" decision boundaries at each node, implemented using a sigmoid function. This allows for gradient-based optimization.
+* **Regularization:** A regularization term encourages balanced splits at each node, preventing the model from relying too heavily on a single path. 
+* **Benefits:** 
+    * **Interpretability:**  The tree structure provides some level of interpretability compared to black-box models like MLPs.
+    * **Performance:**  DDTs can achieve competitive performance on classification tasks. 
+
+**3. Data and Features:**
+
+* **Market Data:** OHLCV (Open, High, Low, Close, Volume) data from the Indian equity market is used, normalized and augmented with technical indicators and logical/temporal features.
+* **Synthetic Data:**  Sine waves with varying levels of noise are used to simulate market behavior and assess the model's robustness to noise. 
+* **Discretization:**  All features and target values are discretized into bins to handle noise and improve model performance.
+
+**4. Evaluation and Results:**
+
+* **Experiments:**  The paper conducts several experiments to evaluate the performance of the proposed method on both synthetic and real market data, including varying noise levels and training/testing on different sets of data.
+* **Metrics:**  Accuracy, support (percentage of data points on which predictions are made), utility (average gain per trade), downside-risk adjusted return, and traded Sharpe ratio are used to evaluate the models.
+* **Findings:**
+    * Cascading models generally outperform single models in terms of accuracy and risk-adjusted returns.
+    * DDTs show promising results, often achieving better utility and risk-adjusted returns than MLPs.
+    * The models tend to make high-confidence predictions at the extremes of the target distribution, which are most relevant for trading decisions.
+
+**5. Future Work:**
+
+* **Addressing Distribution Shifts:** Exploring techniques like meta-learning or continual learning to improve performance when training and test data distributions differ.
+* **Train-time Pruning:**  Investigating data pruning during training to further enhance calibration and model performance.
+
+**Critical Analysis:**
+
+* The paper focuses on short-term predictions, and it's unclear how the method would perform for longer-term forecasting.
+* The choice of Gini impurity as the confidence measure might not be optimal, and other measures could be explored.
+* The paper primarily focuses on the Indian equity market, and further research is needed to assess the generalizability of the method to other markets. 

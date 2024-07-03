@@ -1,0 +1,9 @@
+<system>[your_system_prompt_here]</system>
+
+<chat_history>
+{chat_history}
+<\chat_history>
+
+<human>
+{input}
+<\human>

@@ -1,0 +1,48 @@
+## Literature Review: FEW-SHOT LEARNING PATTERNS IN FINANCIAL TIME-SERIES FOR TREND-FOLLOWING STRATEGIES
+
+**Focus:** Methodology 
+
+**Paper Summary:**
+
+This paper proposes X-Trend, a novel trend-following forecasting model that utilizes few-shot learning to adapt to new market regimes and unseen assets.  X-Trend leverages a cross-attention mechanism over a context set of historical financial data, transferring knowledge from similar patterns to make predictions with limited data.  
+
+**Methodology Breakdown:**
+
+1. **Data Preprocessing:**
+    * **Returns Calculation:** The model works with returns, calculated as the percentage change in price over a specified period (e.g., daily returns). 
+    * **Volatility Scaling:** Volatility targeting is employed, normalizing positions by ex-ante volatility and scaling by annual target volatility to ensure equal risk contribution from each asset.
+    * **Feature Engineering:** The model utilizes the following features:
+        * **Normalized Returns:** Returns aggregated and normalized over different time scales (e.g., 1-day, 21-day, 63-day).
+        * **MACD Indicators:** Moving Average Convergence Divergence (MACD) indicators comparing exponentially weighted signals at various timescales.
+
+2. **Episodic Learning:**
+    * **Few-Shot and Zero-Shot Scenarios:** The model is trained and tested in both few-shot and zero-shot scenarios.  In the few-shot setting, the context set can contain the same asset as the target (but in the past), while in the zero-shot setting, the target asset is unseen during training.
+    * **Context Set Construction:**  Three approaches are explored for constructing the context set: 
+        * **Final Hidden State and Random Sequences:** Random sequences of fixed length are sampled, and the model attends to their final hidden states.
+        * **Time-Equivalent Hidden State:**  Random context sequences with the same length as the target sequence are sampled, and the model attends to time-equivalent hidden states.
+        * **Change-Point Detection (CPD) Segmented Representations:** A Gaussian Process change-point detection algorithm segments the context set into regimes, and the model attends to the final hidden states of these segments.
+
+3. **Model Architecture:**
+    * **Sequence Representations:**  LSTM networks are used to encode both the target sequence and the context set sequences into hidden state representations.  These representations also incorporate asset category information through entity embeddings.
+    * **Cross-Attention Mechanism:**  A cross-attention mechanism allows the target sequence to attend to relevant information within the context set. This facilitates the transfer of knowledge from similar historical patterns. 
+    * **Decoder and Loss Function:** The decoder utilizes another LSTM network to process the encoded target sequence and the output of the cross-attention mechanism.  Two different loss functions are explored:
+        * **Joint Maximum Likelihood Estimation (MLE) and Sharpe Ratio:** This loss function combines the log-likelihood of predicting next-day returns under a Gaussian distribution with the Sharpe ratio, a measure of risk-adjusted returns.
+        * **Joint Quantile Regression (QRE) and Sharpe Ratio:** This loss function combines the quantile regression loss for predicting the full distribution of next-day returns with the Sharpe ratio.
+
+4. **Model Variants:**
+    * **X-Trend-G:** This variant uses the joint MLE and Sharpe ratio loss function.
+    * **X-Trend-Q:** This variant uses the joint QRE and Sharpe ratio loss function.
+    * **X-Trend:** This variant uses only the Sharpe ratio loss function.
+
+5. **Evaluation:**
+    * **Backtesting:** The models are backtested on a portfolio of 50 liquid continuous futures contracts over the period from 1990 to 2023.  An expanding window approach is used for out-of-sample testing.
+    * **Zero-Shot Experiments:**  20 out of the 50 assets are randomly selected as the test set for the zero-shot experiments, with the remaining 30 assets used for the context set and training. 
+    * **Performance Metrics:** Sharpe ratio is the primary metric used to evaluate the performance of the models.  
+
+**Key Findings:**
+
+* X-Trend models outperform baseline trend-following strategies in both few-shot and zero-shot settings, achieving significant improvements in Sharpe ratio.
+* The cross-attention mechanism is crucial for transferring knowledge from the context set and enabling effective predictions with limited data.
+* Change-point detection segmentation of the context set further enhances performance by focusing on the most informative regimes.
+* X-Trend-Q generally performs better in the few-shot setting, suggesting that capturing the full distribution of returns is beneficial.
+* X-Trend-G performs better in the zero-shot setting, indicating that the simpler assumption of Gaussian returns may be more suitable for low-resource scenarios. 

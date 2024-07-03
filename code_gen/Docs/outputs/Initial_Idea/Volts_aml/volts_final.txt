@@ -1,0 +1,32 @@
+Based on the high-level idea, dataset description, and model details provided, I can propose the following methodology for applying the TabPFN transformer architecture to the tabular stock market dataset for classification.
+
+1. **Introduce the Methodological Approach**:
+This study adopts a quantitative approach, leveraging machine learning techniques to perform tabular classification on a stock market dataset. Specifically, we employ the TabPFN (Tabular Predictor via Free-to-Norms) transformer architecture, a state-of-the-art model designed for tabular data prediction tasks.
+
+2. **Establish Methodological Connection**:
+The TabPFN model is well-suited for our research problem as it is specifically designed to handle tabular datasets with numerical features, making it appropriate for the given stock market data. The model's ability to learn effective representations from tabular data and perform classification tasks aligns with our objective of predicting the target variables (`target_10_val` and `target_5_val`) based on the provided features.
+
+3. **Introduce the Instruments**:
+The primary instrument for this study is the TabPFN transformer architecture itself. We will utilize the original CUDA-supporting PyTorch implementation of TabPFN, which is designed to handle tabular data without the need for extensive preprocessing.
+
+4. **Discuss the Analysis**:
+The analysis will involve the following steps:
+
+a. **Data Preprocessing**: Since TabPFN expects scalar values and performs internal preprocessing, we will encode any categorical features (if present) using techniques like OrdinalEncoder. We will not apply any additional preprocessing, as TabPFN handles feature normalization and outlier handling internally.
+
+b. **Model Training**: We will split the dataset into train and test sets, ensuring that each era is treated as a single data point. The TabPFN model will be trained on the training set, with the appropriate number of ensemble configurations (N_ensemble_configurations) determined through experimentation.
+
+c. **Model Evaluation**: The trained TabPFN model will be evaluated on the test set using appropriate classification metrics, such as accuracy, precision, recall, and F1-score. We will also analyze the model's performance across different eras to assess its temporal consistency.
+
+d. **Statistical Analysis**: If applicable, we will perform statistical tests to determine the significance of the model's performance and compare it with baseline models or other relevant benchmarks.
+
+5. **Provide Background Information**:
+The TabPFN transformer architecture is a recently proposed model designed specifically for tabular data prediction tasks. It is a single transformer network that has been pre-trained to approximate probabilistic inference in a single forward pass, enabling it to solve novel tabular classification and regression tasks with state-of-the-art performance.
+
+6. **Discuss Sampling Process**:
+Given the instructions to treat each era as a single data point, we will ensure that the train and test sets are stratified by era. This means that data points from the same era will be kept together and not split across the train and test sets. The specific stratification technique (e.g., stratified random sampling) will be chosen based on the distribution of eras in the dataset.
+
+7. **Address Research Limitations**:
+One potential limitation of our methodology is the assumption that the features and their relationships with the target variables remain consistent across different eras. If this assumption is violated, the model's performance may degrade for certain eras. To mitigate this risk, we will closely monitor the model's performance across different eras and investigate any discrepancies or anomalies.
+
+Additionally, the TabPFN model is designed for tabular data without missing values. If the dataset contains missing values, we will need to impute them using appropriate techniques before feeding the data to the model.

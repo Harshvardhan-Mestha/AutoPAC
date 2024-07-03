@@ -1,0 +1,113 @@
+## Methodology for Numerai Prediction using Deep Incremental Learning and XGBoost
+
+Building upon the insights from the analyzed research paper and considering the specific requirements of the Numerai dataset, here's a detailed methodology for predicting stock rankings:
+
+**Model Selection:**
+
+* **XGBoost:** As the research paper and benchmarking studies suggest, XGBoost remains the preferred choice due to its effectiveness with tabular data, robustness to distribution shifts, and scalability. Its ability to handle mixed data types and missing values aligns well with the Numerai dataset characteristics.
+
+**Addressing Limitations and Incorporating Insights:**
+
+* **Data Sampling Bias:** To mitigate potential bias introduced by the "median-target removal" sampling (S2), we will employ stratified sampling. This ensures representation of all target classes in the training data, maintaining the distribution of the original dataset.
+* **Limited Diversity:** While Jackknife feature set sampling demonstrably improves model diversity, we will explore additional feature engineering techniques to further enhance this aspect. This may involve creating new features based on interactions or combinations of existing features or employing dimensionality reduction techniques like PCA to capture underlying factors.
+* **Static Hedging Ratio:** The dynamic hedging approach in the paper relies on a pre-defined switch between hedging and no-hedging. We will investigate adaptive methods to adjust the hedging ratio continuously based on recent performance and market volatility, potentially using techniques like exponential moving averages or machine learning models.
+
+**Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * **Stratified Sampling:** Implement stratified sampling based on target classes within each era to ensure balanced representation of all target values.
+    * **Feature Engineering:** Explore additional feature engineering techniques such as feature interaction terms, dimensionality reduction (e.g., PCA), or other domain-specific feature creation methods.
+    * **Missing Value Imputation:** Employ appropriate imputation techniques for missing values, considering the nature of each feature (e.g., mean/median imputation for numerical features, mode imputation or creating a separate category for categorical features).
+
+2. **Base Learner Training (Layer 1):**
+    * **XGBoost with Ansatz Hyperparameters:** Train multiple XGBoost models with the Ansatz hyperparameter set, including the learning rate derived from the number of boosting rounds. 
+    * **Diverse Ensemble Creation:**
+        * **Feature Set Sampling:** Implement Jackknife feature set sampling as described in the paper.
+        * **Additional Diversity Techniques:**  Incorporate other diversity-enhancing techniques based on the explored feature engineering methods.
+        * **Training Size Variation:** Train models with varying training set sizes (e.g., 50%, 75%, 100% of available data) to capture different historical contexts.
+        * **Learning Rate Variation:** Train models with different learning rates (derived from the Ansatz formula) to capture fast and slow-changing features.
+    * **Incremental Training:** Retrain each model incrementally as new data arrives, updating parameters while maintaining other hyperparameters.
+    * **Parallel Training:** Train all models within Layer 1 independently and in parallel to optimize computational efficiency.
+
+3. **Prediction Refinement (Layer 2):**
+    * **Ensemble Aggregation:**
+        * Implement simple averaging of predictions from all Layer 1 models as a baseline.
+        * Explore more sophisticated Layer 2 models, such as:
+            * **Regularized linear models (e.g., Elastic Net) with non-negative constraints.**
+            * **Gradient boosting models trained on Layer 1 predictions as features.**
+            * **Neural network models with appropriate architectures for combining predictions.**
+
+4. **Dynamic Hedging:**
+    * **Tail Risk Model:** Create a tail risk model based on the variance of Layer 1 predictions, representing investor disagreement.
+    * **Adaptive Hedging Ratio:** Implement a method for dynamically adjusting the hedging ratio based on recent performance and market volatility indicators (e.g., moving average of tail risk model performance, volatility index). 
+    * **Hedged Portfolio Construction:** Combine baseline and tail risk model predictions using the dynamic hedging ratio.
+
+5. **Evaluation:**
+    * **Performance Metrics:** Evaluate the performance of the overall model and individual components using metrics like Mean Correlation, Sharpe Ratio, Calmar Ratio, and Maximum Drawdown.
+    * **Comparative Analysis:** Compare different Layer 2 models and hedging strategies to identify the optimal configuration.
+    * **Backtesting:** Conduct backtesting on historical data to assess the robustness andgeneralizability of the model across different market conditions.
+
+**Handling the Complete Dataset:**
+
+* **Incremental Training and Batch Processing:** While the methodology emphasizes incremental training, it can be adapted to handle the entire dataset by processing it in batches. This involves dividing the data into manageable chunks and training/retraining models incrementally within each batch.
+* **Distributed Computing:**  For extremely large datasets, distributed computing frameworks like Apache Spark can be employed to parallelize the training process across multiple machines, further improving scalability and efficiency. 
+
+**Pseudocode:**
+
+```
+# Data Preprocessing
+
+def preprocess_data(data):
+    # Implement stratified sampling based on target classes
+    # Perform additional feature engineering
+    # Impute missing values
+    return preprocessed_data
+
+# Base Learner Training (Layer 1)
+
+def train_base_learners(preprocessed_data):
+    base_learners = []
+    for feature_set in feature_sets: 
+        for train_size in train_sizes:
+            for learning_rate in learning_rates:
+                model = XGBoost(params=Ansatz_params, 
+                                 n_estimators=boosting_rounds, 
+                                 learning_rate=learning_rate)
+                model.fit(preprocessed_data[feature_set][:train_size]) 
+                base_learners.append(model)
+    return base_learners 
+
+# Prediction Refinement (Layer 2)
+
+def refine_predictions(base_learners, preprocessed_data):
+    layer1_predictions = []
+    for model in base_learners:
+        layer1_predictions.append(model.predict(preprocessed_data))
+    
+    # Ensemble aggregation (e.g., simple averaging, Elastic Net) 
+    refined_predictions = aggregate(layer1_predictions)
+    return refined_predictions
+
+# Dynamic Hedging 
+
+def hedge_portfolio(refined_predictions, preprocessed_data):
+    tail_risk_predictions = calculate_variance(refined_predictions)
+    hedging_ratio = calculate_dynamic_hedging_ratio(tail_risk_predictions)
+    hedged_predictions = (1 - hedging_ratio) * refined_predictions + hedging_ratio * tail_risk_predictions
+    return hedged_predictions
+
+# Main Function
+
+def main():
+    data = load_numerai_data()
+    preprocessed_data = preprocess_data(data)
+    base_learners = train_base_learners(preprocessed_data)
+    refined_predictions = refine_predictions(base_learners, preprocessed_data)
+    hedged_predictions = hedge_portfolio(refined_predictions, preprocessed_data)
+    evaluate_performance(hedged_predictions)
+
+if __name__ == "__main__":
+    main()
+```
+
+This pseudocode outlines the core steps of the methodology. The specific implementations of data preprocessing, feature engineering, model training, ensemble aggregation, and dynamic hedging would require further development based on the chosen techniques and libraries. 

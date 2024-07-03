@@ -1,0 +1,40 @@
+## Analyzing "Rethinking Attention" with a Focus on Methodology 
+
+Following the systematic approach you've provided, let's delve into the methodology of "Rethinking Attention: Exploring Shallow Feed-Forward Neural Networks as an Alternative to Attention Layers in Transformers" and document our findings.
+
+**Critical Reading and Questions**
+
+* **Problem & Solution:** The paper addresses the complexity and computational cost of attention mechanisms in Transformers, proposing shallow feed-forward networks (FFNs) as replacements. This seems like a valid problem with potential benefits in efficiency. However, it's important to consider if FFNs can truly capture the nuances of attention or if they introduce limitations in long-range dependencies. 
+* **Alternative Solutions:** Did the authors explore other methods for simplifying attention mechanisms, such as reducing the number of heads or employing efficient attention variants? 
+* **Limitations:** The paper acknowledges the increased parameter count in FFN-based models.  How does this impact memory consumption and inference speed? Additionally, the fixed-size input of FFNs limits sequence length flexibility.  How does this compare to the original Transformer's ability to handle variable-length sequences?
+* **Assumptions:** The reliance on knowledge distillation assumes the teacher Transformer model is optimal. Could alternative training methods achieve comparable results without this dependence?
+* **Data & Interpretation:** The IWSLT2017 dataset is a standard benchmark for machine translation. However, exploring other tasks and datasets would provide a more comprehensive evaluation of the approach'sgeneralizability. 
+
+**Creative Reading and Ideas**
+
+* **Strengths:**  The paper offers a novel perspective on Transformer architecture, demonstrating the potential of simpler FFNs. This could lead to more efficient and lightweight models for sequence-to-sequence tasks.
+* **Extensions:** Could this approach be applied to other architectures beyond Transformers that utilize attention mechanisms?
+* **Improvements:**  Exploring alternative FFN architectures or activation functions might further enhance performance. Additionally, investigating methods to mitigate the parameter count increase would be valuable.
+* **Future Research:** This work opens doors to exploring the capabilities of FFNs in capturing complex relationships within sequences. Research into training FFN-based models from scratch without knowledge distillation is also promising. 
+
+**Methodology Summary**
+
+1. **Baseline Model:** A vanilla Transformer model with 6 encoder and decoder layers is trained on the IWSLT2017 dataset for machine translation tasks.
+2. **FFN Design:** Shallow FFNs with a single hidden layer are designed in various sizes. 
+3. **Replacement Approaches:** Four methods are proposed for replacing attention with FFNs:
+    * **ALR (Attention Layer Replacement):** Replaces only the multi-head attention block.
+    * **ALRR (Attention Layer with Residual Connection Replacement):** Replaces the multi-head attention block and the residual connection.
+    * **ASLR (Attention Separate Heads Layer Replacement):** Replaces each head of the multi-head attention with a separate FFN.
+    * **ELR (Encoder Layer Replacement):** Replaces the entire encoder layer with an FFN.
+4. **Knowledge Distillation:** Intermediate activations from the trained Transformer are used to train the FFNs via knowledge distillation.
+5. **Data Preprocessing:** Input sentences are padded to a fixed length and masked to handle variable lengths.
+6. **Decoder Adaptations:** For decoder self-attention, FFNs process words individually, considering causality. For cross-attention, encoder and decoder representations are concatenated and fed to the FFN.
+7. **Training and Evaluation:** FFNs are trained for 20 epochs using the Adam optimizer. The BLEU metric is used to evaluate the performance of the FFN-based models compared to the baseline Transformer.
+
+**Critical Analysis of Methodology**
+
+* The reliance on knowledge distillation raises questions about the ability to train these models from scratch and achieve comparable performance.
+* The fixed-size input of FFNs limits the model's ability to handle long sequences effectively.
+* The paper primarily focuses on machine translation tasks. Evaluating the approach on other sequence-to-sequence tasks would provide a more comprehensive understanding of itsgeneralizability.
+
+**Overall, the paper presents a well-structured methodology for exploring FFNs as replacements for attention mechanisms. The ablation studies and comparisons across different FFN sizes offer valuable insights into the approach's effectiveness. However, further investigation into training methods, sequence length limitations, andgeneralizability is necessary to fully assess the potential of FFNs as attention replacements.** 

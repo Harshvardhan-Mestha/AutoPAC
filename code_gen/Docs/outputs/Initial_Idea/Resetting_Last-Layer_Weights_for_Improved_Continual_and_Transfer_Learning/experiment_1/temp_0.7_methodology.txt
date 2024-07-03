@@ -1,0 +1,92 @@
+## Methodology for Numerai with Insights from "Reset it and Forget It"
+
+Given the Numerai dataset and the high-level idea of leveraging insights from the "Reset it and Forget It" paper, we need to carefully consider the model choice and address potential limitations. 
+
+**Model Selection:**
+
+* **XGBoost:**  Given the tabular nature of the Numerai data with diverse features, XGBoost emerges as a strong candidate. Its effectiveness in handling mixed data types, feature importance analysis, and robustness to noise aligns well with the dataset's characteristics.
+* **Limitations of XGBoost:**  XGBoost, while powerful, can be susceptible to overfitting, especially with high-dimensional data and complex models. Additionally, it might not capture complex non-linear relationships as effectively as deep learning models.
+
+**Relevance of "Reset it and Forget It":**
+
+* **Direct Applicability:** The paper's focus on image classification and convolutional neural networks makes its direct application to Numerai's tabular data and XGBoost model challenging. The concept of "zapping" (resetting weights) doesn't directly translate to XGBoost's tree-based structure.
+* **Indirect Inspiration:** The core idea of preventing overfitting and promoting adaptability through controlled forgetting can be adapted. We can explore techniques like feature sub-sampling, regularization, and ensemble methods within XGBoost to achieve similar goals.
+
+**Proposed Methodology:**
+
+**1. Data Preprocessing:**
+
+* **Handling Missing Values:** Implement a strategy for handling missing values (NaN) in both features and auxiliary targets. Options include imputation (e.g., mean/median) or creating indicator features.
+* **Feature Engineering:** Explore potential feature engineering based on domain knowledge or insights from feature importance analysis.
+* **Feature Scaling:**  Scale features using techniques like standardization or normalization to ensure features contribute equally during model training.
+
+**2. Training with Controlled Forgetting:**
+
+* **Cross-Validation with Era Awareness:** Implement time-series aware cross-validation, ensuring data from future eras doesn't leak into training data for past eras. 
+* **Ensemble Methods:** Train multiple XGBoost models with different random seeds or subsets of features to reduce overfitting and improve generalization.
+* **Regularization:** Apply regularization techniques like L1/L2 regularization to penalize model complexity and prevent overfitting.
+* **Feature Sub-sampling:** Randomly select a subset of features during each training iteration to introduce controlled forgetting and improve model robustness.
+
+**3. Model Evaluation and Selection:**
+
+* **Evaluate model performance using era-wise metrics like mean correlation coefficient.**
+* **Analyze feature importance to understand which features contribute most to predictions.**
+* **Select the best performing model or ensemble based on validation performance and stability across eras.**
+
+**4. Prediction and Submission:**
+
+* **Generate predictions on the test set using the selected model or ensemble.**
+* **Submit predictions to the Numerai platform for evaluation and scoring.**
+
+**Pseudocode:**
+
+```
+# Data Preprocessing
+def preprocess_data(data):
+    # Handle missing values (e.g., imputation, indicator features)
+    # Feature engineering (if applicable)
+    # Feature scaling (e.g., standardization)
+    return processed_data
+
+# Time-series aware cross-validation
+def time_series_cv(data, n_splits):
+    # Split data into n_splits based on eras, ensuring no data leakage
+    return train_indices, validation_indices
+
+# Train XGBoost model with controlled forgetting
+def train_xgboost_model(train_data, params):
+    # Implement feature sub-sampling
+    # Apply regularization
+    model = XGBoostClassifier(**params)
+    model.fit(train_data[features], train_data[target])
+    return model
+
+# Model evaluation
+def evaluate_model(model, validation_data):
+    predictions = model.predict(validation_data[features])
+    # Calculate era-wise metrics (e.g., mean correlation coefficient)
+    return performance
+
+# Ensemble creation and prediction
+def ensemble_prediction(models, test_data):
+    predictions = []
+    for model in models:
+        predictions.append(model.predict_proba(test_data[features]))
+    # Combine predictions (e.g., averaging)
+    return final_predictions
+
+# Main execution
+processed_data = preprocess_data(numerai_data)
+models = []
+for train_indices, validation_indices in time_series_cv(processed_data, n_splits):
+    train_data = processed_data.iloc[train_indices]
+    validation_data = processed_data.iloc[validation_indices]
+    model = train_xgboost_model(train_data, params)
+    performance = evaluate_model(model, validation_data)
+    # Store model and performance
+    models.append(model)
+
+test_predictions = ensemble_prediction(models, test_data)
+# Submit predictions to Numerai platform
+``` 
+**This methodology emphasizes controlled forgetting and adaptability while leveraging the strengths of XGBoost for the Numerai dataset. By incorporating insights from the paper and addressing the limitations of the chosen model, we aim to achieve robust and generalizable performance in the Numerai tournament.** 

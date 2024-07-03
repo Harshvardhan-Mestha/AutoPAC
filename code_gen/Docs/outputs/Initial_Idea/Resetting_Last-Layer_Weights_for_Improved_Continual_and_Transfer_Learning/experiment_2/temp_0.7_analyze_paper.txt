@@ -1,0 +1,39 @@
+## Analyzing "Reset It and Forget It: Relearning Last-Layer Weights Improves Continual and Transfer Learning" with a Focus on Methodology
+
+Following the systematic approach you've provided, let's delve into the paper and document our findings, particularly focusing on the methodology:
+
+**1. Critical Reading and Initial Impressions:**
+
+* **Problem addressed:** The paper tackles the challenge of catastrophic forgetting in neural networks during continual learning and aims to improve transfer learning efficiency. 
+* **Novelty:** The proposed "zapping" mechanism, which involves resetting weights in the last layer, appears to be a simple yet effective approach.
+* **Potential limitations:** The paper primarily focuses on image classification tasks and smaller network architectures. The effectiveness of zapping on larger models and different tasks requires further investigation.
+
+**2. Creative Reading and Potential Extensions:**
+
+* **Generalizability:** The zapping mechanism might be applicable to other domains beyond image classification, such as natural language processing or reinforcement learning. 
+* **Alternative resetting schedules:** Exploring different zapping frequencies and the number of neurons reset could lead to further performance improvements.
+* **Connections to other techniques:** Investigating the relationship between zapping and other regularization methods like dropout could provide valuable insights.
+
+**3. Summary of the Paper:**
+
+The paper introduces "zapping," a weight resetting technique in the last layer of a neural network, to improve continual and transfer learning. By repeatedly forgetting and relearning, the network learns more adaptable features, leading to better performance on new tasks and reduced catastrophic forgetting.
+
+**4. Detailed Methodology:**
+
+* **Pre-training:** Three pre-training methods are explored:
+    * **Standard i.i.d. pre-training:** Training on a subset of classes with mini-batch gradient descent.
+    * **Alternating Sequential and Batch learning (ASB):** Alternating between sequential learning on a single class and batch learning on all classes.
+    * **Meta-learning through ASB (Meta-ASB):** Similar to ASB but with the addition of meta-gradients to update the initial weights of each inner loop.
+* **Zapping:** In all pre-training methods, the option to "zap" is explored, which involves resetting the weights of the last layer corresponding to a specific class before training on that class.
+* **Transfer Learning:** Two transfer learning scenarios are evaluated:
+    * **Sequential transfer (continual learning):** The model is fine-tuned on a sequence of new classes, one at a time.
+    * **Standard i.i.d. transfer (fine-tuning):** The model is fine-tuned on batches of data from new classes.
+
+**5. Analysis of Methodology:**
+
+* **Zapping's effectiveness:** The results consistently demonstrate the positive impact of zapping on both continual and transfer learning performance across various datasets.
+* **Comparison to meta-learning:** While meta-learning with zapping achieves the best results, ASB with zapping offers a competitive alternative without the computational cost of meta-gradients.
+* **Importance of pre-training:**  Pre-training on a similar domain to the transfer domain is beneficial, but zapping can help improve performance even when domains differ. 
+* **Future directions:** Further investigation is needed to explore optimal zapping schedules, its effectiveness on larger models and different tasks, and its connection to other regularization techniques.
+
+**Overall, the paper presents a promising and computationally efficient method for improving continual and transfer learning. The zapping mechanism offers a valuable tool for mitigating catastrophic forgetting and enhancing the adaptability of neural networks.** 

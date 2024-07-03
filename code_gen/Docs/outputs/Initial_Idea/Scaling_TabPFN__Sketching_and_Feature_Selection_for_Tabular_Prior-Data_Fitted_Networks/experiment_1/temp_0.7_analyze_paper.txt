@@ -1,0 +1,40 @@
+## Literature Review: Scaling TabPFN: Sketching and Feature Selection for Tabular Prior-Data Fitted Networks
+
+**Focus:** Methodology and Findings Related to Scaling TabPFN
+
+### Summary:
+
+This paper investigates methods for scaling TabPFN (Tabular Prior-Data Fitted Networks) to handle larger datasets, focusing on **sketching** (reducing the number of training samples) and **feature selection** techniques. The authors compare the performance of TabPFN with CatBoost on 19 datasets, analyzing the impact of different summarization and feature reduction methods.
+
+### Methodology:
+
+1. **Dataset Selection:** The authors chose 19 datasets from OpenML that exceed the recommended feature or sample limitations of TabPFN (100 features and 1000 samples). 
+2. **Algorithms Compared:** TabPFN and CatBoost were selected for comparison, with CatBoost representing a strong baseline as the best-performing model in previous studies.
+3. **Evaluation Metrics:**  Average accuracy over 10 train/validation folds was used as the primary performance metric. Statistical significance of performance differences was assessed using Wilcoxon signed-rank test with Holm-Bonferroni correction.
+4. **Sketching Methods:**
+    * **Random Sampling:** A random subset of samples was selected.
+    * **K-Means Clustering:** Samples were chosen as the K-means cluster centers.
+    * **CoreSet:** An n_max sized CoreSet was selected.
+    * **Sampling Strategies:** Both "equal" (balanced class representation) and "proportional" (maintaining original class distribution) sampling strategies were explored.
+5. **Feature Selection Methods:**
+    * **Random Feature Selection:** A random subset of features was chosen.
+    * **Mutual Information:** Features with high mutual information to the target were selected.
+    * **PCA:** The d_max first principal components were used.
+6. **Scaling Analysis:** The impact of varying the number of samples and features on both TabPFN and CatBoost was investigated. 
+
+### Key Findings:
+
+* **Sketching:** Random sampling of training data generally performed as well as more complex methods like K-means or CoreSet selection. 
+* **Feature Selection:** Feature selection significantly impacted performance, with TabPFN being more sensitive to the choice of features than CatBoost. Mutual information and PCA-based selection often outperformed random selection, especially for datasets with a large number of features.
+* **Scaling:** Increasing the number of samples improved performance for both models, but the gains were more pronounced for CatBoost. In contrast, increasing the number of features consistently benefited CatBoost, while TabPFN sometimes performed better with fewer features, suggesting sensitivity to irrelevant features.
+
+###  Discussion Points:
+
+* The authors hypothesize that the effectiveness of random sampling compared to more sophisticated sketching methods may be due to the large sample size (even after sketching) allowing for a form of statistical convergence.
+* The paper suggests that future research should explore more advanced feature selection techniques specifically tailored for in-context learning models like TabPFN. 
+* Exploring connections between context optimization in TabPFN and large language models is another promising direction for future research.
+
+### Additional Notes:
+
+* The paper provides a formal mathematical formulation of the optimization problem addressed in their work.
+* A complete list of the datasets used in the study is provided, along with their key characteristics. 

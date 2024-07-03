@@ -1,0 +1,45 @@
+## Literature Review: Analyzing "Language Agent Tree Search Unifies Reasoning, Acting, and Planning in Language Models" 
+
+**Focus:** Methodology
+
+**Paper Summary:**
+
+This paper introduces Language Agent Tree Search (LATS), a framework that combines planning, acting, and reasoning abilities of Large Language Models (LLMs) for improved decision-making. LATS utilizes an LLM as the agent, value function, and optimizer within a Monte Carlo Tree Search (MCTS) framework. It leverages external environment feedback and self-reflection to enhance the LLM's capabilities.
+
+**Methodology Breakdown:**
+
+1. **LLM Agent:**
+    * The LLM acts as the agent within the environment, generating actions based on the current state (input, previous actions/observations).
+    * The action space includes both reasoning traces (thoughts) and permissible actions within the environment.
+    * Instead of choosing one action, LATS samples multiple actions from the LLM, allowing for broader exploration.
+
+2. **LATS Algorithm (MCTS Variant):**
+    * **State Representation:** Each node in the search tree represents a state, containing the input, action history, and observation history.
+    * **Selection:** Uses Upper Confidence Bound applied to Trees (UCT) to balance exploration and exploitation, selecting the most promising node for expansion.
+    * **Expansion:** Samples multiple actions from the LLM agent based on the current state, leading to new child nodes in the tree. The environment provides observations for each action.
+    * **Evaluation:** The LLM acts as a value function, assigning a score to each new child node based on its potential for success.
+    * **Simulation:** Expands the selected node further by prioritizing high-value nodes until reaching a terminal state (successful or unsuccessful).
+    * **Backpropagation:** Updates the values of nodes along the explored path based on the simulation outcome (reward).
+    * **Reflection:** If the trajectory fails, the LLM generates a self-reflection analyzing the errors and suggesting improvements. This reflection is used as additional context in future iterations.
+
+3. **Key Advantages:**
+    * **Generality:** Applicable to both reasoning and decision-making tasks.
+    * **Deliberate:** MCTS and the LLM value function ensure a principled search strategy.
+    * **Adaptability:** Leverages external feedback and self-reflection to adapt and improve.
+    * **Flexibility:** Can be adjusted to different environments and resource constraints.
+    * **Modularity:**  The LLM agent, value function, and reflection generator can be independently modified.
+
+**Evaluation:**
+
+The paper evaluates LATS on various tasks:
+
+* **HotPotQA:** LATS outperforms other LLM prompting methods, especially when combining internal and external reasoning strategies.
+* **Programming (HumanEval, MBPP):** Achieves state-of-the-art results, highlighting the importance of external feedback for complex reasoning tasks.
+* **WebShop:** Demonstrates significant improvement over baseline methods, showing effectiveness in complex decision-making environments.
+
+**Additional Observations:**
+
+* Ablation studies confirm the importance of each component within LATS.
+* LATS has a higher computational cost compared to simpler prompting methods, but offers a trade-off between performance and efficiency by adjusting the number of sampled actions.
+
+**Overall, LATS presents a promising approach for enhancing LLM capabilities in decision-making tasks by effectively unifying planning, acting, and reasoning within a search-based framework.**

@@ -1,0 +1,30 @@
+## Literature Review: Selective Mixup and Distribution Shifts 
+
+**Paper:** Selective Mixup Helps with Distribution Shifts, But Not (Only) because of Mixup by Damien Teney, Jindong Wang, and Ehsan Abbasnejad.
+
+**Focus:** Methodology and Findings related to Selective Mixup
+
+### Methodology 
+
+*   **Selective Mixup:** The paper investigates a family of methods called "Selective Mixup" which apply the mixup augmentation technique to specific pairs of training examples, rather than random pairs as in standard mixup. 
+*   **Selection Criteria:** Different criteria are explored for selecting pairs, such as combining examples across classes ("different class") or across domains ("different domain"). 
+*   **Datasets:** Five datasets with known distribution shifts are used for evaluation, covering various modalities (vision, NLP, tabular) and types of shifts (covariate, label, subpopulation).
+*   **Evaluation Metrics:** The paper uses metrics like worst-group accuracy and area under the ROC curve (AUROC) to assess the performance of different methods under distribution shifts.
+*   **Baselines:** Comparisons are made against standard Empirical Risk Minimization (ERM), vanilla mixup, and resampling baselines that balance class or domain distributions.
+*   **Ablation Studies:** A critical ablation study is performed where selected pairs are not mixed but simply concatenated in mini-batches ("selective sampling"). This helps isolate the effects of resampling from the mixing operation.
+
+### Findings
+
+*   **Resampling Effect:** The paper reveals that selective mixup implicitly modifies the training distribution due to the non-random selection of pairs. This resampling effect is independent of the mixing operation and can significantly impact generalization.
+*   **Regression Toward the Mean:**  The "different class" or "different domain" criteria tend to bring the training distribution closer to a uniform distribution of classes or domains. This is beneficial when the test data also exhibits a similar shift toward uniformity, effectively "regressing toward the mean" between training and test distributions.
+*   **Correlation with Performance:** The paper finds a strong correlation between the performance improvements achieved by selective mixup and the reduction in divergence between training and test distributions. This further supports the claim that resampling plays a key role.
+*   **Comparison with Baselines:** In most cases, the improvements from selective mixup can be partly or fully explained by the resampling effects. Simple resampling strategies often achieve comparable performance. 
+*   **Complementary Effects:**  However, in some cases, there is evidence of complementary benefits from both resampling and the mixing operation within selective mixup. Combining the best of both worlds can lead to further improvements.
+
+### Takeaways 
+
+*   Selective mixup's success is largely attributed to its implicit resampling effect, which addresses distribution shifts by bringing training and test distributions closer.
+*   The effectiveness of different selection criteria depends on the specific characteristics of the dataset and the nature of the distribution shift.
+*   Simple resampling methods can be powerful baselines for handling distribution shifts and should be considered alongside more complex techniques.
+*   Combining resampling with selective mixup can offer additional benefits when both aspects contribute positively.
+*   The reliance on a "regression toward the mean" phenomenon in the evaluated datasets raises questions about thegeneralizability of selective mixup to real-world scenarios with unknown distribution shifts. 

@@ -1,0 +1,76 @@
+## Methodology for Numerai Prediction using Insights from "Rethinking Attention"
+
+While the paper "Rethinking Attention" provides valuable insights into the potential of shallow FF networks as replacements for attention mechanisms in Transformers, its direct application to the Numerai dataset, which is tabular and not sequence-based, is limited.  Therefore, we'll develop a methodology that leverages the paper's core idea of exploring simpler architectures while considering the specific characteristics of the Numerai data. 
+
+### Step 1: Model Selection and Justification
+
+Given the tabular nature of the Numerai dataset, **Gradient Boosting Machines (GBMs)** like XGBoost or LightGBM are well-suited for the task. GBMs excel at handling tabular data with mixed feature types and are known for their predictive accuracy and efficiency. Additionally, their inherent feature importance analysis aligns with the need to understand feature contributions in the Numerai competition. 
+
+### Step 2: Addressing GBM Limitations
+
+GBMs can be susceptible to overfitting, especially with noisy or high-dimensional data. To mitigate this, we will employ the following techniques:
+
+* **Feature Selection:** Utilize feature importance analysis provided by GBMs to identify and select the most relevant features, reducing dimensionality and noise.
+* **Regularization:** Implement techniques like L1/L2 regularization or early stopping to prevent overfitting during training.
+* **Ensemble Methods:** Explore ensemble learning methods like bagging or stacking to combine multiple GBM models, further improvinggeneralizability and robustness.
+
+### Step 3: Incorporating Inspiration from "Rethinking Attention"
+
+While FF networks are not directly applicable, the paper's core idea of exploring simpler architectures can be adapted. We will experiment with shallower GBM structures (fewer trees, lower depth) and compare their performance to deeper structures. This investigation will shed light on the trade-off between model complexity and predictive power on the Numerai data.
+
+### Step 4: Data Preprocessing and Feature Engineering
+
+* **Handling Missing Values:** Implement appropriate strategies for dealing with missing values (NaNs) in both features and targets. Options include imputation (e.g., mean/median) or creating indicator features for missingness.
+* **Feature Scaling:** Apply feature scaling techniques like standardization or normalization to ensure features are on a similar scale, improving GBM training stability.
+* **Era-Wise Splitting:** Respect the temporal nature of the data by splitting data era-wise for training and validation to avoid leakage and ensure realistic evaluation. 
+* **Target Engineering:** Explore creating additional features based on the provided auxiliary targets or engineered features based on domain knowledge of financial markets.
+
+### Step 5: Training and Evaluation
+
+* **Training Process:** Train GBM models using the preprocessed data, incorporating the chosen regularization and ensemble methods.
+* **Validation and Hyperparameter Tuning:** Employ era-wise cross-validation to tune hyperparameters and select the best performing model. 
+* **Performance Metrics:** Evaluate model performance using metrics aligned with the Numerai competition, such as correlation and Sharpe ratio. 
+
+### Step 6: Utilizing the Entire Dataset
+
+To leverage the complete Numerai dataset, we can implement incremental learning or online learning techniques. These methods allow the GBM model to continuously learn and adapt as new data becomes available, ensuring the model remains up-to-date with the evolving market dynamics.
+
+## Pseudocode for Methodology
+
+```
+# Step 1 & 2: Model Selection and Addressing Limitations
+model = LightGBM(objective="regression", n_estimators=100, learning_rate=0.1, 
+                 reg_alpha=0.1, reg_lambda=0.1)  # Initialize with parameters
+
+# Step 3: Inspiration from "Rethinking Attention"
+shallow_model = LightGBM(objective="regression", n_estimators=50, max_depth=3) 
+
+# Step 4: Data Preprocessing and Feature Engineering
+def preprocess_data(data):
+    # Handle missing values (e.g., imputation or indicator features)
+    # Apply feature scaling (e.g., standardization)
+    # Perform feature engineering (e.g., based on auxiliary targets)
+    return processed_data
+
+# Step 5: Training and Evaluation
+def train_and_evaluate(model, data):
+    # Split data into era-wise training and validation sets
+    for train_data, val_data in era_wise_split(data):
+        model.fit(train_data[features], train_data[target])
+        predictions = model.predict(val_data[features])
+        # Calculate performance metrics (correlation, Sharpe ratio)
+    return performance
+
+# Step 6: Utilizing the Entire Dataset (Incremental Learning Example)
+for new_data in stream_of_data:
+    model.fit(new_data[features], new_data[target], 
+             init_model=model)  # Update the model with new data
+
+# Compare performance of different models and configurations
+performance_regular = train_and_evaluate(model, preprocessed_data)
+performance_shallow = train_and_evaluate(shallow_model, preprocessed_data)
+
+# Analyze results and choose the best model 
+```
+
+**Note:** This pseudocode provides a high-level overview. Specific implementation details will depend on the chosen libraries and the intricacies of the Numerai data. 

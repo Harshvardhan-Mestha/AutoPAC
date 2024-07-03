@@ -1,0 +1,58 @@
+## Dissecting "Learning to Learn Financial Networks for Optimising Momentum Strategies": A Methodology Focus
+
+Based on the provided abstract and introduction of the paper "Learning to Learn Financial Networks for Optimising Momentum Strategies" by Pu et al., let's delve into the methodology and document key findings with a Chain-of-Thought approach:
+
+**Problem & Motivation:**
+
+* **Accessibility:** Constructing financial networks traditionally relies on expensive data and expert knowledge, limiting accessibility for smaller institutions and academic research.
+* **Disconnection:** Existing approaches treat network construction and portfolio optimization as separate tasks, potentially hindering optimal performance.
+
+**Proposed Solution: L2GMOM**
+
+* **End-to-End Framework:**  L2GMOM simultaneously learns financial networks and optimizes trading signals for network momentum strategies.
+* **Learning to Learn (L2G):** Leverages the L2G concept to learn graph topologies directly from readily available historical pricing data. This eliminates the need for expensive external data and reduces human bias in network construction. 
+* **Algorithm Unrolling:** The model architecture is a neural network derived from unrolling the optimization algorithm used in traditional graph learning. This provides interpretability by explicitly showing the connections between assets. 
+* **Flexibility:** L2GMOM can be trained with various loss functions related to portfolio performance, such as the negative Sharpe ratio. This allows for tailoring the model to specific investment objectives. 
+
+**Methodology Breakdown:**
+
+1. **Input Features:**
+    * **Momentum Features (U_t):** Eight features capture momentum signals: 
+        * Volatility-normalized returns over various lookback windows (1 day, 1 month, 3 months, 6 months, 1 year).
+        * MACD indicators with three combinations of short and long time scales.
+    * **Node Features (V_t):** 252-day lookback window of individual momentum features stacked together to capture stable similarities for robust graph learning.
+
+2. **L2G Layer:**
+    * Learns the graph adjacency matrix (A_t) representing asset interconnections based on the input node features (V_t).
+    * Employs algorithm unrolling, transforming the optimization process into a neural network layer with learnable parameters (α, β, γ). 
+
+3. **Network Construction:**
+    * Normalizes the adjacency matrix (A_t) to account for node degree differences, resulting in ˜A_t. 
+
+4. **Network Momentum Feature Construction:**
+    * A linear layer combines the individual momentum features (U_t) of connected assets using the normalized adjacency matrix (˜A_t) and learnable weights (θ). This results in network momentum features (y_t) reflecting the influence of connected assets.
+
+5. **Trading Signal Generation:**
+    * **L2GMOM:** Trading positions are determined by the sign of the network momentum features (x_t = sgn(y_t)).
+    * **L2GMOM_SR:**  A tanh activation is applied to the linear layer output to directly model positions within the [-1, 1] range and optimize for the Sharpe ratio. 
+
+6. **Loss Function & Training:**
+    * **L2GMOM:**  Mean Squared Error (MSE) between predicted network momentum features (y_t) and actual future returns.
+    * **L2GMOM_SR:** Negative Sharpe Ratio to directly optimize for risk-adjusted returns.
+    * Model parameters are trained using stochastic gradient descent with the Adam optimizer.
+
+**Key Findings & Insights:**
+
+* **Improved Performance:** L2GMOM demonstrates significant improvement in portfolio profitability and risk control compared to traditional time-series momentum and graph-based strategies. 
+* **Interpretability:** Learned networks offer insights into momentum spillover effects and reveal community structures within asset classes. 
+* **Adaptability:** The framework's flexibility allows for incorporating different loss functions and adapting to various investment goals.
+* **Computational Efficiency:**  L2GMOM offers fast inference, bypassing the need for daily graph optimization. 
+
+**Further Research Directions:**
+
+* Exploring alternative network construction methods and their impact on performance.
+* Investigating the effectiveness of L2GMOM in different market regimes and asset classes.
+* Incorporating additional features and data sources to enhance the model's predictive power.
+* Developing methods to further reduce turnover and transaction costs.
+
+**Overall, L2GMOM presents a promising approach for constructing network momentum strategies, offering improved accessibility, performance, and interpretability compared to existing methods.** 

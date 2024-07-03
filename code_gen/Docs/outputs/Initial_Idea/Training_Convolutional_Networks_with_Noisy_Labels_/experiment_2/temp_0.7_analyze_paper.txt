@@ -1,0 +1,46 @@
+## Literature Review: Training Convolutional Networks with Noisy Labels 
+
+**Paper Summary:**
+
+This paper investigates the impact of noisy labels on the performance of Convolutional Neural Networks (ConvNets) and proposes methods to mitigate these effects. It explores two main types of label noise: label flips (incorrect class labels) and outliers (samples not belonging to any defined class). The authors introduce a novel approach involving a "noise layer" added to the ConvNet, which adapts to the noise distribution and improves classification accuracy.
+
+**Methodology Focus:**
+
+1. **Noise Modeling:**
+    * **Label Flip Noise:**  A probability transition matrix, Q*, is introduced to model the probability of one class being mislabeled as another. This allows for asymmetric noise distributions, reflecting real-world scenarios.
+    * **Outlier Noise:**  An additional "outlier" class is added to handle samples not belonging to any defined class. The noise distribution matrix, Q*, is adjusted to account for this extra class.
+
+2. **Noise Layer Integration:**
+    * A constrained linear layer is added on top of the softmax layer in the ConvNet. This layer acts as the noise model, with its weights representing the noise distribution matrix, Q. 
+    * The network is trained end-to-end using backpropagation, allowing the noise layer to learn the noise distribution without explicit supervision.
+
+3. **Learning the Noise Distribution:**
+    * Initially, the noise layer is set to the identity matrix while the base model is trained.
+    * Subsequently, the noise layer's weights (Q) are updated along with the rest of the network using weight decay as a regularizer. This encourages Q to move away from the identity and converge towards the true noise distribution (Q*).
+    * For outlier noise, Q is fixed based on the estimated outlier ratio and a small set of known outlier examples.
+
+4. **Evaluation:** 
+    * Experiments are conducted on various datasets, including SVHN, CIFAR-10, and ImageNet, with both synthetic and real-world noise.
+    * Performance is measured using classification accuracy and compared with baseline models without the noise layer. 
+    * The results demonstrate the effectiveness of the proposed noise layer approach in improving the robustness of ConvNets to label noise.
+
+**Strengths of the Methodology:**
+
+* **Flexibility:** The noise layer approach can handle both label flip and outlier noise, making it adaptable to various noise scenarios.
+* **Efficiency:** The noise layer is a simple linear layer, easily integrated into existing ConvNet architectures and training procedures.
+* **Scalability:** The method is demonstrated to be effective on large-scale datasets like ImageNet.
+* **Effectiveness:** The experiments show significant improvements in classification accuracy compared to baseline models, especially in high noise settings.
+
+**Potential Limitations:**
+
+* **Weight Decay Parameter:** The optimal weight decay parameter for the noise layer may require tuning and could be sensitive to the specific dataset and noise characteristics.
+* **Outlier Ratio Estimation:**  Accurate estimation of the outlier ratio is crucial for the outlier noise model, which may be challenging in real-world scenarios. 
+* **Domain Shift:** The performance of the noise layer may be affected by domain shift between the training data and the test data. 
+
+**Further Research Directions:**
+
+* **Automatic Weight Decay Tuning:** Exploring methods to automatically determine the optimal weight decay parameter for the noise layer could enhance the usability and performance of the approach.
+* **Noise Type Identification:** Developing techniques to automatically identify the type of noise present in the data could allow for more tailored noise mitigation strategies. 
+* **Alternative Noise Models:** Exploring alternative noise models beyond the probability transition matrix could provide further insights and improvements.
+
+**Overall, this paper presents a valuable contribution to the field of deep learning by addressing the challenge of training ConvNets with noisy labels. The proposed noise layer approach is a simple yet effective method for improving the robustness and accuracy of ConvNets in real-world scenarios with noisy data.**

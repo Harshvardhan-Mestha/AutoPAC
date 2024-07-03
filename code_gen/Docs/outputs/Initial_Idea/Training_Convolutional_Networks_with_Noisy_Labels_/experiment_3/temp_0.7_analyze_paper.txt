@@ -1,0 +1,56 @@
+## Literature Review: Training Convolutional Networks with Noisy Labels 
+
+**Paper:** Training Convolutional Networks with Noisy Labels (Sukhbaatar et al., 2015)
+
+**Focus:** Methodology for training ConvNets with noisy labels.
+
+### Summary
+
+This paper investigates the impact of noisy labels on ConvNet training and proposes methods to mitigate its negative effects. Two main types of noise are addressed: label flips (incorrect class labels) and outliers (samples not belonging to any of the target classes). The authors introduce a novel approach involving a "noise layer" added to the network, which adapts to the noise distribution during training. This layer allows the model to learn from noisy data more effectively and achieve better performance compared to standard ConvNets.
+
+### Methodology
+
+**1. Label Flip Noise:**
+
+*   **Noise Model:** A probability transition matrix Q is introduced to model the probability of a label being flipped from one class to another. This matrix captures the noise distribution in the data.
+*   **Network Modification:** A constrained linear "noise layer" is added on top of the softmax layer in the ConvNet. The weights of this layer correspond to the noise matrix Q. 
+*   **Training:** The network, including the noise layer, is trained end-to-end using backpropagation. The noise matrix Q is updated during training, effectively learning the noise distribution from the data. 
+*   **Regularization:** A regularization term (e.g., weight decay) is applied to the noise matrix Q to prevent it from overfitting to the noise and to encourage it to converge to the true noise distribution.
+
+**2. Outlier Noise:**
+
+*   **Outlier Class:** An additional "outlier" class is introduced to represent samples not belonging to any of the target classes.
+*   **Network Modification:** The network output is extended to include an additional probability for the outlier class.
+*   **Noise Model:** The noise matrix Q is fixed based on the assumed outlier distribution (e.g., uniform distribution across classes).
+*   **Training:** The network is trained similarly to the label flip case, but with the fixed noise matrix Q for outlier handling.
+
+**3. Experiments:**
+
+*   **Datasets:** SVHN, CIFAR-10, and ImageNet are used to evaluate the proposed methods under different noise levels and settings.
+*   **Evaluation:** Classification accuracy is measured on clean test sets to assess the effectiveness of the noise handling techniques.
+
+**4. Key Findings:**
+
+*   ConvNets are surprisingly robust to moderate levels of label noise but degrade significantly at higher noise levels.
+*   The proposed noise layer method consistently improves performance compared to standard ConvNets under both label flip and outlier noise.
+*   The noise layer effectively learns the noise distribution from the data, leading to better generalization and robustness.
+
+### Strengths and Limitations
+
+**Strengths:**
+
+*   Simple and effective approach for handling noisy labels.
+*   Easy to implement with minimal modifications to existing ConvNet architectures.
+*   Scalable to large datasets and complex noise distributions.
+
+**Limitations:**
+
+*   Requires tuning of hyperparameters (e.g., weight decay for Q) which can be challenging without clean validation data.
+*   Assumes specific noise models (e.g., independent label flips) which may not always hold in real-world scenarios.
+*   Performance gains on real-world noisy datasets are smaller compared to synthetic noise experiments. 
+
+### Future Research Directions
+
+*   Developing methods for automatically estimating the noise distribution without relying on hyperparameter tuning.
+*   Exploring more complex and realistic noise models that capture dependencies between samples and features.
+*   Investigating the combination of noise handling techniques with other methods such as semi-supervised learning. 

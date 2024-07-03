@@ -1,0 +1,61 @@
+## Literature Review: Network Momentum Across Asset Classes
+
+**Paper:** Network Momentum across Asset Classes by Xingyue (Stacy) Pu, Stephen Roberts, Xiaowen Dong, and Stefan Zohren
+
+**Focus:** Methodology and Findings
+
+**Chain of Thought and Findings:**
+
+**1. Problem and Solution:**
+
+* **Problem:**  Momentum spillover, the propagation of momentum risk premium across assets, has been observed within and across asset classes. However, studying this effect across classes is challenging due to the lack of readily available common characteristics or economic ties.
+* **Solution:** The paper proposes using a graph learning model to infer dynamic networks among 64 continuous future contracts across commodities, equities, fixed income, and foreign currencies. This network captures momentum spillover patterns based solely on pricing data.
+
+**2. Methodology:**
+
+* **Data:** Daily prices of 64 highly liquid, ratio-adjusted continuous futures contracts from 1990 to 2022.
+* **Momentum Features:** Eight individual momentum features are calculated for each asset, including volatility-scaled returns and normalized MACD indicators over different time spans.
+* **Graph Learning:**
+    * A graph learning model is used to estimate the graph adjacency matrix, representing the network among assets. 
+    * The model minimizes the Laplacian quadratic term, encouraging connections between assets with similar momentum features.
+    * The resulting graph has non-negative edge weights reflecting the strength of similarity and no self-connections.
+    * Five distinct graphs are learned using different lookback windows (1-5 years) and then combined into an ensemble graph.
+* **Network Momentum Features:**
+    * For each asset, network momentum features are calculated as a weighted average of its connected assets' individual momentum features, with edge values as weights.
+* **Portfolio Construction:**
+    * A linear regression model predicts an asset's future 1-day volatility-scaled return based on its network momentum features.
+    * A long/short portfolio (GMOM) is constructed based on the predicted returns, targeting an annualized volatility of 15%. 
+
+**3. Findings:**
+
+* **GMOM Performance:**
+    * GMOM achieves an annual return of 22% and a Sharpe ratio of 1.51 after volatility scaling, outperforming individual momentum strategies and the market benchmark.
+    * It exhibits lower downside deviation and maximum drawdown, demonstrating superior risk management.
+* **Diversification Analysis:**
+    * GMOM has a moderate correlation with individual momentum strategies, suggesting it captures unique trading signals.
+    * Combining individual and network momentum features in a linear regression model further improves performance.
+* **Turnover Analysis:**
+    * GMOM has a higher turnover than model-free strategies but demonstrates better resilience to transaction costs.
+* **Graph Topology Analysis:**
+    * The learned graphs exhibit stable topological properties over time, with high edge sparsity and a degree of community structure.
+    * The community structure does not perfectly align with asset classes, suggesting inter-class similarities in momentum features.
+* **Individual Asset Class Portfolios:**
+    * The performance of GMOM is not driven by a single asset class but rather by the network effects across classes.
+    * Inter-class connections play a crucial role in shaping network momentum signals and enhancing predictive power.
+* **Momentum and Reversals:**
+    * The regression coefficients suggest potential reversal effects in network momentum, differing from those observed in individual momentum.
+
+**4. Future Research:**
+
+* Exploring nonlinear machine learning models to capture complex relationships in network momentum.
+* Implementing turnover regularisation to improve strategy monetisation.
+* Conducting theoretical analysis of network momentum to deepen understanding of this risk premium.
+
+**5. Critical Evaluation:**
+
+* The paper's methodology is well-defined and transparent, allowing for replication and further research.
+* The use of graph learning is a novel and effective approach to capture momentum spillover across asset classes.
+* The empirical results are convincing and demonstrate the potential of network momentum as a valuable risk premium.
+* The paper acknowledges limitations, such as the high turnover and the need for further theoretical analysis.
+
+**Overall, this paper makes a significant contribution to the understanding and application of momentum spillover across asset classes. The proposed methodology and findings offer valuable insights for developing and improving cross-asset trading strategies.** 

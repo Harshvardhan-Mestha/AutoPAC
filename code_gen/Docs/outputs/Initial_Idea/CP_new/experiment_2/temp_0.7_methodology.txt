@@ -1,0 +1,68 @@
+### Methodology for Continual Learning on Noisy Financial Data
+
+#### Step-by-Step Methodology
+
+1. **Objective Identification**:
+   - **Goal**: Develop a continual learning model to predict 'target_10_val' labels as new data arrives, adapting to daily changes in data distribution and noise levels.
+   - **Data Characteristics**: Sequential data arrival by 'day', with unknown 'era' and noise levels.
+
+2. **Data Preprocessing**:
+   - **Normalization**: Confirm if further normalization is required beyond provided normalized values.
+   - **Feature Engineering**: Utilize existing features and potentially engineer new features that could help capture temporal patterns more effectively, especially focusing on the changes over time in features like volume, price movements, and moving averages.
+
+3. **Model Selection**:
+   - **Choice of Model**: Given the nature of the problem, a model capable of online learning and quick adaptation to new patterns is needed. Options include LSTM (Long Short-Term Memory networks), GRU (Gated Recurrent Units), or Transformer-based models which can handle sequential data effectively.
+   - **Model Rationale**: LSTM and GRU are chosen for their ability to remember long-term dependencies, crucial for financial time series data. Transformers could be considered for their ability to handle sequences in parallel and capture complex patterns.
+
+4. **Continual Learning Setup**:
+   - **Learning Approach**: Implement a sliding window approach where the model is continually trained on a window of the most recent data. This window moves forward as new data comes in.
+   - **Data Windowing**: Define the size of the sliding window (e.g., the last 30 days of data) to balance between computational efficiency and model performance.
+
+5. **Noise Adaptation Strategy**:
+   - **Noise Estimation**: Implement a mechanism to estimate the noise level in incoming data, potentially using a rolling standard deviation of residuals between predictions and actual values.
+   - **Model Adjustment**: Adjust the learning rate and model sensitivity based on estimated noise levels to stabilize learning in the presence of high noise.
+
+6. **Training Procedure**:
+   - **Incremental Training**: As new data arrives each day, update the model incrementally using the new data while phasing out the oldest data in the sliding window.
+   - **Batch Updates**: Perform daily batch updates to the model to incorporate all new data from the day, recalibrating the model parameters accordingly.
+
+7. **Prediction Mechanism**:
+   - **Real-Time Prediction**: For each new data point, after model update, make real-time predictions for 'target_10_val'.
+   - **Handling Unknown Labels**: For the most recent 10 rows where labels are not available, use model predictions as temporary labels for continual training until actual labels become available.
+
+8. **Performance Evaluation**:
+   - **Metrics**: Evaluate the model using metrics suitable for regression tasks such as RMSE (Root Mean Square Error) and MAE (Mean Absolute Error), focusing on the predictions for the 'target_10_val'.
+   - **Feedback Loop**: Incorporate a feedback mechanism to adjust model parameters based on prediction errors, particularly focusing on minimizing errors in high-noise environments.
+
+9. **Model Adaptation for Noise Levels**:
+   - **Dynamic Adaptation**: Continuously monitor performance and adapt the model to maintain effectiveness across varying noise levels, using techniques like dynamic re-weighting of input features based on their stability and noise influence.
+
+#### Pseudocode for the Methodology
+
+```plaintext
+Algorithm: Continual Learning for Noisy Financial Time-Series Data
+Input: Stream of financial data points arriving daily
+Output: Predictions for 'target_10_val' for each data point
+
+Initialize model (e.g., LSTM, GRU)
+Define window_size (e.g., 30 days of data)
+Initialize data_window to empty
+
+For each new_day_data in incoming_data_stream:
+    If length of data_window >= window_size:
+        Remove oldest_day_data from data_window
+    Add new_day_data to data_window
+    
+    Train or fine-tune model on data_window
+    
+    For each new_data_point in new_day_data:
+        prediction = model.predict(new_data_point)
+        If available, use actual 'target_10_val' to update model
+        Else, use prediction as temporary label for next model update
+        
+    Evaluate model performance on latest 'target_10_val' predictions
+    Adjust model parameters based on performance feedback and estimated noise levels
+
+Return predictions
+```
+This methodology ensures the model is continually learning and adapting to the latest data, with mechanisms to handle noise and changing data distributions effectively.

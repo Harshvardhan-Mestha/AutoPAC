@@ -1,0 +1,73 @@
+## Methodology for NumerAI Prediction with Noisy Label Considerations
+
+The NumerAI dataset presents a unique challenge with its noisy labels and the need for robust predictive models. While the paper "Understanding and Utilizing Deep Neural Networks Trained with Noisy Labels" offers valuable insights, its direct application to NumerAI requires careful consideration due to the differences in data structure and the nature of the prediction task. This methodology outlines a tailored approach, incorporating relevant aspects of the paper and addressing potential limitations.
+
+### Step 1: Model Selection and Understanding Limitations
+
+* **Model Choice:** Given the tabular nature of the NumerAI data, **Gradient Boosting Trees (GBTs)** like XGBoost or LightGBM would be suitable choices. GBTs excel at handling mixed data types, feature interactions, and are less prone to overfitting compared to DNNs.
+* **Limitations:** GBTs can still be sensitive to noisy labels, potentially leading to biased predictions and reduced generalization performance.
+
+### Step 2: Relevance of Noisy Label Research
+
+The core idea of the analyzed paper, focusing on understanding and mitigating the impact of noisy labels, is highly relevant to NumerAI. The methods for identifying clean samples and improving training robustness can be adapted to the chosen GBT model.
+
+### Step 3: Addressing Limitations and Combining Ideas
+
+* **Data Splitting:** Implement a similar cross-validation approach as NCV, but instead of training a DNN, train GBT models on each data split. This helps identify potentially mislabeled samples based on prediction discrepancies between models.
+* **Sample Weighting:** Instead of directly discarding potentially mislabeled samples, assign them lower weights during training. This approach, similar to MentorNet, reduces the influence of noisy labels while still leveraging information from the entire dataset. 
+* **Ensemble Learning:** Train multiple GBT models with different hyperparameters or initialization seeds. Combine their predictions through averaging or stacking to improve robustness and reduce the impact of individual model biases caused by noise.
+
+### Step 4: Alternative Strategies
+
+If the adapted noisy label methods prove ineffective, consider alternative strategies:
+
+* **Feature Engineering:** Explore creating new features that are more robust to noise, such as ratios or ranks instead of raw values.
+* **Robust Loss Functions:** Experiment with loss functions less sensitive to outliers, like Huber loss or quantile regression, to mitigate the impact of noisy labels.
+
+### Step 5: Training on the Entire Dataset
+
+* **Iterative Training:** Train the GBT model iteratively, updating sample weights based on the previous iteration's predictions. This allows the model to progressively focus on cleaner samples while still learning from the entire dataset.
+* **Early Stopping:** Monitor the validation performance and implement early stopping to prevent overfitting, especially when dealing with noisy labels.
+
+## Pseudocode for Methodology
+
+```
+# Step 1: Model Selection
+model = XGBoostRegressor()  # or LightGBM
+
+# Step 2 & 3: Cross-Validation and Sample Weighting
+def train_and_weight(data):
+    splits = k_fold_cross_validation(data, k=5)
+    weights = np.ones(len(data))
+    for train_idx, val_idx in splits:
+        model.fit(data[train_idx], target[train_idx])
+        val_preds = model.predict(data[val_idx])
+        # Identify potential mislabeled samples based on prediction discrepancies
+        mislabeled_idx = identify_mislabeled(val_preds, target[val_idx])
+        weights[val_idx[mislabeled_idx]] *= 0.5  # Reduce weight for potential mislabeled samples
+    return weights
+
+weights = train_and_weight(data)
+
+# Step 4 (Alternative): Feature Engineering
+data_engineered = engineer_features(data)
+
+# Step 5: Training on Entire Dataset with Weighting
+model.fit(data_engineered, target, sample_weight=weights)
+
+# Ensemble Learning (Optional)
+ensemble_preds = []
+for i in range(n_models):
+    model_i = XGBoostRegressor()
+    model_i.fit(data_engineered, target, sample_weight=weights)
+    ensemble_preds.append(model_i.predict(test_data))
+final_prediction = average(ensemble_preds)  # or use stacking
+```
+
+**Additional Notes:**
+
+* The `identify_mislabeled` function could be based on the difference between predicted and actual values, potentially using thresholds or statistical methods.
+* The feature engineering step depends on the specific characteristics of the NumerAI data and requires domain knowledge and experimentation.
+* Hyperparameter tuning and model selection should be performed using a robust validation strategy, like nested cross-validation, to avoid overfitting and account for noisy labels.
+
+This methodology provides a comprehensive approach to tackling the NumerAI prediction challenge with considerations for noisy labels. The combination of GBT models, adapted noisy label techniques, and potential alternative strategies offers a promising direction for building robust and accurate predictive models on this unique dataset.

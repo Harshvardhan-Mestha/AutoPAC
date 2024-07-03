@@ -1,0 +1,83 @@
+## Methodology for Numerai Prediction with LLM-enhanced Strategies 
+
+While LATS offers a powerful framework for decision-making and reasoning, its direct application to the Numerai dataset, which involves predicting stock market performance, presents some challenges. The primary limitation is the mismatch between LATS' strength in natural language processing and the numerical nature of the Numerai data. LATS excels in environments with textual observations and actions, whereas the Numerai dataset consists of numerical features and targets.
+
+Therefore, we need to adapt and extend the core principles of LATS to create a suitable methodology for this specific problem.
+
+### Proposed Methodology:
+
+**Step 1: Feature Engineering with LLM Insights**
+
+1. **LLM-based Feature Analysis:** Employ an LLM to analyze textual data related to the stock market, such as news articles, financial reports, and social media sentiment. The LLM can extract relevant information and insights, potentially uncovering hidden relationships or trends.
+2. **Feature Generation:** Based on the LLM's analysis, engineer new features that capture the extracted information. This could involve sentiment scores, topic modeling results, or entity recognition outputs.
+3. **Feature Selection:** Use a combination of statistical methods and LLM-based insights to select the most relevant and informative features for prediction. The LLM can help identify features that may not be statistically significant but still hold valuable predictive power.
+
+**Step 2: Ensemble Model with LLM-guided Architecture**
+
+1. **Base Model Selection:** Choose a suitable base model for the Numerai dataset, such as XGBoost, LightGBM, or a deep learning architecture like LSTM. Consider the model's strengths and limitations in handling tabular data and time series patterns. 
+2. **LLM-based Architecture Optimization:** Utilize an LLM to analyze the performance of different model architectures and hyperparameter settings on the Numerai dataset. The LLM can suggest potential improvements or alternative architectures based on its knowledge of successful machine learning approaches.
+3. **Ensemble Creation:** Combine multiple base models with diverse architectures and hyperparameters, potentially guided by the LLM's suggestions. This ensemble approach can help mitigate the limitations of individual models and improve overall prediction accuracy and robustness. 
+
+**Step 3: LLM-assisted Prediction Refinement**
+
+1. **Prediction Explanation:**  Use the LLM to generate natural language explanations for the ensemble model's predictions. This can provide insights into the factors influencing the model's decisions and help identify potential biases or errors. 
+2. **Feedback Loop:**  Incorporate the LLM's explanations and insights as feedback to refine the feature engineering and model training process. This iterative feedback loop can lead to continuous improvement in prediction accuracy and a better understanding of the underlying market dynamics.
+
+### Pseudocode:
+
+```python
+# Step 1: Feature Engineering with LLM Insights
+def generate_llm_features(text_data):
+    # Use LLM to analyze text data and extract insights
+    insights = llm.analyze(text_data)
+    # Generate new features based on LLM insights
+    new_features = feature_engineering(insights)
+    return new_features
+
+# Step 2: Ensemble Model with LLM-guided Architecture
+def create_ensemble_model(base_models, llm_suggestions):
+    # Combine base models into an ensemble
+    ensemble = Ensemble(base_models)
+    # Optimize ensemble architecture based on LLM suggestions
+    ensemble.optimize(llm_suggestions)
+    return ensemble
+
+# Step 3: LLM-assisted Prediction Refinement
+def refine_predictions(predictions, llm_explanations):
+    # Generate explanations for predictions using LLM
+    explanations = llm.explain(predictions)
+    # Analyze explanations and identify potential improvements
+    feedback = analyze_explanations(explanations)
+    # Refine feature engineering and model training based on feedback
+    improve_model(feedback)
+
+# Main Function
+def predict_numerai(numerai_data, text_data):
+    # Generate LLM-based features
+    llm_features = generate_llm_features(text_data)
+    # Combine with Numerai features
+    features = combine_features(numerai_data, llm_features)
+    # Select features
+    selected_features = select_features(features)
+    # Train base models
+    base_models = train_base_models(selected_features)
+    # Get LLM suggestions for ensemble architecture
+    llm_suggestions = get_llm_suggestions(base_models)
+    # Create ensemble model
+    ensemble = create_ensemble_model(base_models, llm_suggestions)
+    # Make predictions
+    predictions = ensemble.predict(selected_features)
+    # Refine predictions with LLM explanations
+    refine_predictions(predictions, llm_explanations)
+    return predictions
+```
+
+**Addressing Data Handling:**
+
+* **Complete Dataset Training:** The methodology assumes access to the entire Numerai dataset for training. To handle large datasets, consider techniques like distributed training or online learning.
+* **Missing Values:** Address missing values (NaN) in features and auxiliary targets using appropriate imputation techniques or by incorporating them as additional information for the LLM. 
+
+**Assumptions and Limitations:**
+
+* The effectiveness of this methodology depends on the quality of the LLM and its ability to extract relevant information from textual data.
+* The computational cost of using an LLM can be high, requiring efficient implementation and resource management. 

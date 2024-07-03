@@ -1,0 +1,85 @@
+## Methodology for NumerAI Prediction using Path Shadowing Concepts
+
+While the Path Shadowing Monte-Carlo (PS-MC) method from the paper offers intriguing possibilities, directly applying it to the NumerAI dataset presents challenges due to fundamental differences between financial time series and the NumerAI data structure. However, we can adapt the core ideas of path shadowing and combine them with suitable machine learning models to develop an effective methodology.
+
+### Challenges and Adaptations:
+
+1. **Non-Sequential Data:** NumerAI data isn't a time series of prices for a single entity but rather a collection of diverse features for numerous stocks across different time points (eras). The concept of "path" needs reinterpretation.
+2. **Feature Importance:** The dataset contains a vast array of features with varying and time-dependent predictive power. Identifying relevant features for each era becomes crucial.
+3. **Target Definition:** The target variable represents stock-specific returns, not directly comparable to volatility or option prices. 
+
+### Proposed Methodology:
+
+1. **Model Selection:**
+    * **Gradient Boosting Trees (e.g., XGBoost, LightGBM):** These models are well-suited for tabular data with mixed feature types and can handle feature interactions effectively. They also provide feature importance information, which aligns with our need to identify relevant features for each era. 
+
+2. **Feature Engineering and Selection:**
+    * **Era-Specific Feature Importance:** Train a separate model for each era using historical data. Analyze the feature importance scores to identify the most relevant features for that specific era. 
+    * **Feature Clustering:** Group features with similar characteristics or belonging to the same feature group (e.g., "constitution", "charisma") to create a lower-dimensional representation.
+    * **Dimensionality Reduction Techniques:** Explore techniques like PCA or autoencoders to further reduce feature space dimensionality while retaining essential information.
+
+3. **Path Shadowing Inspiration:**
+    * **Similar Era Identification:** Instead of searching for similar paths, we search for historically similar eras based on the identified important features. This involves calculating a distance metric (e.g., Euclidean distance) between the feature vectors of the current era and past eras.
+    * **Weighted Predictions:**  
+        * Train a model on the most similar eras, giving higher weights to eras with closer distances. 
+        * Alternatively, use the predictions from models trained on similar eras as additional features for the current era's model.
+
+4. **Model Training and Evaluation:**
+    * **Cross-Validation:** Implement a time-series aware cross-validation strategy to avoid data leakage due to overlapping target values across eras.
+    * **Performance Metrics:** Evaluate model performance using era-specific metrics like mean correlation or Spearman's rank correlation coefficient, aligning with NumerAI's evaluation criteria. 
+
+### Pseudocode:
+
+```
+# 1. Initialization
+models = {}  # Dictionary to store era-specific models
+feature_groups = {...}  # Define feature groups
+
+# 2. Process each era
+for era in eras:
+    # 2.1 Feature Engineering
+    important_features = get_important_features(era, feature_groups)
+    reduced_features = dimensionality_reduction(important_features)
+    
+    # 2.2 Similar Era Identification
+    similar_eras = find_similar_eras(era, reduced_features)
+    
+    # 2.3 Model Training
+    if era not in models:
+        models[era] = train_model(similar_eras, weights)
+    
+    # 2.4 Prediction
+    predictions[era] = models[era].predict(reduced_features)
+
+# 3. Evaluation
+evaluate_performance(predictions)
+
+# --- Helper Functions ---
+def get_important_features(era, feature_groups):
+    # Train a model on past eras and extract feature importances
+    # Select top features based on importance and feature group membership
+    ...
+
+def dimensionality_reduction(features):
+    # Apply PCA or autoencoders to reduce feature dimensionality
+    ...
+
+def find_similar_eras(era, features):
+    # Calculate distance between current era and past eras based on features
+    # Select most similar eras based on distance threshold
+    ...
+
+def train_model(eras, weights):
+    # Train a gradient boosting model on the selected eras with weighted samples
+    ...
+
+def evaluate_performance(predictions):
+    # Calculate era-specific performance metrics (e.g., correlation)
+    ...
+```
+
+**Additional Considerations:**
+
+* **Data Preprocessing:** Address missing values (NaNs) through imputation or removal, depending on the feature and its importance.
+* **Hyperparameter Optimization:** Optimize model hyperparameters using a time-series aware approach. 
+* **Ensemble Methods:** Combine predictions from multiple models trained with different parameters or feature sets for improved performance and robustness. 

@@ -1,0 +1,71 @@
+## Refining the Methodology: Numerai with Transfer Learning
+
+### Evaluation and Refinements
+
+1. **Explanation:** The methodology is explained in a step-by-step manner with justifications for model selection and data preprocessing techniques. However, further details could be added regarding:
+    * **Hyperparameter tuning:** Specific hyperparameter search spaces and optimization strategies for FT-Transformer on Numerai data.
+    * **Fine-tuning process:** Strategies for selecting the best epoch and handling overfitting during fine-tuning. 
+    * **Evaluation metrics:** A more comprehensive discussion of Numerai's evaluation metrics and their implications for model selection and optimization.
+
+2. **Standard vs. Modified Methods:** The methodology primarily employs standard methods for data preprocessing, model training, and transfer learning. The main modification is the adaptation of the pseudo-feature method for handling feature set mismatches in Numerai data. This modification is well-explained and justified, given the unique structure of the Numerai dataset.
+
+3. **Limitations and Problems:** The methodology acknowledges the computational cost of deep learning models and proposes mitigation strategies. However, additional potential limitations and problems to consider include:
+    * **Data leakage:**  Care must be taken to avoid data leakage when handling overlapping target values across eras in Numerai data. This can be addressed through techniques like lagged target encoding or careful cross-validation strategies.
+    * **Concept drift:** The financial market is dynamic, and models may suffer from concept drift over time. Strategies like online learning or periodic retraining may be necessary. 
+    * **Feature importance and interpretability:** Understanding which features contribute most to the model's predictions can be valuable for both performance analysis and risk management. Exploring techniques like attention visualization or permutation importance can provide insights into feature importance.
+
+4. **Appropriateness:** The chosen methods are appropriate for the Numerai problem, considering the dataset's characteristics and the goals of transfer learning. FT-Transformer's ability to handle mixed data types, its strong performance, and its suitability for transfer learning make it a suitable choice. 
+
+5. **Adaptation from Literature Review:** The methodology effectively adapts the findings from the literature review to the Numerai problem. The use of FT-Transformer, the focus on supervised pre-training, and the implementation of the pseudo-feature method directly address the insights gained from the paper.
+
+### Refined Methodology
+
+1. **Data Preprocessing:**
+    * Apply quantile transformation with standard output distribution to numerical features.
+    * Impute missing values using the KNNImputer from scikit-learn, considering its effectiveness for mixed data types.
+    * Split data into training, validation, and test sets using a time-series split to account for overlapping target values and prevent data leakage. 
+
+2. **Pre-training:**
+    * Pre-train the FT-Transformer model on the "large" feature set using all available historical data.
+    * Use the main target for supervised learning. 
+    * Tune hyperparameters using Optuna with a focus on optimizing the Sharpe ratio, considering its importance in the Numerai competition. Explore a wide range of hyperparameters, including learning rate, number of layers, embedding dimensions, and dropout rates.
+
+3. **Pseudo-Feature Imputation:**
+    * Fine-tune the pre-trained model on the "small" and "medium" feature sets to predict missing features from the "large" set. Use early stopping based on validation loss to prevent overfitting.
+    * Impute missing features using the predictions from the fine-tuned models.
+
+4. **Fine-tuning:**
+    * Fine-tune the pre-trained model on the current week's data with the chosen feature set.
+    * Use an MLP head with two hidden layers and ReLU activation for the final prediction layer.
+    * Fine-tune the entire model end-to-end with a small learning rate and AdamW optimizer. Implement gradient checkpointing to reduce memory usage during training.
+    * Employ early stopping based on validation loss to prevent overfitting. Alternatively, use a pre-defined number of epochs based on prior experiments if data is extremely limited.
+
+5. **Evaluation:** 
+    * Evaluate the model's performance on the test set using the correlation and Sharpe ratio metrics, aligning with the Numerai competition's evaluation criteria. 
+    * Analyze feature importance using permutation importance to gain insights into the model's decision-making process and identify potential risks.
+
+6. **Concept Drift Mitigation:** 
+    * Monitor the model's performance over time and implement periodic retraining with updated data to address concept drift.
+    * Explore online learning techniques to continuously update the model with new data and adapt to changing market dynamics.
+
+### Refined Pseudocode 
+
+```python
+# Preprocessing
+def preprocess_data(data, feature_set):
+    # Apply quantile transformation to numerical features
+    # Impute missing values using KNNImputer 
+    # Split data into train, validation, and test sets with time-series split
+    return train_data, val_data, test_data
+
+# Pre-training
+def pretrain_model(model, train_data, val_data):
+    # Train FT-Transformer on "large" feature set with main target
+    # Tune hyperparameters using Optuna, optimizing for Sharpe ratio
+    return pretrained_model
+
+# Pseudo-feature imputation
+def impute_features(pretrained_model, data, missing_features):
+    # Fine-tune model to predict missing features with early stopping 
+    # Impute missing features with predictions
+    return data_with_imputed_features 

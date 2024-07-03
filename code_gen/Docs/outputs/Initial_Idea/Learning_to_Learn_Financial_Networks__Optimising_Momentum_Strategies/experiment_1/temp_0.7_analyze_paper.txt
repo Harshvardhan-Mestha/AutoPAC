@@ -1,0 +1,48 @@
+## Literature Review: Learning to Learn Financial Networks for Optimizing Momentum Strategies
+
+This document outlines my findings and analysis of the paper "Learning to Learn Financial Networks for Optimizing Momentum Strategies" by Pu et al. with a specific focus on the methodology.
+
+**Core Idea**: The paper introduces L2GMOM, a machine learning framework that simultaneously learns financial networks and optimizes trading signals for network momentum strategies. This addresses limitations of current network momentum approaches which rely on expensive data and separate network construction from portfolio optimization.
+
+### Methodology Breakdown:
+
+1. **Learning to Learn Graph Topologies (L2G):**
+    * L2GMOM leverages the L2G concept, reformulating graph learning as a neural network. 
+    * This network takes node features (historical pricing data) as input and outputs the graph adjacency matrix (network structure).
+    * The network is trained by unrolling the optimization steps of traditional graph learning algorithms like Primal-Dual Splitting (PDS).
+    * Learnable parameters replace hyperparameters, allowing the network to learn optimal graph structures.
+
+2. **Network Momentum Feature Construction:**
+    * L2GMOM adds a layer to the L2G network to directly construct network momentum features.
+    * After obtaining the graph adjacency matrix, it is normalized to account for node degree differences.
+    * A linear layer combines individual momentum features of connected assets based on the learned graph, resulting in network momentum features.
+
+3. **Model Variants and Loss Functions:**
+    * **L2GMOM:** This variant uses the network momentum features to estimate trend and takes the sign as the trading position. It is trained using Mean Squared Error (MSE) loss between estimated trend and actual returns.
+    * **L2GMOM_SR:** This variant directly outputs trading positions using a tanh activation function to constrain values. It is trained using the negative Sharpe Ratio as the loss function, directly optimizing for portfolio performance. 
+
+4. **Input Features:**
+    * **Individual Momentum Features (U_t):** Eight features are used including volatility-normalized returns over various lookback windows and MACD indicators with different time scales.
+    * **Node Features (V_t):** A 252-day history of individual momentum features is stacked to capture stable similarities for robust graph learning. Winsorization is applied to mitigate outlier effects.
+
+5. **Training and Evaluation:**
+    * Models are trained every 5 years with the most recent 10% of data used for validation and hyperparameter tuning.
+    * The out-of-sample performance is evaluated over a 20-year period (2000-2020) using metrics like Sharpe ratio, Sortino ratio, maximum drawdown, and turnover.
+    * Comparisons are made against baseline strategies like Long Only, MACD, and Linear Regression with and without graph learning (LinReg and GLinReg).
+
+###  Strengths of the Methodology:
+
+* **End-to-End Learning:** The framework learns the graph structure and optimizes trading signals simultaneously, ensuring the network is tailored for portfolio performance.
+* **Data Efficiency:** It utilizes readily available pricing data, eliminating the need for expensive and specialized datasets. 
+* **Interpretability:** The learned networks provide insights into momentum spillover effects and asset relationships.
+* **Flexibility:** The framework can accommodate different loss functions and model variants, allowing for customization and optimization based on specific objectives.
+
+### Potential Areas for Further Investigation:
+
+* **Turnover Regularization:** Explore methods to reduce portfolio turnover and improve cost-adjusted performance.
+* **Alternative Network Structures:** Investigate the use of different graph learning algorithms or network architectures.
+* **Dynamic Networks:** Explore the possibility of learning time-varying networks to capture evolving market dynamics.
+* **Feature Engineering:** Experiment with additional or alternative features to potentially improve performance. 
+* **Transfer Learning:** Investigate the applicability of pre-trained models or transfer learning techniques for faster adaptation to new market conditions.
+
+**Overall, the L2GMOM framework presents a promising approach for constructing network momentum strategies. Its data efficiency, interpretability, and performance make it a valuable tool for quantitative finance applications.** 

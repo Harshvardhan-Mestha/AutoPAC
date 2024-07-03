@@ -1,0 +1,50 @@
+## Literature Review: VolTS Paper
+
+Following the provided guidelines, let's analyze the "VolTS: A Volatility-based Trading System to forecast Stock Markets Trend using Statistics and Machine Learning" paper with a focus on methodology.
+
+**Summary:**
+
+The paper proposes VolTS, a volatility-based trading system that combines statistical analysis and machine learning to predict stock market trends. It uses k-means++ clustering on historical volatility data to group stocks and then applies the Granger Causality Test (GCT) to identify predictive relationships between them. This information is then used to develop a trend-following trading strategy.
+
+**Methodology Analysis:**
+
+1. **Asset Selection:**
+    * The system focuses on nine major stocks from NYSE and NasdaqGS. 
+    * This selection might limit the generalizability of the findings to other markets or asset classes.
+
+2. **Anomaly Detection:**
+    * A KNN-based anomaly detection algorithm is used to identify and exclude periods with significant anomalies (e.g., the 2020 pandemic) from the analysis.
+    * This step is crucial to ensure the data used for model training and evaluation is representative of normal market behavior.
+
+3. **Historical Volatility Dataset:**
+    * Four historical volatility estimators (Parkinson, Garman-Klass, Rogers-Satchell, Yang-Zhang) are employed to calculate average volatility. 
+    * Using multiple estimators provides a more robust representation of volatility compared to relying on a single method.
+    * The k-means++ clustering algorithm with dynamic time warping (DTW) distance is used to group stocks into three clusters (high, middle, low volatility).
+    *  DTW is suitable for comparing time series with different lengths and speeds, making it appropriate for volatility data.
+
+4. **Granger Causality Test (GCT):**
+    *  GCT is applied to the middle volatility cluster to identify pairs of stocks where one stock's past volatility can predict the other's future volatility.
+    *  The algorithm iterates through different lag periods (2 to 30 days) to find the optimal lag with the highest number of significant causal relationships.
+    *  This step forms the basis of the trading strategy, where the "causal" stock acts as a trend indicator for the "affected" stock.
+
+5. **Trading Strategy:**
+    * A trend-following strategy is implemented based on the GCT results. 
+    * When the "causal" stock shows an upward trend, the system takes a long position on the "affected" stock, and vice versa for a downward trend.
+    * The paper compares the performance of this strategy to a buy-and-hold benchmark.
+
+**Critical Analysis:**
+
+* The paper focuses on a specific set of stocks and a limited time period. It's unclear how well the results would generalize to other markets or timeframes.
+* The choice of k=3 for k-means clustering seems arbitrary. Exploring different cluster numbers and their impact on the results would be beneficial.
+* The GCT analysis assumes a linear relationship between past and future volatility. Exploring non-linear methods like neural networks might be more effective. 
+* The trading strategy is based solely on trend-following. Investigating other strategies, such as mean reversion, could be valuable.
+
+**Creative Ideas and Future Directions:**
+
+* Expanding the analysis to include a broader range of assets, including cryptocurrencies or commodities. 
+* Exploring alternative clustering techniques and comparing their effectiveness.
+* Investigating non-linear methods for identifying causal relationships between stocks.
+* Developing a more comprehensive trading strategy that incorporates both trend-following and mean reversion techniques.
+* Analyzing the impact of transaction costs and slippage on the strategy's performance. 
+
+**Overall, the VolTS paper presents an interesting approach to volatility-based trading. However, further research is needed to validate its effectiveness and explore its potential in different market conditions and with diverse asset classes.** 

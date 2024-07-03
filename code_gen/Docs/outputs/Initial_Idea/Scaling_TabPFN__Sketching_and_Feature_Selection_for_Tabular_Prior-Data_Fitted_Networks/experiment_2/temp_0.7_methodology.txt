@@ -1,0 +1,89 @@
+## Methodology for Applying TabPFN to Numerai Dataset
+
+Based on the literature review of "Scaling TabPFN: Sketching and Feature Selection for Tabular Prior-Data Fitted Networks" and considering the characteristics of the Numerai dataset, we can devise the following methodology:
+
+**1. Model Selection:** 
+
+* **TabPFN as the primary model:** Given the success of TabPFN with tabular data and its in-context learning capabilities, we will use it as the primary model. This choice aligns with the high-level idea of leveraging the strengths of TabPFN.
+* **CatBoost as a baseline:** To benchmark TabPFN's performance, we will also implement CatBoost, a strong contender for tabular data, as a baseline model.
+
+**2. Addressing TabPFN's Limitations:**
+
+* **Context Length:** The literature review highlighted the importance of context length for TabPFN. While the original paper recommends a maximum of 1000 samples, we will experiment with larger context sizes (e.g., 3000 samples) to potentially improve performance, considering the large size of the Numerai dataset.
+* **Feature Dimensionality:** As TabPFN is sensitive to irrelevant features, we will implement feature selection techniques to reduce the dimensionality and focus on the most informative features.
+
+**3. Feature Engineering and Selection:**
+
+* **Understanding Feature Groups:** We will analyze the provided feature groups ("constitution", "charisma", etc.) to understand the relationships between features and potentially identify groups that are more relevant to specific eras or targets.
+* **Feature Selection Techniques:** 
+    * **Mutual Information:** We will calculate the mutual information between each feature and the target variable to identify features with high predictive power.
+    * **PCA:** Principal Component Analysis will be used to reduce dimensionality while retaining the most important information.
+    * **Feature Importance from CatBoost:** We will leverage CatBoost's built-in feature importance metrics to identify relevant features.
+* **Experimentation:** We will experiment with different combinations of feature selection techniques and feature groups to find the optimal feature set for each era and target variable.
+
+**4. Handling Missing Values:**
+
+* **NaN values in Features:** We will explore different strategies for handling missing feature values, such as imputation (e.g., mean/median) or creating additional binary features indicating missingness.
+* **NaN values in Auxiliary Targets:** We will investigate whether imputing missing values in auxiliary targets or excluding samples with missing targets leads to better performance.
+
+**5. Training and Evaluation:**
+
+* **Training on Eras:** Considering the temporal nature of the Numerai dataset, we will train the models on each era independently, treating each era as a separate data point. 
+* **Cross-Validation:** Due to overlapping target values across eras, we will use a carefully designed cross-validation strategy (e.g., forward chaining) to avoid data leakage and ensure reliable performance evaluation.
+* **Performance Metrics:** We will evaluate the models based on metrics relevant to Numerai, such as mean correlation per era and Sharpe ratio.
+
+**6. Model Ensemble (Optional):**
+
+* **Combining Predictions:** If both TabPFN and CatBoost perform well with different feature sets or on different eras, we will consider creating an ensemble model that combines their predictions to potentially improve overall performance and robustness.
+
+**7. Continuous Monitoring and Improvement:**
+
+* **Performance Tracking:** We will continuously monitor the performance of the models on the live Numerai tournament data and analyze the results to identify areas for improvement.
+* **Feature Engineering and Selection Refinement:** Based on the insights gained from performance monitoring, we will refine the feature engineering and selection process to adapt to changes in the market and improve the model's predictive power. 
+
+## Pseudocode
+
+```
+# 1. Load Numerai Data
+features, targets = load_numerai_data()
+
+# 2. Feature Engineering and Selection
+selected_features = []
+for feature_group in feature_groups:
+    # Calculate mutual information and feature importance
+    mi_scores = calculate_mutual_information(features[feature_group], targets)
+    feature_importances = get_feature_importances_from_catboost(features[feature_group], targets)
+    
+    # Select top features based on combined scores
+    top_features = select_top_features(mi_scores, feature_importances)
+    selected_features.extend(top_features)
+
+# Apply PCA for dimensionality reduction
+pca_features = apply_pca(features[selected_features])
+
+# 3. Handle Missing Values
+imputed_features = impute_missing_values(pca_features)
+
+# 4. Train and Evaluate Models for each Era
+for era in eras:
+    # Split data for current era
+    era_features, era_targets = get_data_for_era(imputed_features, targets, era)
+    
+    # Train TabPFN and CatBoost models
+    tabpfn_model = train_tabpfn(era_features, era_targets)
+    catboost_model = train_catboost(era_features, era_targets)
+    
+    # Evaluate and store model predictions
+    tabpfn_predictions = tabpfn_model.predict(era_features)
+    catboost_predictions = catboost_model.predict(era_features)
+    
+    # Store predictions for ensemble or analysis
+    ...
+
+# 5. Ensemble (Optional)
+ensemble_predictions = combine_predictions(tabpfn_predictions, catboost_predictions)
+
+# 6. Submit Predictions and Monitor Performance
+submit_predictions_to_numerai(ensemble_predictions)
+monitor_performance_and_refine_models()
+``` 

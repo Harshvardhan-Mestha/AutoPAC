@@ -1,0 +1,82 @@
+## Methodology for Applying Conservative Predictions with TabPFN on Numerai Data
+
+Considering the high-level idea of using TabPFN with a conservative prediction strategy on the Numerai dataset, and keeping in mind the limitations of TabPFN, here's a potential methodology:
+
+**Step 1: Data Preprocessing and Feature Engineering**
+
+1. **Data Cleaning:** Address missing values (NaNs) in both features and auxiliary targets.  Options include imputation (e.g., mean/median filling, KNN imputation) or creating indicator variables for missingness.
+2. **Feature Selection/Engineering:**
+    * **Dimensionality Reduction:**  Since TabPFN is limited to 100 features, dimensionality reduction techniques like PCA or feature importance analysis might be needed, especially when using the "large" feature set. 
+    * **Feature Engineering:** Explore creating new features based on domain knowledge or combinations of existing features, potentially improving model performance.
+3. **Target Engineering:** 
+    * Focus on the main target variable for predicting stock-specific returns ("alpha").
+    * Consider incorporating auxiliary targets as additional features or creating a multi-task learning framework to leverage the information they provide. 
+4. **Era-wise Splitting:** Divide the data into era-wise sets, where each era represents a single data point as recommended for the Numerai dataset.
+
+**Step 2: Addressing TabPFN Limitations**
+
+1. **Data Size Limitation:**
+    * **Chunking:**  Divide the data into smaller chunks with less than 10,000 data points each. Train separate TabPFN models on each chunk and ensemble their predictions. 
+    * **Sampling:**  If chunking is not feasible, consider sampling eras from the dataset to create smaller training sets.  This might require careful stratification to maintain the distribution of eras and target values. 
+2. **Class Number Limitation:**
+    * The Numerai target variable has 5 classes, which is within TabPFN's limit.  No action is needed for this limitation.
+
+**Step 3: Implementing Conservative Predictions with TabPFN**
+
+1. **Model Training:** Train a TabPFN model on each data chunk or sample (as determined in Step 2).
+2. **Confidence Estimation:**
+    * Use the model's predicted class probabilities to estimate confidence.  Gini impurity, as used in the paper, is a suitable metric. 
+    * Alternatively, explore other confidence measures such as entropy or the maximum predicted probability.
+3. **Thresholding:**  Set a threshold for the chosen confidence metric.  Predictions below this threshold will be considered "uncertain."
+4. **Cascading (Optional):** 
+    * If desired, implement a cascading approach where uncertain predictions from the first model are passed to a second TabPFN model trained on a different chunk or sample of data.  This can be repeated for multiple stages. 
+    * Evaluate the trade-off between increased support and potential overfitting when using cascading. 
+
+**Step 4: Evaluation**
+
+1. Evaluate the performance of the model(s) using metrics such as accuracy, support, utility, DRAR, and Traded Sharpe Ratio as described in the paper. 
+2. Compare the performance of the conservative prediction approach with a baseline TabPFN model that makes predictions on all data points.
+3. Analyze the distribution of confident predictions and their alignment with the extremes of the target variable.
+
+**Step 5:  Pseudocode**
+
+```python
+# Assuming necessary libraries are imported and data is preprocessed
+
+def train_conservative_tabpfn(data, confidence_threshold, num_models=1):
+    models = []
+    for i in range(num_models):
+        # Split data into chunks or samples (if necessary)
+        if data_size_exceeds_limit:
+            data_chunk = get_data_chunk(data, chunk_size)
+        else:
+            data_chunk = data
+        
+        # Train TabPFN model
+        model = TabPFN()
+        model.fit(data_chunk)
+        models.append(model)
+
+    return models
+
+def predict_conservatively(models, data, confidence_threshold):
+    predictions = []
+    for x in data:
+        for model in models:
+            y_pred_proba = model.predict_proba(x)
+            confidence = calculate_gini_impurity(y_pred_proba)
+            if confidence <= confidence_threshold:
+                predictions.append(y_pred_proba)
+                break  # Move to the next data point 
+        else:
+            predictions.append(None)  # No confident prediction 
+    
+    return predictions
+
+# Example usage
+models = train_conservative_tabpfn(numerai_data, confidence_threshold=0.5, num_models=2)
+predictions = predict_conservatively(models, test_data, confidence_threshold=0.5)
+
+# Evaluate performance using chosen metrics
+...
+```

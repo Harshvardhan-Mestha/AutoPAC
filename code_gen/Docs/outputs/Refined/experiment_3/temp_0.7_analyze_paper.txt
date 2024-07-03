@@ -1,0 +1,53 @@
+## Literature Review: Conservative Predictions on Noisy Financial Data
+
+**Paper**: Conservative Predictions on Noisy Financial Data by Omkar Nabar and Gautam Shroff (ICAIF '23)
+
+**Focus**: Methodology for making predictions on noisy financial data, particularly focusing on the cascading model approach and its implementation using Differentiable Decision Trees (DDTs) and Multi-Layer Perceptrons (MLPs).
+
+### Methodology Breakdown:
+
+1. **Data Preparation**:
+    * **Market Data**: OHLCV (Open, High, Low, Close, Volume) data from the Indian equity market is used. Data is normalized daily and augmented with technical indicators (moving averages, RSI, MACD, Bollinger Bands) and logical/temporal features (differences, slopes, change lengths). 
+    * **Synthetic Data**:  Sine waves with varying frequencies, amplitudes, and noise levels are generated to mimic market behavior.  
+    * **Feature Discretization**: All features and target values (10-candle returns) are discretized into 5 bins for both market and synthetic data. 
+
+2. **Model Architectures**:
+    * **Differentiable Decision Trees (DDTs)**:  These are modified decision trees where hard splits are replaced with "fuzzy" decisions using sigmoid functions, allowing for gradient-based training.  Regularization is employed to encourage balanced splits at each node.
+    * **Multi-Layer Perceptrons (MLPs)**: Traditional neural networks with hidden layers are used for comparison with DDTs.
+
+3. **Cascading Model Approach**:
+    * **Motivation**:  Address the issue of noisy financial data by making predictions only when the model is confident, thus minimizing risk.
+    * **Implementation**:
+        1. **Training**: A sequence of models is trained, with each subsequent model trained on data where the previous model(s) were uncertain (high Gini impurity). Training continues until accuracy on confident predictions reaches a desired threshold.
+        2. **Inference**:  Each data point is passed through the cascade.  Each model either makes a prediction (if confident) or passes the data to the next model.  Final accuracy is calculated only on data points where predictions were made.
+
+4. **Evaluation**: 
+    * **Metrics**:  Accuracy, support (fraction of data with confident predictions), utility (average gain per trade), Downside-Risk Adjusted Return (DRAR), and Traded Sharpe Ratio.
+    * **Experiments**:
+        * Training and testing on data from the same set of eras (time periods).
+        * Training on one set of eras and testing on a different set.
+        * Training and testing on data from a single era.
+        * Training on one era and testing on a different one.
+        * Training on clean synthetic data and testing on noisy data. 
+        * Training on noisy synthetic data and testing on clean data.
+
+### Findings:
+
+* Cascading models generally improve test accuracy and degrade more gracefully with noise compared to single models, but at the expense of support.
+* Cascaded DDTs often outperform cascaded MLPs in terms of utility, DRAR, and Traded Sharpe Ratio, suggesting better risk-adjusted performance.
+* Predictions from cascaded models are primarily at the extremes of the target distribution (predicting significant price increases or decreases), making them valuable for trading decisions.
+* Model performance degrades when tested on data distributions different from the training data.
+
+### Potential Future Work:
+
+* Explore meta-learning or continual learning techniques to improve performance on different data distributions.
+* Investigate train-time pruning approaches for cascading models.
+*  Evaluate the performance of the proposed methodology in live trading scenarios. 
+*  Compare the proposed method with other approaches for handling noisy financial data.
+
+### Critical Analysis:
+
+* The paper focuses on a specific type of financial data (Indian equities) and a limited set of features.  The generalizability of the findings to other markets and asset classes needs further investigation.
+* The choice of 5 bins for discretization may not be optimal and could be further explored.
+* The paper uses synthetic data with a simplistic noise model.  More complex and realistic noise models could be explored.
+* The evaluation metrics focus on risk-adjusted returns, which are important for leveraged trading. However, other metrics such as total return and maximum drawdown could also be considered. 

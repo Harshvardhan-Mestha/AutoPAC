@@ -1,0 +1,97 @@
+## Methodology for NumerAI Prediction using PS-MC and SS Model Adaptations
+
+While the Path Shadowing Monte-Carlo (PS-MC) method combined with the Scattering Spectra (SS) model shows promising results for financial time series prediction, directly applying it to the NumerAI dataset presents several challenges. Let's analyze the limitations and propose adaptations to address them: 
+
+**Challenges:**
+
+1. **Non-stationarity:** The NumerAI dataset, representing the global stock market, is inherently non-stationary due to evolving economic conditions, policy changes, and other external factors. The SS model, as presented in the paper, assumes stationarity.
+2. **Target Definition:** The NumerAI target is a measure of stock-specific future returns, residualized to remove broader market trends and known factors. This differs from the realized volatility prediction task used in the paper.
+3. **Data Structure:** The NumerAI dataset is tabular, with each row representing a stock at a specific point in time. This differs from the continuous time series format used in the paper.
+
+**Proposed Adaptations:**
+
+1. **Local SS Models:**
+    * Instead of a single global SS model, we can create local SS models for each era (week) in the NumerAI dataset. This allows capturing the non-stationary dynamics within each era.
+    * For each era, we calculate the SS statistics on a rolling window of past data (e.g., past 1 year) to capture the recent market behavior.
+    * A separate maximum entropy model is then constructed for each era based on its corresponding SS statistics.
+
+2. **Target-Specific Embedding:**
+    * The path embedding function `h_α,β(x)` needs to be adapted to reflect the target definition.
+    * Instead of raw price differences, we can use the residualized returns (target values) from past eras as the input to the embedding function. This ensures the shadowing paths are selected based on their similarity in terms of stock-specific returns.
+
+3. **Tabular Data Handling:**
+    * We can treat each stock as a separate time series and apply the PS-MC method independently to each stock.
+    * Alternatively, we can explore dimensionality reduction techniques (e.g., PCA) to create a lower-dimensional representation of the feature space before applying PS-MC.
+
+**Methodology Steps:**
+
+1. **Data Preprocessing:**
+    * Divide the NumerAI dataset into eras (weeks).
+    * For each era, calculate the residualized returns (target values) for each stock.
+    * Apply any necessary data cleaning or imputation techniques to handle missing values.
+
+2. **Local SS Model Construction:**
+    * For each era and each stock, calculate the SS statistics on a rolling window of past residualized returns.
+    * Build a maximum entropy model for each era and each stock based on the calculated SS statistics.
+
+3. **Path Shadowing:**
+    * Define a target-specific embedding function `h_α,β(x)` that takes residualized returns as input.
+    * For each era and each stock, identify shadowing paths within the generated dataset of that era whose past embedding is close to the observed past embedding of the stock.
+
+4. **Prediction:**
+    * For each shadowing path, extract the predicted target value (residualized return) for the future era.
+    * Calculate a weighted average of the predicted target values over the shadowing paths to obtain the final prediction for each stock in the future era.
+
+5. **Model Training and Evaluation:**
+    * Train the local SS models on a rolling basis using past data.
+    * Evaluate the prediction performance on a hold-out validation set or through cross-validation.
+    * Optimize the model parameters (α, β, η, rolling window size, etc.) based on the evaluation results.
+
+**Pseudocode:**
+
+```
+# Parameters
+alpha = ...  # Embedding parameter
+beta = ...   # Embedding parameter
+eta = ...    # Shadowing threshold
+window_size = ... # Rolling window size for SS calculation
+
+# Data preprocessing
+eras = ...  # List of eras
+stock_data = ...  # Dictionary with stock IDs as keys and list of (features, target) tuples as values
+
+# Loop through eras
+for era in eras:
+    # Calculate residualized returns for each stock
+    for stock_id, data in stock_data.items():
+        residualized_returns = calculate_residualized_returns(data, era)
+        stock_data[stock_id] = (data[0], residualized_returns)  # Update data with residualized returns
+
+    # Loop through stocks
+    for stock_id, data in stock_data.items():
+        features, residualized_returns = data
+
+        # Calculate SS statistics
+        ss_stats = calculate_ss_statistics(residualized_returns, window_size)
+
+        # Build local SS model
+        local_ss_model = build_maximum_entropy_model(ss_stats)
+
+        # Generate shadowing paths
+        past_embedding = h_alpha_beta(residualized_returns)
+        shadowing_paths = find_shadowing_paths(local_ss_model, past_embedding, eta)
+
+        # Predict target value
+        predicted_target = weighted_average_prediction(shadowing_paths)
+
+        # Store prediction for evaluation
+        ...
+```
+
+**Additional Considerations:**
+
+* **Computational Efficiency:** To improve efficiency, we can explore techniques like KD-trees or Locality Sensitive Hashing (LSH) for faster nearest neighbor search during path shadowing. 
+* **Ensemble Methods:** Combining predictions from multiple local SS models or using ensemble learning techniques could further enhance the robustness and accuracy of the predictions.
+* **Feature Engineering:**  Explore additional feature engineering techniques beyond the provided features to capture more predictive signals.
+
+**This adapted methodology offers a framework for applying the core ideas of PS-MC and the SS model to the NumerAI dataset while addressing the challenges posed by its unique characteristics.  Further experimentation and refinement will be necessary to achieve optimal performance on this complex prediction task.** 

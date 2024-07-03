@@ -1,0 +1,53 @@
+## Literature Review: Path Shadowing Monte-Carlo for Financial Price Prediction 
+
+**Paper:** Path Shadowing Monte-Carlo by Rudy Morel, Stéphane Mallat, & Jean-Philippe Bouchaud
+
+**Focus:** Methodology 
+
+**Summary:**
+
+This paper introduces the Path Shadowing Monte-Carlo (PS-MC) method for predicting future financial price scenarios. It utilizes a generative model based on the Scattering Spectra (SS) of financial prices, which captures key statistical properties like volatility, skewness, and kurtosis across multiple scales. PS-MC then identifies "shadowing paths" within the generated dataset whose past behavior closely resembles the observed history. By averaging future quantities over these shadowing paths, the method provides predictions for future realized volatility and option prices.
+
+**Methodology Breakdown:**
+
+1. **Scattering Spectra (SS) Model:**
+    * **Motivation:** Traditional low-parameter models struggle to capture the complex, multi-scale nature of financial price data. 
+    * **Construction:**
+        * **Wavelet Increments:** Decompose price variations across different scales using wavelet filters to capture both time and scale dependencies.
+        * **Low-Moment Statistics:** Calculate low-order moments (order 1 and 2) of wavelet increments to represent multi-scale skewness and kurtosis.  This approach reduces estimation variance compared to using higher-order moments.
+        * **Maximum Entropy Model:**  Define a probability distribution that maximizes entropy while ensuring the model reproduces the SS statistics observed in the actual data.
+
+2. **Path Shadowing Monte-Carlo (PS-MC):**
+    * **Objective:** Estimate the conditional expectation of future quantities (e.g., realized volatility) given the observed past price history.
+    * **Challenge:** Finding exact matches to the past history in a dataset is highly unlikely.
+    * **Solution:**
+        * **Path Embedding:** Define a low-dimensional embedding `h(x_past)` that captures relevant features of the past price history.
+        * **Shadowing Paths:** Identify paths within the generated dataset whose past embedding is close to the observed past embedding, forming the set `H_η(ex_past)`.
+        * **Weighted Averaging:** Estimate the conditional expectation by taking a weighted average of the future quantity over the shadowing paths, with weights based on the distance between their past embedding and the observed past embedding.
+
+3. **Path Embedding:**
+    * The paper proposes a specific embedding function `h_α,β(x)` that incorporates multi-scale increments with power-law decaying weights. This allows capturing the influence of both recent and distant past while maintaining low dimensionality.
+
+4. **Volatility Prediction:**
+    * **Application:** PS-MC is applied to predict future realized volatility over various time horizons.
+    * **Evaluation:** The method demonstrates superior performance compared to a benchmark and the Path-Dependent Volatility (PDV) model, especially for longer prediction horizons.
+
+5. **Option Pricing:**
+    * **Path Shadowing Hedged Monte-Carlo (PS-HMC):** Combines PS-MC with the Hedged Monte-Carlo method to price options based on the shadowing paths.
+    * **Trading Game:** Evaluates the quality of the predicted option smiles by simulating a trading strategy that buys or sells options based on the difference between model-predicted and market prices.
+    * **Results:** The trading game using SS model smiles consistently outperforms the PDV model and yields positive returns.
+
+**Strengths of the Methodology:**
+
+* **Multi-scale approach:** The SS model effectively captures the complex dependencies across different time scales inherent in financial data.
+* **Data efficiency:** Using low-moment statistics reduces estimation variance and allows for accurate model calibration with limited data.
+* **Generative power:** The SS model generates diverse and realistic price paths, which are crucial for effective path shadowing.
+* **Flexibility:** PS-MC can be applied to various prediction tasks and financial instruments beyond volatility and options.
+
+**Limitations and Future Work:**
+
+* **Computational cost:** The path shadowing step can be computationally expensive, requiring efficient algorithms or pre-selection of typical paths.
+* **Model assumptions:** The stationarity assumption may not hold in all market conditions, and incorporating exogenous events could enhance prediction accuracy.
+* **Multivariate extension:** Extending the methodology to multivariate time series for applications such as portfolio optimization and risk management.
+
+**Overall, the paper presents a novel and promising methodology for financial price prediction. The combination of the SS model and PS-MC offers a powerful tool for capturing complex market dynamics and generating accurate forecasts.** 

@@ -1,0 +1,41 @@
+## Analyzing "Dynamically Modular and Sparse General Continual Learning" with a Focus on Methodology 
+
+Following the provided guidelines for a critical and creative literature review, let's delve into the paper "Dynamically Modular and Sparse General Continual Learning" with a specific focus on its methodology.
+
+**1. Core Problem and Solution:**
+
+* **Problem:** The paper addresses the issue of catastrophic forgetting in deep neural networks (DNNs) during continual learning. As DNNs learn from a stream of data with changing conditions, they tend to forget previously acquired knowledge. 
+* **Proposed Solution:** The authors introduce **Dynamos**, a novel approach that combines:
+    * **Dynamic Modularity and Sparsity:** Inspired by the brain's sparse coding, Dynamos utilizes agents within the DNN to dynamically activate relevant subsets of neurons for specific stimuli. This leads to specialized modules within the network. 
+    * **Rehearsal-based Learning:** A memory buffer stores past examples, and the network is retrained on both current and past data to mitigate forgetting and maintain performance.
+
+**2. Methodology in Detail:**
+
+* **Dynamic Sparsity and Modularity:**
+    * **Agents:** Each convolutional layer is equipped with an agent that decides which channels (filters) to activate based on the input.  This is achieved through a self-attention network and policy gradient training.
+    * **Reward Function:** Agents are rewarded for choosing actions that lead to accurate predictions with a sparse activation pattern (fewer channels used). They are penalized for actions resulting in incorrect predictions.
+    * **Prototype Loss:** To encourage specialization of modules, a prototype loss is applied. This loss pulls together channel-wise attention vectors belonging to the same class and pushes apart those from different classes.
+* **Multi-Scale Associations:**
+    * **Memory Buffer:** A fixed-size memory buffer stores past examples using reservoir sampling.
+    * **Consistency Losses:** The network is trained on both current and past examples. Consistency losses ensure that the network's responses to past examples remain consistent over time. 
+
+**3. Strengths of the Methodology:**
+
+* **Biologically Inspired:** The dynamic activation of neurons and the specialization of modules mirror the behavior observed in the brain.
+* **Addresses Catastrophic Forgetting:** The combination of dynamic sparsity, modularity, and rehearsal effectively mitigates forgetting and maintains performance on previously learned tasks.
+* **General Continual Learning:** Dynamos adheres to the desiderata of general continual learning, not requiring task boundaries or identities during training or testing.
+
+**4. Potential Limitations and Future Work:**
+
+* **Computational Cost:** The use of agents and the additional losses may increase the computational cost compared to simpler continual learning methods.
+* **Hyperparameter Tuning:** The method introduces several hyperparameters that need careful tuning for optimal performance.
+* **Exploration of Different Architectures:** Investigating the effectiveness of Dynamos with various DNN architectures could be beneficial. 
+* **Understanding Module Specialization:** Further analysis of the learned modules and their specialization could provide valuable insights into the inner workings of the model.
+
+**5. Creative Extensions:**
+
+* **Application to Other Domains:**  Exploring the application of Dynamos to other domains beyond image classification, such as natural language processing or reinforcement learning, could be promising.
+* **Hierarchical Modularity:**  Investigating the incorporation of hierarchical modularity within Dynamos could further enhance its ability to learn complex relationships and representations. 
+* **Dynamically Growing Networks:**  Exploring mechanisms for dynamically growing the network capacity based on task complexity or data distribution could be an interesting avenue for future research. 
+
+**Overall, Dynamos presents a compelling and innovative approach to continual learning, drawing inspiration from the brain's functionality. Its methodology effectively addresses catastrophic forgetting and shows promise for real-world applications with its adherence to general continual learning principles. Further exploration of its capabilities and potential extensions could lead to significant advancements in the field of continual learning.** 

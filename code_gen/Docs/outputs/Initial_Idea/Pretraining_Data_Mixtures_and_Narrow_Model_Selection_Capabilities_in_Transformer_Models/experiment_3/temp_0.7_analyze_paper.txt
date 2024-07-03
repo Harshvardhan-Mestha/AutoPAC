@@ -1,0 +1,46 @@
+## Literature Review: Pretraining Data Mixtures and In-Context Learning in Transformer Models 
+
+**Paper:** Pretraining Data Mixtures Enable Narrow Model Selection Capabilities in Transformer Models by Yadlowsky, Doshi, and Tripuraneni (2023)
+
+**Focus:** Methodology and Findings Related to Model Selection and Generalization
+
+### Methodology 
+
+1. **Pretraining Data:** The authors constructed pretraining datasets consisting of sequences of (x, f(x)) pairs, where x is drawn from a normal distribution and f is a function drawn from a mixture of different function classes. The function classes explored include:
+    * **D(Fdense):** Dense linear functions.
+    * **D(Fsparse, nnz):** Sparse linear functions with a specified number of non-zero coefficients (nnz).
+    * **D(Frelu):** Two-layer ReLU networks. 
+    * **D(Fsine):** Sinusoidal functions.
+    * **Mixture Distributions:** Combinations of the above function classes with varying weights.
+
+2. **Model Architecture and Training:**
+    * The authors employed a decoder-only Transformer model with 12 layers, 8 attention heads, and a 256-dimensional embedding space (similar to GPT-2 scale).
+    * The model was trained using a "teacher forcing" objective with squared loss, where the model predicts the next element in the sequence given the previous elements.
+    * Training involved 1 million steps with a batch size of 1024, using the Adam optimizer and a specific learning rate schedule.
+
+3. **Evaluation:**
+    * The trained models were evaluated on their ability to perform in-context learning (ICL) on unseen functions from both within and outside the pretraining data distribution.
+    * ICL involved providing the model with a few input-output examples of a new function and then asking it to predict the output for a new input.
+    * Performance was measured using mean squared error (MSE) between the predicted and true outputs.
+
+### Findings 
+
+1. **Model Selection within Pretraining Distribution:**
+    * Transformer models demonstrated near-optimal model selection capabilities when presented with functions from the same classes used in pretraining. 
+    * The models could effectively identify the correct function class based on the in-context examples and make accurate predictions.
+    * This ability held even when the pretraining data was a mixture of different function classes, with the model adapting its predictions based on the specific examples provided.
+
+2. **Limitations of Model Selection:**
+    * The model selection capabilities were limited to functions within or close to the pretraining distribution. 
+    * When presented with functions outside the pretraining distribution, such as convex combinations of functions from different classes, the models struggled to make accurate predictions. 
+    * This suggests that the model's ICL abilities are more closely tied to the coverage of its pretraining data than to any inherent ability to generalize to entirely new function classes.
+
+3. **Impact of Model Size:**
+    * The ability to perform model selection generally improved with increasing model size.
+    * However, the effect was not always uniform across different function classes, with some tasks exhibiting more significant performance gains with larger models than others.
+
+###  Further Research Directions 
+
+* **Bridging the Gap to Natural Language:** Exploring how these findings translate to the domain of natural language processing, where the definition of task families and data distributions is less clear-cut.
+* **Understanding Failure Modes:** Investigating the specific ways in which models fail when presented with out-of-distribution functions and developing techniques to improve generalization.
+* **Exploring Alternative Architectures:** Examining whether different model architectures or training methods can enhance model selection and generalization capabilities. 

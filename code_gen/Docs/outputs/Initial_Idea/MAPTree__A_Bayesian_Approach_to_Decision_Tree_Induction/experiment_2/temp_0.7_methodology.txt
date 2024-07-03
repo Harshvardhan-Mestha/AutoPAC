@@ -1,0 +1,104 @@
+## Methodology for Numerai with MAPTree and Potential Enhancements
+
+### Assessing MAPTree's Relevance and Limitations
+
+While MAPTree shows promise for decision tree induction, its direct application to the Numerai dataset presents challenges:
+
+* **Memory limitations:** The construction of the AND/OR graph in MAPTree can be memory-intensive, potentially exceeding available resources for the large Numerai dataset. 
+* **Feature interactions:**  MAPTree, as presented in the paper, focuses on individual feature splits. Numerai explicitly mentions the importance of feature interactions and advises against relying on single features due to inconsistent predictive power over time. 
+
+### Proposed Methodology
+
+Considering the limitations, we propose a methodology that combines the strengths of MAPTree with techniques to address its shortcomings and cater to the specifics of the Numerai dataset:
+
+**1. Data Preprocessing:**
+
+* **Feature Engineering:**
+    * Explore feature interactions by creating new features that combine existing ones. This could involve:
+        * **Simple interactions:**  Adding features like product or ratio of existing features. 
+        * **Domain-specific features:** Incorporating financial knowledge to create features like momentum indicators or moving averages. 
+    * Address missing values (NaNs) using techniques like imputation (e.g., mean/median) or creating indicator features for missingness.
+
+* **Era-wise Splitting:** 
+    * Instead of treating each row independently, split the data into era-wise subsets to account for the temporal nature of the data. 
+    * This ensures each era is treated as a single data point, aligning with Numerai's evaluation metrics.
+
+**2. Model Selection:**
+
+* **Ensemble Methods:**
+    *  Given the limitations of single decision trees and the advice against overreliance on specific features, consider ensemble methods like Random Forests or XGBoost.
+    * These methods combine multiple decision trees, reducing overfitting and improving generalizability.
+    * MAPTree could be used to build individual trees within the ensemble, leveraging its ability to find high-performing trees.
+
+**3. Training Process:**
+
+* **Memory Optimization:**
+    * Implement techniques to reduce memory usage during AND/OR graph construction:
+        * **Subsampling:** Train MAPTree on smaller, representative subsets of the data for each era.
+        * **Pruning:**  Limit the depth of the AND/OR graph or prune branches with low probability early in the search.
+        * **Parallelization:**  Distribute the graph construction and search process across multiple cores or machines.
+
+* **Feature Importance:**
+    * Analyze feature importance within the ensemble to understand which features contribute most to the predictions.
+    * This information can guide further feature engineering efforts and provide insights into the model's behavior.
+
+**4. Evaluation:**
+
+* **Numerai Metrics:** 
+    * Evaluate the model using Numerai's era-wise metrics, such as mean correlation per era, to assess its performance accurately.
+    * Pay close attention to consistency of performance across eras to ensure the model is not overfitting to specific time periods.
+
+### Pseudocode 
+
+```
+# Preprocessing
+def preprocess_data(data):
+    # Feature engineering
+    engineered_features = create_interaction_features(data)
+    data = pd.concat([data, engineered_features], axis=1)
+    data = impute_missing_values(data)
+    
+    # Era-wise splitting
+    eras = data["era"].unique()
+    era_data = []
+    for era in eras:
+        era_data.append(data[data["era"] == era])
+    return era_data
+
+# Model training with memory optimization (example: subsampling)
+def train_model(era_data):
+    models = []
+    for data in era_data:
+        # Subsample data
+        subsample = data.sample(n=1000)
+        
+        # Train MAPTree on subsample
+        tree = MAPTree(subsample)
+        models.append(tree)
+    
+    # Create ensemble (e.g., Random Forest)
+    ensemble = RandomForest(models)
+    return ensemble
+
+# Evaluation
+def evaluate_model(model, era_data):
+    correlations = []
+    for data in era_data:
+        predictions = model.predict(data)
+        correlation = calculate_correlation(predictions, data["target"])
+        correlations.append(correlation)
+    
+    mean_correlation = np.mean(correlations)
+    return mean_correlation
+
+# Main workflow
+data = load_numerai_data()
+era_data = preprocess_data(data)
+model = train_model(era_data)
+performance = evaluate_model(model, era_data)
+print(f"Mean correlation per era: {performance}")
+```
+
+### Conclusion 
+
+By combining MAPTree with ensemble methods, feature engineering, and memory optimization techniques, this methodology addresses the limitations of MAPTree and caters to the unique characteristics of the Numerai dataset. This approach has the potential to produce a high-performing and generalizable model for the Numerai competition.

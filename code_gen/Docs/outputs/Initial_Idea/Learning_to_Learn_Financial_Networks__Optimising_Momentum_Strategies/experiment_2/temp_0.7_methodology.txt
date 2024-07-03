@@ -1,0 +1,65 @@
+## Methodology for Numerai with Insights from L2GMOM
+
+While the L2GMOM paper offers valuable insights into learning financial networks and optimizing momentum strategies, its direct application to the Numerai dataset presents challenges due to key differences in data structure and target variables. Here's a methodology incorporating L2GMOM's strengths while addressing these challenges:
+
+**1. Model Selection:**
+
+* **Transformer-based architecture:** Given the temporal and cross-sectional nature of the Numerai data, a Transformer-based model like the Momentum Transformer proposed by Wood et al. (2022) is a suitable choice. Transformers excel at capturing long-range dependencies and relationships between features, making them effective for time-series and cross-sectional analysis.
+
+**2. Addressing Limitations:**
+
+* **Transformer limitations:**
+    * **Computational cost:** Training Transformers can be computationally expensive, especially with large datasets. We can mitigate this by employing techniques like gradient checkpointing and mixed-precision training.
+    * **Interpretability:** While attention mechanisms offer some interpretability, understanding the model's reasoning can still be challenging. We can incorporate techniques like attention visualization and feature importance analysis to gain insights into the model's decision-making process.
+
+**3. Relevance of L2GMOM:**
+
+* **Network learning:** The concept of learning relationships between assets from historical data is relevant to Numerai. However, instead of constructing explicit graphs, we can leverage the self-attention mechanism within the Transformer to implicitly learn relationships between stocks based on their features and performance across eras.
+* **Momentum optimization:** The focus on optimizing momentum strategies aligns with Numerai's goal of predicting stock-specific returns ("alpha"). We can adapt the loss functions used in L2GMOM, such as MSE or negative Sharpe Ratio, to directly optimize the model for Numerai's target variable.
+
+**4. Combining Ideas and Overcoming Limitations:**
+
+* **Hybrid approach:** We can combine the strengths of the Momentum Transformer with the network learning concept from L2GMOM. 
+    * The Transformer will capture temporal and cross-sectional dependencies in the data.
+    * The self-attention mechanism will implicitly learn relationships between stocks based on their features and performance across eras, similar to how L2GMOM learns explicit network structures.
+
+**5. Training on the Entire Dataset:**
+
+* **Data preparation:**
+    * Handle missing values (NaNs) using appropriate techniques like imputation or removal, depending on the feature and its importance.
+    * Normalize features to ensure they have similar scales and prevent any single feature from dominating the model.
+* **Training process:**
+    * **Cross-validation:** Implement a time-series aware cross-validation strategy to account for the overlapping nature of target values across eras. This ensures that the model is evaluated on truly out-of-sample data.
+    * **Early stopping:** Monitor validation performance and employ early stopping to prevent overfitting and ensure the model generalizes well to unseen data.
+
+**Pseudocode for the Methodology:**
+
+```
+# Data preparation
+1. Load Numerai dataset (features and targets)
+2. Handle missing values (e.g., imputation or removal)
+3. Normalize features
+
+# Model definition
+4. Define a Momentum Transformer model with:
+    * Embedding layers for categorical features
+    * Positional encoding for temporal information
+    * Encoder and decoder blocks with self-attention and feedforward layers
+
+# Training loop
+5. Split data into train and validation sets using time-series aware cross-validation
+6. For each training fold:
+    7. Train the Momentum Transformer model:
+        * Use Adam optimizer with appropriate learning rate and weight decay
+        * Choose loss function (e.g., MSE or negative Sharpe Ratio)
+        * Implement gradient checkpointing and mixed-precision training for efficiency
+        * Monitor validation performance and apply early stopping
+8. Ensemble the trained models from each fold
+
+# Evaluation and analysis
+9. Evaluate the ensemble model on the test set using Numerai's metrics
+10. Analyze attention weights and feature importance to gain insights into the model's behavior
+
+# Prediction
+11. Use the trained ensemble model to generate predictions on new data
+``` 

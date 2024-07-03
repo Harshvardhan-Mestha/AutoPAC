@@ -1,0 +1,1 @@
+!pip install -q numerapi umap-learn pandas pyarrow matplotlib lightgbm scikit-learn cloudpickle scipy==1.10.1 tabpfn

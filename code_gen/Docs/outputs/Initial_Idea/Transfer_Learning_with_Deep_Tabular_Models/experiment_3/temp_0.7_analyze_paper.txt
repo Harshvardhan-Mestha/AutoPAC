@@ -1,0 +1,74 @@
+## Literature Review: Transfer Learning with Deep Tabular Models 
+
+**Paper:** Transfer Learning with DeepTabular Models (Levin et al., ICLR 2023)
+
+**Focus:** Methodology and Findings
+
+**Summary:**
+
+This paper explores the potential of transfer learning with deep tabular models for scenarios with limited downstream data. The authors find that deep tabular models, when pre-trained on upstream data and fine-tuned on downstream tasks, outperform gradient boosted decision trees (GBDTs), even when GBDTs leverage upstream data through stacking. They further compare supervised and self-supervised pre-training strategies, finding that supervised pre-training leads to more transferable features in the tabular domain. Finally, they propose a pseudo-feature method to address feature set mismatches between upstream and downstream data.
+
+**Methodology:**
+
+1. **MetaMIMIC Testbed:**
+    * The authors utilize the MetaMIMIC repository, containing anonymized patient data with 12 binary prediction tasks corresponding to different medical diagnoses.
+    * They create 12 upstream-downstream splits, reserving 11 diagnoses for upstream pre-training and one for downstream fine-tuning.
+    * Downstream data is limited to 4, 10, 20, 100, and 200 samples to simulate scenarios with limited data availability.
+
+2. **Models:**
+    * **Deep Tabular Models:** FT-Transformer, TabTransformer, MLP, ResNet
+    * **GBDT Models:** CatBoost, XGBoost
+
+3. **Transfer Learning Setups:**
+    * **Neural Networks:**
+        * Linear head atop a frozen feature extractor
+        * MLP head atop a frozen feature extractor
+        * End-to-end fine-tuned feature extractor with a linear head
+        * End-to-end fine-tuned feature extractor with an MLP head
+    * **GBDT Baselines:** 
+        * Models trained from scratch on downstream data
+        * Models with stacking (leveraging upstream data predictions) 
+
+4. **Hyperparameter Tuning:**
+    * Optuna library is used for hyperparameter tuning with Bayesian optimization. 
+    * Deep models with transfer learning are tuned on full upstream data.
+    * Deep baselines and GBDT models are tuned on upstream data with the same size as the downstream data.
+
+5. **Self-Supervised Pre-training:**
+    * **MLM Pre-training:** A random feature is masked for each sample, and the model predicts the masked value.
+    * **Contrastive Pre-training:** The model learns to map augmented views of the same sample close together in feature space while pushing apart views of different samples.
+
+6. **Pseudo-Feature Method:**
+    * For missing features in upstream data:
+        * Pre-train a model on upstream data without the missing feature.
+        * Fine-tune the model on downstream data to predict the missing feature.
+        * Use the fine-tuned model to impute pseudo-values for the missing feature in upstream data.
+        * Re-train the model on the augmented upstream data and transfer the feature extractor to the downstream task. 
+    * A similar approach is used for missing features in downstream data. 
+
+**Findings:**
+
+* Deep tabular models with transfer learning outperform GBDT models with stacking across all data levels, especially in low-data regimes.
+* Supervised pre-training leads to more transferable features than self-supervised pre-training in the tabular domain.
+* The pseudo-feature method effectively addresses feature set mismatches and enables transfer learning with heterogeneous data.
+* MLP models with transfer learning are competitive, especially in low-data regimes, while more complex architectures like FT-Transformer offer consistent gains across all data levels. 
+* Using an MLP head with a trainable or frozen feature extractor is effective for all deep tabular models.
+* Hyperparameter tuning on upstream data is crucial for effective transfer learning.
+
+**Critical Analysis:**
+
+* The study primarily focuses on the MetaMIMIC dataset, which may limit the generalizability of the findings to other domains. 
+* The computational cost of deep tabular models compared to GBDTs is not extensively discussed. 
+* The pseudo-feature method may not be as effective when upstream and downstream tasks are significantly different. 
+
+**Creative Extensions:**
+
+* Explore the effectiveness of transfer learning with deep tabular models in various domains beyond healthcare.
+* Investigate the impact of different data augmentation techniques on self-supervised pre-training for tabular data. 
+* Develop more efficient and scalable deep tabular models for transfer learning.
+
+**Next Steps:**
+
+* Apply the proposed methodology to a specific tabular dataset and downstream task relevant to my research area. 
+* Compare the performance of different deep tabular models and GBDTs with transfer learning on this dataset. 
+* Analyze the impact of different pre-training strategies and hyperparameter tuning on the downstream task performance. 

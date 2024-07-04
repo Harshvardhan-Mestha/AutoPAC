@@ -1,13 +1,4 @@
-## Code Generation for Research Papers
-
-
-### Experiment Pipeline Overview:
-Use the [Drive](https://drive.google.com/drive/folders/1L8cZxFp0Kt6Cwu75dnqTX0-UuodWzzsr?usp=sharing) for all the necessary files.
-
-How to Run:
-
-Just download the [Drive](https://drive.google.com/drive/folders/1L8cZxFp0Kt6Cwu75dnqTX0-UuodWzzsr?usp=sharing) and upload it to Colab/Google Drive or any environment (More details soon).
-
+## AutoPAC - Automated Plan and Code Synthesis for Continual Machine Learning Ideation
 
 
 ## Note ##

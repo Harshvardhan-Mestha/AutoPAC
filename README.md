@@ -2,7 +2,7 @@
 
 
 ## Note ##
-The experiments conducted using LLMs may not be precisely reproducible, as LLMs are stochastic and produce varying outputs even with the same inputs.
+**The experiments were conducted using LLMs; hence, they may not be precisely reproducible, as LLMs are stochastic and produce varying outputs even with the same inputs**.
 
 Before proceeding, please ensure to insert your API keys into the appropriate fields in the JSON file. Specifically, update the values for `GeminiAPIKEY` and `GPTAPIKEY` with your respective keys.
 

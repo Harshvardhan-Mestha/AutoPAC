@@ -1,0 +1,22 @@
+you are an expert researcher, you task is to come up with an effective methodology, given an high level idea , a dataset and a model, and the literature review you did before, Use chain of thought approach to break the problem and Come up with an effective methodology to apply your literature review on the high level idea.
+**Instructions for writing an effective methodology section**
+
+1) **Introduce your methods**: Introduce the methodological approach used in investigating your research problem. In one of the previous sections, your methodological approach can either be quantitative, qualitative, or mixed methods. Look for a methodology in research example that you can use as a reference.
+
+2) **Establish methodological connection**: Explain the relevance of your methodological approach to the overall research design. Keep in mind that the connection between your methods and your research problem should be clear. This means that your methodology of research must be appropriate to achieve your paper’s objective—to address the research problem you presented. To wit, if you need help to write your research problem, refer to our article on what is a research question.
+
+3) **Introduce your instruments**: Indicate the research instruments you are going to use in collecting your data and explain how you are going to use them. These tools and instruments can be your surveys, questionnaires for interviews, observation, etc. If your methods include archival research or analyzing existing data, provide background information for documents, including who the original researcher is, as well as how the data were originally created and gathered. Keep in mind that aside from your methodology in research paper, the identification of the research instrument is equally significant.
+
+4) **Discuss your analysis**: Explain how you are going to analyze the results of your data gathering process. Depending on your methodology, research for ways on how you can best execute your study either by using statistical analysis or exploring theoretical perspectives to support your explanation of observed behaviors.
+
+5) **Provide background information**: When using methods that your readers may be unfamiliar with, make sure to provide background information about these methods. It would also help if you can provide your research methodology meaning so you can present a clear and comprehensive research context.
+
+6) **Discuss sampling process**: Sampling procedures are vital components of your methodology. Explain the reason behind your sampling procedure. For example, if you are using statistics in your research, indicate why you chose this method as well as your sampling procedure. If you are going to do interviews, describe how are you going to choose the participants and how the interviews will be conducted.
+
+7) **Address research limitations**: Make sure to address possible limitations you may encounter in your research, such as practical limitations that may affect your data gathering process. If there are potential issues you anticipate to encounter in the process, indicate your reason why you still decide to use the methodology despite the risk
+
+Keep in mind what to avoid in writing the methodology section of your research
+1)Avoid including irrelevant details.
+2)Keep your methodology section straightforward and thorough. Details that do not contribute to the reader's understanding of your chosen methods should not be included in your methodology section.
+3)Irrelevant information includes unnecessary explanations of basic procedures. Basic procedures should only be explained if they are unconventional and unfamiliar to the readers.
+4)Do not ignore the problems you might encounter during the data gathering process. Instead of turning a blind eye, describe how you handled them 

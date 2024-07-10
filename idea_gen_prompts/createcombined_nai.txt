@@ -1,0 +1,64 @@
+<high_level_idea>
+I want to use TabPFN transformer architecture for NumerAI dataset
+
+Dataset description:
+Data Structure - The Numerai dataset is a tabular dataset that describes the global stock market over time.
+At a high level, each row represents a stock at a specific point in time, where id is the stock id and the era is the date. The  features describe the attributes of the stock (eg. P/E ratio) known on the date and the target is a measure of future returns (eg. after 20 days) relative to the date.
+
+Features -There are many features in the dataset, ranging from fundamentals like P/E ratio, to technical signals like RSI, to market data like short interest, to secondary data like analyst ratings, and much more.
+Each feature has been meticulously designed and engineered by Numerai to be predictive of the target or additive to other features. We have taken extreme care to make sure all features are point-in-time to avoid leakage issues.
+While many features can be predictive of the targets on their own, their predictive power is known to be inconsistent across over time. Therefore, we strongly advise against building models that rely too heavily on or are highly correlated to a small number of features as this will likely lead to inconsistent performance. See this  for more information.
+Note: some features values can be NaN. This is because some feature data is just not available at that point in time, and instead of making up a fake value we are letting you choose how to deal with it yourself.
+
+Targets - The target of the dataset is specifically engineered to match the strategy of the hedge fund.
+Given our hedge fund is market/country/sector and factor neutral, you can basically interpret the target as stock-specific returns that are not explained by broader trends in the market/country/sector or well known factors. In simple terms: what we are after is "alpha".
+Apart from the main target we provide many auxiliary targets that are different types of stock specific returns. Like the main target, these auxiliary targets are also based on stock specific returns but are different in what is residualized (eg. market/country vs sector/factor) and time horizon (eg. 20 day vs 60 days).
+Even though our objective is to predict the main target, we have found it helpful to also model these auxiliary targets. Sometimes, a model trained on an auxiliary target can even outperform a model trained on the main target. In other scenarios, we have found that building an ensemble of models trained on different targets can also help with performance.
+Note: some auxiliary target values can be NaN but the main target will never be NaN. This is because some target data is just not available at that point in time, and instead of making up a fake value we are letting you choose how to deal with it yourself.
+
+Eras - Eras represents different points in time, where feature values are as-of that point in time, and target values as forward looking relative to the point in time.
+Instead of treating each row as a single data point, you should strongly consider treating each era as a single data point. For this same reason, many of the metrics on Numerai are "per-era", for example mean correlation per-era.
+In historical data (train, validation), eras are 1 week apart but the target values can be forward looking by 20 days or 60 days. This means that the target values are "overlapping" so special care must be taken when applying cross validation. See this  for more information.
+In the live tournament, each new round contains a new era of live features but are only 1 day apart.
+
+
+The main file format of our data API is , which works great for large columnar data. But you can also find CSV versions of all files if you prefer.
+By default, features and targets in all files are stored as floats ranging from 0 to 1, but you can also find versions of the files that store them as integers which are useful for lowering memory usage.
+Data Releases
+The Numerai dataset is a living and breathing dataset that is constantly improving. In general, if you are building a new model you are encouraged to use the latest version.
+Improvements to the dataset are released as new versions of the dataset to preserve backwards compatibility of models trained on older versions.
+
+Model Description:
+TabPFN is different from other methods you might know for tabular classification. Here, we list some tips and tricks that might help you understand how to use it best.
+Do not preprocess inputs to TabPFN. TabPFN pre-processes inputs internally. It applies a z-score normalization (x-train_x.mean()/train_x.std()) per feature (fitted on the training set) and log-scales outliers heuristically. Finally, TabPFN applies a PowerTransform to all features for every second ensemble member. Pre-processing is important for the TabPFN to make sure that the real-world dataset lies in the distribution of the synthetic datasets seen during training. So to get the best results, do not apply a PowerTransformation to the inputs.
+TabPFN expects scalar values only (if your categoricals are floats just leave them as they are, if you have categoricals that are not encoded as float (rather str or object), encode your categoricals e.g. with OrdinalEncoder). TabPFN works best on data that does not contain any categorical or NaN data .
+TabPFN ensembles multiple input encodings per default. It feeds different index rotations of the features and labels to the model per ensemble member. You can control the ensembling with TabPFNClassifier(...,N_ensemble_configurations=?)
+TabPFN does not use any statistics from the test set. That means predicting each test example one-by-one will yield the same result as feeding the whole test set together.
+TabPFN is differentiable in principle, only the pre-processing is not and relies on numpy.
+The TabPFN is a neural network that learned to do tabular data prediction. This is the original CUDA-supporting pytorch impelementation.
+TabPFN is, a single Transformer that has been
+pre-trained to approximate probabilistic inference in a single forward pass, and has learned to solve novel small tabular classification tasks (≤ 1 000 training examples, ≤ 100 purely numerical features without missing values and ≤ 10 classes) in less than a second yielding state-of-the-art performance.
+<\high_level_idea>
+
+you are an expert researcher, you task is to come up with an effective methodology, given an high level idea , a dataset and a model, and the literature review you did before, Use chain of thought approach to break the problem and Come up with an effective methodology to apply your literature review on the high level idea.
+**Instructions for writing an effective methodology section**
+
+1) **Introduce your methods**: Introduce the methodological approach used in investigating your research problem. In one of the previous sections, your methodological approach can either be quantitative, qualitative, or mixed methods. Look for a methodology in research example that you can use as a reference.
+
+2) **Establish methodological connection**: Explain the relevance of your methodological approach to the overall research design. Keep in mind that the connection between your methods and your research problem should be clear. This means that your methodology of research must be appropriate to achieve your paper’s objective—to address the research problem you presented. To wit, if you need help to write your research problem, refer to our article on what is a research question.
+
+3) **Introduce your instruments**: Indicate the research instruments you are going to use in collecting your data and explain how you are going to use them. These tools and instruments can be your surveys, questionnaires for interviews, observation, etc. If your methods include archival research or analyzing existing data, provide background information for documents, including who the original researcher is, as well as how the data were originally created and gathered. Keep in mind that aside from your methodology in research paper, the identification of the research instrument is equally significant.
+
+4) **Discuss your analysis**: Explain how you are going to analyze the results of your data gathering process. Depending on your methodology, research for ways on how you can best execute your study either by using statistical analysis or exploring theoretical perspectives to support your explanation of observed behaviors.
+
+5) **Provide background information**: When using methods that your readers may be unfamiliar with, make sure to provide background information about these methods. It would also help if you can provide your research methodology meaning so you can present a clear and comprehensive research context.
+
+6) **Discuss sampling process**: Sampling procedures are vital components of your methodology. Explain the reason behind your sampling procedure. For example, if you are using statistics in your research, indicate why you chose this method as well as your sampling procedure. If you are going to do interviews, describe how are you going to choose the participants and how the interviews will be conducted.
+
+7) **Address research limitations**: Make sure to address possible limitations you may encounter in your research, such as practical limitations that may affect your data gathering process. If there are potential issues you anticipate to encounter in the process, indicate your reason why you still decide to use the methodology despite the risk
+
+Keep in mind what to avoid in writing the methodology section of your research
+1)Avoid including irrelevant details.
+2)Keep your methodology section straightforward and thorough. Details that do not contribute to the reader's understanding of your chosen methods should not be included in your methodology section.
+3)Irrelevant information includes unnecessary explanations of basic procedures. Basic procedures should only be explained if they are unconventional and unfamiliar to the readers.
+4)Do not ignore the problems you might encounter during the data gathering process. Instead of turning a blind eye, describe how you handled them 

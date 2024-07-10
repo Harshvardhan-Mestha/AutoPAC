@@ -1,0 +1,50 @@
+Thank you for providing the instructions on writing an effective methodology section and the dataset description. Based on the literature review I conducted earlier and the high-level idea of implementing the cascading models approach from the paper on the given dataset, here is my proposed methodology:
+
+1) Introduce the methodological approach:
+We will employ a quantitative approach using machine learning models for tabular classification on the given financial dataset. Specifically, we will implement the cascading models methodology proposed in the paper "Conservative Predictions on Noisy Financial Data" to deal with the noisy nature of financial time series data.
+
+2) Establish methodological connection: 
+The cascading models approach aligns well with the research problem of making accurate predictions on noisy financial data. By training an ensemble of models sequentially, each focused on the subset of data where the previous model was uncertain, we can improve prediction accuracy and utility for trading decisions on the data points where the models are most confident.
+
+3) Introduce instruments/models:
+We will use differentiable decision trees (DDTs) and multi-layer perceptrons (MLPs) as the base model types in the cascading ensemble, following the paper's methodology.
+
+DDTs extend traditional decision trees by replacing hard splits with "soft" sigmoid decisions and learning distributions over classes at the leaf nodes. This allows backpropagation for end-to-end training like neural networks.
+
+MLPs are standard feed-forward neural networks with dense layers that can learn complex non-linear representations from data.
+
+4) Discuss analysis approach:
+The analysis will proceed as follows:
+
+a) Data preprocessing: 
+- Treat each 'era' as a single data point by aggregating rows belonging to the same era
+- Split eras into train/val/test splits
+- One-hot encode categorical features
+- Normalize numerical features
+
+b) Model training:
+- Initialize cascaded model ensemble with DDT and MLP 
+- Train first level on train data
+- At each level:
+    - Get predicted probabilities on train data
+    - Compute Gini impurity of predictions 
+    - Add data points with impurity < threshold to "unpruned" set
+    - Train next level on remaining "pruned" data
+- Cascade termination: Stop adding levels if accuracy on unpruned doesn't improve
+
+c) Evaluation:
+- Pass test data through trained cascade
+- Evaluate accuracy only on "unpruned" test points 
+- Compute utility metrics like profit utility, downside risk-adjusted return, traded Sharpe ratio
+- Analyze confusion matrices to study prediction distributions
+
+5) Provide background:
+The cascading models approach is inspired by classic rule learning algorithms like CN2 that learned high-precision rules on smaller subsets of noise-free data. The Gini impurity threshold allows controlling the trade-off between accuracy and coverage.
+
+6) Discuss sampling:
+We will use standard train/val/test splits on the data, treating each era as a single point to avoid train-test contamination. Theval set will be used for early stopping and hyperparameter tuning of the base models.
+
+7) Address limitations:
+A key limitation is that the effective sample size reduces at each level of the cascade due to pruning, which can lead to overfitting if not carefully regularized. Additionally, the approach is sensitive to the impurity threshold - very low values may prune too much data leading to low coverage.
+
+Let me know if you need any clarification or have additional suggestions on the proposed methodology!

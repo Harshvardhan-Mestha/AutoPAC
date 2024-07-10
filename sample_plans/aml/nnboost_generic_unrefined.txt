@@ -1,0 +1,35 @@
+Based on the literature review, high-level idea, dataset description, and guidelines for writing an effective methodology section, here is my proposed methodology using the chain of thought approach:
+
+1. Introduce methodological approach:
+The methodological approach will be a quantitative study using machine learning algorithms for tabular data classification. Specifically, we will compare the performance of neural networks and gradient boosted decision trees, given the ongoing debate in the literature about which family performs better on tabular data.
+
+2. Establish methodological connection: 
+The stock market dataset provided contains tabular features describing the market over time, with the goal of classifying future target values. This aligns with the paper's goal of studying algorithm performance across diverse tabular datasets. The time-series nature adds complexity compared to static tabular data.
+
+3. Instruments for data collection:
+The dataset is already provided, so no additional data collection instruments are needed. However, appropriate preprocessing and feature engineering may be required based on the dataset's characteristics.
+
+4. Data analysis approach:
+a) Split the data into train/validation/test sets, treating each "era" as a single data point per the dataset description.
+b) Calculate a diverse set of metafeatures on the dataset using libraries like PyMFE.
+c) Train and evaluate the following algorithms with thorough hyperparameter tuning:
+    - Neural networks: MLPs, TabNet, TabTransformer, NODE, etc.
+    - Gradient boosted trees: XGBoost, LightGBM, CatBoost
+    - Baselines: Logistic Regression, SVMs, Decision Trees
+d) Compare algorithm performance using appropriate metrics like accuracy, log-loss, F1-score.
+e) Analyze correlations between metafeatures and relative performance of NN vs GBDT families, as well as individual algorithms.
+f) Use meta-learning models to test if metafeatures are predictive of algorithm performance.
+
+5. Background information:
+The machine learning algorithms and evaluation approach follows the methodology used in the paper, which is a large-scale empirical study on tabular data. Calculating metafeatures and using meta-learning models builds upon recent work exploring dataset characteristics.
+
+6. Sampling process: 
+No additional sampling is required since the full dataset is provided. However, if computationally infeasible, a representative subsample could be extracted while ensuring era boundaries are maintained.
+
+7. Limitations:
+a) The provided dataset may not be fully representative of all tabular data domains.
+b) Time and compute constraints may limit the number of algorithms, hyperparameters, and repetitions explored.
+c) The generated metafeatures may not fully capture all relevant dataset characteristics.
+d) Temporal dependencies and non-stationarities in time-series data add complexity compared to static tabular data.
+
+Let me know if you need any clarification or have additional suggestions to improve the proposed methodology!

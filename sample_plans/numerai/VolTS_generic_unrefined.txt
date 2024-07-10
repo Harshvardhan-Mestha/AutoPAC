@@ -1,0 +1,69 @@
+Certainly! I'll use the chain of thought approach to break down the problem and develop an effective methodology that applies my literature review to the high-level idea of creating a volatility-based trading system using the Numerai dataset.
+
+1. Introduce your methods:
+   My methodological approach is quantitative, focusing on statistical learning and machine learning techniques to forecast stock market trends. This approach is inspired by Letteri's paper "VolTS: A Volatility-based Trading System to forecast Stock Markets Trend using Statistics and Machine Learning," which successfully combined statistical analysis with machine learning to predict market movements.
+
+2. Establish methodological connection:
+   The research problem is to create a robust, volatility-based trading system that can effectively capture opportunities for profit from market dynamics. Letteri's approach showed that by using k-means++ for volatility clustering and Granger causality tests for predicting stock trends, one could outperform a Buy & Hold strategy. Similarly, I propose to use unsupervised and supervised learning techniques on the Numerai dataset to cluster stocks based on volatility and identify predictive relationships between them.
+
+3. Introduce your instruments:
+   My primary research instrument is the Numerai dataset, a comprehensive tabular dataset that describes the global stock market over time. Each row represents a stock at a specific point in time, with features describing its attributes (e.g., P/E ratio, RSI) and targets indicating future returns. This dataset is meticulously engineered by Numerai to be point-in-time, avoiding leakage issues, and to capture "alpha" - stock-specific returns not explained by broader trends.
+
+   I'll also use Python libraries for data analysis and machine learning, including pandas for data manipulation, scikit-learn for machine learning tasks, and statsmodels for statistical tests. These tools will help me preprocess the data, apply clustering and causality tests, and evaluate my trading strategy.
+
+4. Discuss your analysis:
+   My analysis will follow these steps:
+   a. Data Preprocessing:
+      - Handle NaN values in features using KNN imputation, as it preserves data relationships.
+      - Normalize features to a common scale (0-1) to ensure fair contribution in clustering.
+
+   b. Volatility Estimation:
+      - Calculate Historical Volatility (HV) using Yang-Zhang estimator, as Letteri found it to be the most robust.
+      - Group HV by 'era' to align with Numerai's recommendation to treat each era as a single data point.
+
+   c. Clustering:
+      - Apply k-means++ with Dynamic Time Warping (DTW) metric on HV data.
+      - Use the elbow method to determine optimal k, not just fixed at 3 like in Letteri's paper.
+      - Identify mid-volatility cluster, following Letteri's insight that these stocks offer the best trade-off between risk and opportunity.
+
+   d. Causality Testing:
+      - Apply Granger Causality Test (GCT) pairwise on mid-volatility stocks' returns.
+      - Use AIC or BIC for optimal lag selection, improving on Letteri's fixed lag.
+      - Build a directed graph where edges represent significant Granger causality.
+
+   e. Feature Selection:
+      - Use LASSO or Random Forest to identify most predictive features.
+      - This extends Letteri's work by considering more than just price data.
+
+   f. Trading Strategy:
+      - Train a Random Forest model for each target stock, using its predictors' returns and selected features as inputs.
+      - Use model's output probabilities to decide buy, sell, or hold.
+      - Incorporate volatility in position sizing: larger positions for mid-volatility stocks.
+
+   g. Backtesting:
+      - Use AitaBT module from Letteri's framework for consistency.
+      - Test on out-of-sample data, respecting Numerai's era structure.
+      - Calculate Total Return, Sharpe/Sortino/Calmar Ratios, Max Drawdown.
+
+5. Provide background information:
+   The core of my methodology is based on Letteri's VolTS system, which showed that volatility clustering and Granger causality can guide profitable trading decisions. However, I'm extending this in several ways:
+
+   a. Using a more comprehensive dataset (Numerai) that includes a wide range of features beyond just price data.
+   b. Applying KNN imputation for missing data, inspired by Letteri's use of KNN for anomaly detection.
+   c. Using more advanced techniques for parameter selection (elbow method for k, AIC/BIC for GCT lags) to make the method more data-driven.
+   d. Incorporating feature selection to leverage Numerai's rich feature set.
+   e. Using a machine learning model (Random Forest) for trading decisions, moving beyond simple trend following.
+
+6. Discuss sampling process:
+   Unlike traditional research where sampling is about selecting participants, in this quantitative finance study, "sampling" refers to data selection. I'm using the entire Numerai dataset, as it's carefully curated to be point-in-time and capture alpha. However, following Numerai's advice, I treat each 'era' as a single data point to respect the time series nature of the data.
+
+   For backtesting, I'll use a walk-forward validation approach. I'll train on a chunk of historical data, test on the next chunk, then move the window forward. This respects the overlapping nature of Numerai's targets and simulates real-world trading where you're always using past data to predict the future.
+
+7. Address research limitations:
+   a. Data Snooping Bias: Letteri's strategy worked well on his chosen stocks, but there's a risk it was overfitted. By using Numerai's large, curated dataset and out-of-sample testing, I mitigate this risk.
+   b. Stationarity Assumption: GCT assumes time series are stationary. I'll use Augmented Dickey-Fuller tests to check this and differencing if needed.
+   c. Market Regime Changes: My strategy might perform differently in bull vs bear markets. I'll analyze performance in different market conditions.
+   d. Transaction Costs: Like Letteri, I include a fixed commission per trade, but real-world costs can be more complex.
+   e. Look-Ahead Bias: Numerai's point-in-time data helps avoid this, but I must be careful not to use future data when preprocessing or in my models.
+
+In conclusion, my methodology builds upon Letteri's innovative volatility-based approach, extending it with more advanced techniques and a richer dataset. By combining statistical learning (GCT) with machine learning (clustering, feature selection, Random Forest), I aim to create a robust trading system that capitalizes on volatility dynamics and inter-stock relationships. The use of Numerai's carefully crafted dataset and rigorous backtesting should provide a strong validation of this approach.

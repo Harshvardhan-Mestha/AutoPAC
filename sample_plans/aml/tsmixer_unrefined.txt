@@ -1,0 +1,34 @@
+To effectively apply the TabPFN transformer architecture on the given tabular stock market dataset for classification, I would propose the following methodology:
+
+1) Introduce the methodological approach:
+For this multivariate tabular classification task on time-series stock market data, I will employ a neural network-based approach using the TabPFN (Tabular Perceiver for Forecasting and Classification) architecture. TabPFN is a transformer model pre-trained to perform probabilistic inference on small tabular datasets with numerical features. It is well-suited for this problem given its proven performance on similar tabular classification tasks.
+
+2) Establish methodological connection: 
+The TabPFN architecture aligns well with the objective of accurately classifying stock movements based on the provided numerical features describing market conditions over time. Its transformer-based design allows it to effectively capture complex interactions between the input features, which is crucial given the inconsistent predictive power of individual features mentioned. Additionally, TabPFN's pre-training on synthetic tabular tasks enables fast adaptation to new datasets like this stock market one.
+
+3) Introduce instruments and preprocessing:
+I will utilize the TabPFN implementation provided, which takes numerical tabular data as input. As per the model description, no manual feature preprocessing like encoding or transformations will be applied, as TabPFN handles this internally through normalization, log-scaling, and power transforms.
+
+The provided dataset contains 24 numerical features along with row/era identifiers and target values at 5/10 period forecasting horizons. I will treat each distinct era as a single data point, in line with the recommendations.
+
+4) Discuss analysis approach:
+TabPFN is designed to output probabilistic predictions over the target classes. I will evaluate its performance using appropriate classification metrics like accuracy, F1-score, and area under the receiver operating characteristic curve (AUROC). 
+
+Given TabPFN's ensembling capabilities, I will train multiple model instances with different input encodings as per the N_ensemble_configurations parameter. Ensembling helps improve generalization.
+
+For analysis, I will perform a random search over TabPFN's hyperparameters like learning rate, number of layers, ensemble size etc. to identify the optimal configuration on a validation set. Visualizations of model predictions, uncertainties, and salience maps can provide insights into what signals the model utilizes.
+
+5) Provide background information:
+TabPFN combines transformer encoders with a Perceiver processor. It is pre-trained on a suite of synthetic tabular tasks to learn effective representations and operations like normalization. At inference, it processes real tabular data end-to-end through its pre-processing pipeline and transformer encoder.
+
+6) Sampling process: 
+I will split the dataset into training, validation, and test sets stratified by the target classes and eras to ensure consistency across splits. The validation set will guide model selection and hyperparameter tuning during the random search.
+
+7) Address limitations:
+A key limitation is TabPFN's constraint of operating only on numerical data without missing values. Data imputation or other missing value strategies may be required if the dataset contains any missing values.
+
+Additionally, the stochasticity in TabPFN's ensembling and pre-processing steps may introduce some variance in results across multiple runs. Reporting mean/variance over multiple seeds can account for this.
+
+While TabPFN is pre-trained, its performance may degrade if the dataset distribution differs significantly from its pre-training data. Monitoring for such distribution shifts is advisable.
+
+In summary, the proposed methodology leverages the pre-trained TabPFN model on the numerical time-series stock data, utilizing its transformer architecture and specialized pre-processing capabilities. An appropriate evaluation framework with metrics, hyperparameter tuning, and analysis techniques are incorporated to comprehensively assess TabPFN's performance on this task while being mindful of its limitations.
